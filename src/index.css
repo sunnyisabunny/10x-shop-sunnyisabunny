@@ -1,0 +1,4 @@
+/* NOTE: the only global stylesheet. This one import brings in all of Tailwind v4, which then scans
+   the source files and generates just the utility classes they actually use.
+   Connects to: the `tailwindcss()` plugin in `vite.config.ts` and the import in `main.tsx`. */
+@import "tailwindcss";

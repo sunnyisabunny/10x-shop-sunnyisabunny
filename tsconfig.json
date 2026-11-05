@@ -1,0 +1,35 @@
+{
+  // NOTE: the one TypeScript config for the whole project.
+  // WHY ONE FILE: Vite's template splits this into several "referenced" configs. With that setup a
+  // plain `tsc --noEmit` can finish with 0 errors because the root file lists no source files, so
+  // the check passes without checking anything. One flat file means `npm run typecheck` really
+  // reads `src`. Proof: a deliberate type error makes it fail.
+  "compilerOptions": {
+    // What JavaScript and browser features the code may use.
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+
+    // The PRD's strict rules (T1). `strict` turns on noImplicitAny and strictNullChecks.
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // TypeScript only checks here. Vite does the actual building, so nothing is emitted.
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+
+    // Lets `import.meta.env` and image imports be understood.
+    "types": ["vite/client"],
+
+    // The @ alias: `@/utils/format` means `src/utils/format`.
+    // The PRD's sample also sets `baseUrl`, but TypeScript 6 reports that as an error (TS5101),
+    // and `paths` no longer needs it.
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src", "vite.config.ts"]
+}
