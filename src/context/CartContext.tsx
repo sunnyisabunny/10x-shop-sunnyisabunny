@@ -31,31 +31,52 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 /**
- * Checks that something from localStorage really is a cart line. JSON has no types, and anyone can edit
- * storage in developer tools, so TypeScript can't promise this. `value is CartItem` is a type guard: when
- * it returns true, TypeScript treats the value as a CartItem from then on.
+ * Checks that something from localStorage really is a usable cart line. JSON has no types, and anyone can
+ * edit storage in developer tools, so TypeScript can't promise this. `value is CartItem` is a type guard:
+ * when it returns true, TypeScript treats the value as a CartItem from then on.
+ * Checking `typeof` alone isn't enough: a quantity of -3 is a number, and it would make the total negative.
  */
 function isCartItem(value: unknown): value is CartItem {
   if (typeof value !== "object" || value === null) {
     return false;
   }
+  // Only widens `object` so the fields can be read. Each field's real type is checked just below.
   const item = value as Record<string, unknown>;
   return (
-    typeof item.productId === "number" &&
+    Number.isInteger(item.productId) &&
     typeof item.title === "string" &&
     typeof item.thumbnail === "string" &&
     typeof item.price === "number" &&
+    item.price >= 0 &&
     typeof item.discountPercentage === "number" &&
+    item.discountPercentage >= 0 &&
+    item.discountPercentage <= 100 &&
     typeof item.stock === "number" &&
-    typeof item.quantity === "number"
+    typeof item.quantity === "number" &&
+    Number.isInteger(item.quantity) &&
+    item.quantity >= 1 &&
+    item.quantity <= item.stock
   );
 }
 
-/** Reads the saved cart. Broken or edited data gives an empty cart, not a crash on every page. */
+/**
+ * Reads the saved cart. Broken or edited data gives an empty cart, not a crash on every page. Repeated
+ * products are dropped too, because the Cart page uses `productId` as its React key, and keys must be unique.
+ */
 function readStoredCart(): CartItem[] {
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEYS.cart) ?? "[]");
-    return Array.isArray(parsed) ? parsed.filter(isCartItem) : [];
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    const seen = new Set<number>();
+    return parsed.filter(isCartItem).filter((item) => {
+      if (seen.has(item.productId)) {
+        return false;
+      }
+      seen.add(item.productId);
+      return true;
+    });
   } catch {
     return [];
   }
