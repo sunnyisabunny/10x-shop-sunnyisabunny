@@ -6,7 +6,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { StorageService } from "../models/StorageService";
-import { STORAGE_KEYS } from "../utils/constants";
+import { STORAGE_KEYS, THEME_BAR_COLORS } from "../utils/constants";
 import { parseTheme, type Theme } from "../utils/guards";
 
 interface ThemeContextValue {
@@ -22,9 +22,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   /** Starts dark, because the night street is the shop's natural look. A saved choice wins. */
   const [theme, setTheme] = useState<Theme>(() => themeStorage.get() ?? "dark");
 
-  // Puts the theme on <html>, where the CSS looks for it, and saves it for the next visit.
+  // Puts the theme on <html>, where the CSS looks for it, tells a phone's browser bar, and saves it for the next visit.
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME_BAR_COLORS[theme]);
     themeStorage.set(theme);
   }, [theme]);
 

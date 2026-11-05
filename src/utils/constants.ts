@@ -73,6 +73,12 @@ export const STORAGE_KEYS = {
   theme: "shop_theme",
 } as const;
 
+/**
+ * The colour of a phone's browser bar in each theme: the header's own colour, so the two blend together.
+ * `index.html` keeps a copy of these, because it runs before any of this code loads.
+ */
+export const THEME_BAR_COLORS = { dark: "#0e121b", light: "#fafaf6" } as const;
+
 /** Profile: shortest accepted first or last name, after trimming spaces. */
 export const MIN_NAME_LENGTH = 2;
 
