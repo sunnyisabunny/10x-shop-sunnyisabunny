@@ -68,6 +68,14 @@ export function parseCartState(value: unknown): CartState | null {
   return { items, promoCode: value.promoCode === PROMO_CODE ? PROMO_CODE : null };
 }
 
+/**
+ * Reads where to go after logging in. `location.state` has the type `any`, so this checks its real shape at
+ * runtime instead of trusting it. Anything unexpected falls back to the catalog.
+ */
+export function readFromPath(state: unknown): string {
+  return isRecord(state) && typeof state.from === "string" ? state.from : "/";
+}
+
 /** The two themes. A union, so "dakr" doesn't compile. */
 export type Theme = "dark" | "light";
 

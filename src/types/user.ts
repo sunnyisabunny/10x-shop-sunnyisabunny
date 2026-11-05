@@ -1,7 +1,7 @@
 /**
  * NOTE: the types for the simulated login and the user's profile.
  * Why it exists: login is local, as the PRD requires, so there is no token or server user. Just a name.
- * Connects to: `context/AuthContext.tsx`, `pages/LoginPage.tsx` and `pages/ProfilePage.tsx`.
+ * Connects to: `context/AuthContext.tsx`, the Login, Sign Up and Reset pages, and `pages/ProfilePage.tsx`.
  */
 
 /** Who is using the shop right now. A guest is `null` in AuthContext, so this always means logged in. */
@@ -13,6 +13,17 @@ export interface AuthUser {
 export interface LoginFormValues {
   username: string;
   password: string;
+}
+
+/** The Sign Up form. `Login` plus two more fields, so `extends` saves repeating them. */
+export interface SignUpFormValues extends LoginFormValues {
+  email: string;
+  confirmPassword: string;
+}
+
+/** The password reset form. */
+export interface ResetPasswordValues {
+  email: string;
 }
 
 /** The details a user can edit on the Profile page. */
