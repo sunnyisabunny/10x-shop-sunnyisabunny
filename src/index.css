@@ -3,7 +3,7 @@
    Why it exists: PRD TW1 asks for `@import "tailwindcss"`, and TW5 asks for our own tokens in `@theme`.
    Connects to: every component. A token here, such as `--color-steel`, becomes classes like `bg-steel`.
 
-   The palette rule: amber only ever means price, pink only ever means act. */
+   The palette rule: amber is the machine's LED readout (prices and counts), and pink only ever means act. */
 @import "tailwindcss";
 
 /* Fonts are served from our own site, not Google's. That means no extra connection to another server

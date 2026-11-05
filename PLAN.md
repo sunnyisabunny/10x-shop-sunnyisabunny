@@ -43,7 +43,7 @@ tracker, Night-shift cat.
 
 "Night Vending": the shop is a lit vending machine on a rainy street in Tokyo at night.
 - The product grid is the machine's front, and each product sits in a slot of bright, lit glass.
-- Amber always means price. Pink always means act.
+- Amber is the machine's LED readout: prices and counts. Pink always means act.
 - The daylight theme is a white enamel machine.
 - The spec's exact English texts stay word for word. Japanese text is decoration only, hidden from screen readers.
 

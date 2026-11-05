@@ -6,7 +6,6 @@
  *
  * On a phone the card is a sideways shelf row (grid areas). From tablet width up it stacks vertically.
  */
-import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import type { Product } from "../../types/product";
 import { formatCategory } from "../../utils/format";
@@ -18,8 +17,8 @@ export interface ProductCardProps {
   product: Product;
   /** The machine's label for this position, such as "B3". */
   code: string;
-  /** Asks the parent to add this product. Returns false when the stock has run out. */
-  onAdd: (product: Product) => boolean;
+  /** A callback prop: the card only reports the press, and the parent decides what adding means. */
+  onAdd: (product: Product) => void;
 }
 
 export default function ProductCard({ product, code, onAdd }: ProductCardProps) {
@@ -27,19 +26,6 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
 
   /** Where this card is. The product page uses it to know whether "Back to catalog" can just go back. */
   const { pathname } = useLocation();
-
-  /** The short message on the button after pressing it. Null shows the normal label. */
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  // Clears the message after a moment. The cleanup cancels the timer if the card disappears first, or if
-  // the message changes. Without it, a stale timer could clear a newer message too early.
-  useEffect(() => {
-    if (feedback === null) {
-      return;
-    }
-    const timer = setTimeout(() => setFeedback(null), 1800);
-    return () => clearTimeout(timer);
-  }, [feedback]);
 
   // 92 products have no brand. Without this check they would show a dangling "Groceries · ".
   const subtitle = product.brand ? `${formatCategory(product.category)} · ${product.brand}` : formatCategory(product.category);
@@ -109,10 +95,10 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
           cart rather than opening the product. */}
       <Button
         disabled={isOut}
-        onClick={() => setFeedback(onAdd(product) ? "Added to cart ✓" : `Only ${product.stock} available`)}
+        onClick={() => onAdd(product)}
         className="relative z-[2] col-span-2 mx-2.5 mb-3 tablet:mx-3 tablet:mb-[13px]"
       >
-        {isOut ? "Out of stock" : (feedback ?? "Add to cart")}
+        {isOut ? "Out of stock" : "Add to cart"}
       </Button>
     </article>
   );

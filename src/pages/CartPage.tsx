@@ -9,10 +9,18 @@ import CartSummary from "../components/cart/CartSummary";
 import Button, { buttonStyles } from "../components/ui/Button";
 import StateMessage from "../components/ui/StateMessage";
 import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";
 
 export default function CartPage() {
   const { items, itemCount, total, removeItem, setQuantity, clear } = useCart();
+  const { showToast } = useToast();
   const navigate = useNavigate();
+
+  /** PRD P4: removing a line confirms it with this exact toast. */
+  function handleRemove(productId: number) {
+    removeItem(productId);
+    showToast("Removed from cart");
+  }
 
   /** PRD: Clear cart asks first, with these exact words, because it can't be undone. */
   function handleClear() {
@@ -41,7 +49,7 @@ export default function CartPage() {
           <div className="min-w-0">
             <ul className="grid gap-2.5">
               {items.map((item) => (
-                <CartLine key={item.productId} item={item} onQuantityChange={setQuantity} onRemove={removeItem} />
+                <CartLine key={item.productId} item={item} onQuantityChange={setQuantity} onRemove={handleRemove} />
               ))}
             </ul>
             <button type="button" onClick={handleClear} className="mt-1.5 min-h-11 font-semibold text-ink-soft underline hover:text-ink">

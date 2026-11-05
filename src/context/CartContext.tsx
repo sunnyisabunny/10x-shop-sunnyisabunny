@@ -23,6 +23,8 @@ interface CartContextValue extends CartState {
   total: number;
   /** Returns false when that many would exceed the stock, so the caller can say so. */
   addItem: (product: CartProductInput, quantity?: number) => boolean;
+  /** How many of a product are in the cart right now. */
+  quantityOf: (productId: number) => number;
   removeItem: (productId: number) => void;
   setQuantity: (productId: number, quantity: number) => void;
   clear: () => void;
@@ -107,9 +109,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
+  const quantityOf = useCallback((productId: number): number => {
+    return latestItems.current.find((item) => item.productId === productId)?.quantity ?? 0;
+  }, []);
+
   const addItem = useCallback((product: CartProductInput, quantity = 1): boolean => {
-    const inCart = latestItems.current.find((item) => item.productId === product.id)?.quantity ?? 0;
-    if (inCart + quantity > product.stock) {
+    if (quantityOf(product.id) + quantity > product.stock) {
       return false;
     }
     setItems((current) => {
@@ -135,7 +140,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...current, newItem];
     });
     return true;
-  }, []);
+  }, [quantityOf]);
 
   const removeItem = useCallback((productId: number) => {
     setItems((current) => current.filter((item) => item.productId !== productId));
@@ -156,8 +161,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const total = items.reduce((sum, item) => sum + discountedPrice(item.price, item.discountPercentage) * item.quantity, 0);
     // Rounded to cents, because adding many decimals can leave a tiny floating-point remainder.
-    return { items, itemCount, total: Math.round(total * 100) / 100, addItem, removeItem, setQuantity, clear };
-  }, [items, addItem, removeItem, setQuantity, clear]);
+    return { items, itemCount, total: Math.round(total * 100) / 100, addItem, quantityOf, removeItem, setQuantity, clear };
+  }, [items, addItem, quantityOf, removeItem, setQuantity, clear]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
