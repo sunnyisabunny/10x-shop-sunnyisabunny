@@ -5,8 +5,9 @@
  * Connects to: `CartContext` and `ToastContext`. Used by `ProductGrid` and `ProductPage`.
  */
 import { useCallback } from "react";
-import { useCart, type CartProductInput } from "../context/CartContext";
+import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import type { CartProductInput } from "../types/cart";
 
 export function useAddToCart(): (product: CartProductInput, quantity?: number) => void {
   const { addItem, quantityOf } = useCart();

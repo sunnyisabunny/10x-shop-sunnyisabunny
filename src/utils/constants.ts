@@ -26,6 +26,14 @@ export const MIN_ADDRESS_LENGTH = 5;
 /** Checkout: how long the simulated "placing your order" moment lasts, in milliseconds. */
 export const PLACE_ORDER_DELAY_MS = 600;
 
+/** Cart: the one working promo code, and how much it takes off. Its label on screen is built from these. */
+export const PROMO_CODE = "10X10";
+export const PROMO_PERCENT = 10;
+
+/** Cart: shipping is free from this total upwards, and costs SHIPPING_COST below it. */
+export const FREE_SHIPPING_FROM = 100;
+export const SHIPPING_COST = 10;
+
 /** The API every product request goes to. */
 export const API_BASE_URL = "https://dummyjson.com";
 
