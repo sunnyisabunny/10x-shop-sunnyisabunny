@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { formatItemCount } from "../../utils/format";
 
 /**
  * NavLink calls this with `isActive`, so the current page can be highlighted (PRD P0.1).
@@ -34,7 +35,7 @@ function CoinCounter({ count, className = "" }: { count: number; className?: str
       >
         {String(count).padStart(2, "0")}
       </span>
-      <span className="sr-only">{count === 1 ? "1 item" : `${count} items`}</span>
+      <span className="sr-only">{formatItemCount(count)}</span>
     </span>
   );
 }
