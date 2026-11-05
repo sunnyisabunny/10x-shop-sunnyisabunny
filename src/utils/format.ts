@@ -23,6 +23,11 @@ export function formatPrice(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 }
 
+/** A date as text, in the visitor's own format. The date's meaning doesn't depend on the locale, unlike money. */
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString();
+}
+
 /** "1 item" or "5 items". Search and filters make a single result possible, and "1 items" reads as a bug. */
 export function formatItemCount(count: number): string {
   return count === 1 ? "1 item" : `${count} items`;
