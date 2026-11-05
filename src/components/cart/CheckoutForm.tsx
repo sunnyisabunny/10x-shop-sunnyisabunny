@@ -61,13 +61,24 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
     }
   }
 
-  /** `preventDefault` stops the browser's page reload. Only a valid form goes on to place the order. */
+  /**
+   * `preventDefault` stops the browser's page reload. Only a valid form goes on to place the order. The rules
+   * ignore spaces around a value, so the spaces are removed here too, or they would be saved in the order.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors = validateCheckout(values);
     setErrors(nextErrors);
     if (hasNoErrors(nextErrors) && !isPlacing) {
-      onPlaceOrder(values);
+      onPlaceOrder({
+        fullName: values.fullName.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim(),
+        address: values.address.trim(),
+        city: values.city.trim(),
+        postalCode: values.postalCode.trim(),
+        country: values.country,
+      });
     }
   }
 

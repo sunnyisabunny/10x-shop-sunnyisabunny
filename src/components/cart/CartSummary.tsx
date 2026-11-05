@@ -10,7 +10,7 @@ import { formatPrice } from "../../utils/format";
 import { inputStyles } from "../ui/FormField";
 
 interface CartSummaryProps {
-  /** Only the Cart page offers the promo code field. Checkout just shows the result. */
+  /** Only the Cart page can add or remove a promo code. Checkout just shows the result. */
   showPromoForm?: boolean;
   children?: ReactNode;
 }
@@ -74,7 +74,8 @@ export default function CartSummary({ showPromoForm = false, children }: CartSum
         <span>
           {/* The exact PRD wording when a code is applied, and a plain line when not. */}
           {promoCode !== null ? `Discount (${promoCode} −${PROMO_PERCENT}%)` : "Discount"}
-          {promoCode !== null && (
+          {/* Checkout is read-only: changing the total there could make the saved order differ from the screen. */}
+          {promoCode !== null && showPromoForm && (
             <button type="button" onClick={removePromo} className="ml-2 min-h-11 font-semibold text-ink-soft underline hover:text-ink">
               Remove
             </button>
