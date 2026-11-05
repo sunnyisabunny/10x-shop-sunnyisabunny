@@ -1,8 +1,19 @@
 /**
- * NOTE: a temporary root component that proves the tooling works.
- * Why it exists: step 1 of the PRD asks for a building project with working Tailwind classes before
- * any feature exists. The real routes and layout replace this in the first feature branch.
+ * NOTE: the root component. It sets up routing for the whole app.
+ * Why it exists: the router must wrap everything that uses links or reads the URL.
+ * Connects to: `main.tsx` draws this, and `AppRoutes` decides which page shows.
  */
+import { BrowserRouter } from "react-router";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
+import AppRoutes from "./routes/AppRoutes";
+
 export default function App() {
-  return <h1 className="p-8 text-3xl font-bold text-pink-500">10X Shop</h1>;
+  return (
+    // This outer boundary catches a crash in the Header or Layout itself. Layout has its own for pages.
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ErrorBoundary>
+  );
 }
