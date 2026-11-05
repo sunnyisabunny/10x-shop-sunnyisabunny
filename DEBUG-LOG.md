@@ -57,3 +57,39 @@ list only grows when a real bug turns up.
 **Fix:** [`02a0d65`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/02a0d65): removed the `aria-label`. The link now has hidden `Cart` and `4 items` text, with the LED digits hidden from screen readers instead, and the short links got `min-h-11`.
 
 **What it taught:** an `aria-label` overrides content, so it can hide information rather than add it. Real text usually works better.
+
+---
+
+## 4. The whole shop crashed if the browser refused to save
+
+**Symptom:** with storage that refuses writes, the entire site showed "Something went wrong." with no products, even though browsing doesn't need the cart.
+
+**Reproduce:**
+1. Make `localStorage.setItem` throw. A full disk or blocked site data does this for real, and a test script can simulate it.
+2. Open the catalog.
+
+**Tool:** a code review flagged the line, and a Playwright script with a throwing `setItem` confirmed it: the crash screen appeared and 0 products were drawn.
+
+**Root cause:** `CartProvider` saves the cart in a `useEffect`, and that effect runs when the app first loads. The read from storage had a `try/catch`, but the write did not. An error thrown in an effect goes up to the nearest Error Boundary, and for a provider that wraps the whole app, that is the outermost one.
+
+**Fix:** [`18d297c`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/18d297c): a `try/catch` around the write. The cart still works for the visit and just isn't saved.
+
+**What it taught:** anything touching storage can fail, so both directions need handling. Also, a working Error Boundary doesn't mean the problem is handled well: it replaced the whole shop when only saving had failed.
+
+---
+
+## 5. A corrupted saved cart showed a total of −$10.00
+
+**Symptom:** the Cart page showed a negative total when the saved cart held an impossible quantity.
+
+**Reproduce:**
+1. In developer tools, set `shop_cart` to a line with `"quantity": -3`, plus a second line with the same `productId`.
+2. Open `/cart`. It showed `Subtotal -$10.00` and `Total -$10.00`, with both lines drawn.
+
+**Tool:** a code review pointed at the type guard, and a Playwright script confirmed the numbers.
+
+**Root cause:** the `isCartItem` type guard only checked `typeof item.quantity === "number"`, and -3 is a number. A type guard proves the type, not that the value makes sense. The repeated `productId` would also have given React duplicate keys.
+
+**Fix:** [`32b0beb`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/32b0beb): quantity must be a whole number between 1 and the stock, price and discount must be in range, and repeated products are dropped.
+
+**What it taught:** data from storage is outside input, like data from a user. TypeScript's types say nothing about it at runtime.
