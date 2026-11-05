@@ -205,7 +205,7 @@ list only grows when a real bug turns up.
 
 **Root cause:** `ProductGrid` uses the cart context through `useAddToCart`, so it redraws whenever the cart changes. A plain component redraws whenever its parent does, even if its props are identical.
 
-**Fix:** [`3198996`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/3198996): `memo(ProductCard)`. It works because `useAddToCart` already returns a stable function. After the fix, the same counter reports `ProductCard 0`.
+**Fix:** [`3198996`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/3198996): `memo(ProductCard)`. It works because `useAddToCart` already returns a stable function. After the fix, the same counter reports `ProductCard 0`. A later code review found one more leak: `useLocation` inside the card got straight through `memo`, because `memo` only looks at props, so every URL change still redrew all 12. [`52779ee`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/52779ee) moved it up to the grid, and a URL change now also reports `ProductCard 0`.
 
 **What it taught:** measure first. The counter showed one component worth wrapping, which is far less work and far less risk than wrapping everything.
 
