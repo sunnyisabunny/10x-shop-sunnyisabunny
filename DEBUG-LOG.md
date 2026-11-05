@@ -93,3 +93,21 @@ list only grows when a real bug turns up.
 **Fix:** [`32b0beb`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/32b0beb): quantity must be a whole number between 1 and the stock, price and discount must be in range, and repeated products are dropped.
 
 **What it taught:** data from storage is outside input, like data from a user. TypeScript's types say nothing about it at runtime.
+
+---
+
+## 6. Choosing a category during a search did nothing
+
+**Symptom:** with a search active, picking a category from the dropdown changed nothing. The search stayed and the category disappeared.
+
+**Reproduce:**
+1. Search for `phone`.
+2. Choose `Smartphones` in the Category dropdown.
+
+**Tool:** a Playwright test timed out waiting for `category=` in the URL. I then traced the two effects in `CatalogToolbar` in order.
+
+**Root cause:** choosing a category removes `q` from the URL, because the API can't combine them. In that same render the box still held `phone`, and the effect that sends a search saw "the text differs from the URL" and sent it again, which removed the category. The effect couldn't tell typed text from text left over. A later code review found a second route into the same bug: picking a category within the 400ms debounce window.
+
+**Fix:** [`eef169a`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/eef169a): the test caught this before the first commit of this code, so the fix is part of that commit. An `isTyping` ref means only real keystrokes can start a search. The second route was fixed in the commit after the review, where choosing a category also drops any text still being typed.
+
+**What it taught:** when one value lives in two places, here the box and the URL, an effect that syncs them needs to know which one changed first. "They differ" isn't enough information.

@@ -29,6 +29,25 @@ export const PLACE_ORDER_DELAY_MS = 600;
 /** The API every product request goes to. */
 export const API_BASE_URL = "https://dummyjson.com";
 
+/** Search: how long typing must pause before a request is sent. 5 letters send 1 request, not 5. */
+export const SEARCH_DEBOUNCE_MS = 400;
+
+/**
+ * The catalog's sort options (PRD P2.6). One row each: the value in the URL, the label, and what the API needs.
+ * Adding a sort option is one line here, and the dropdown and the request both follow.
+ * `as const` keeps each value as its exact text, which is what makes `SortValue` below possible.
+ */
+export const SORT_OPTIONS = [
+  { value: "", label: "Default" },
+  { value: "price-asc", label: "Price: low to high", sortBy: "price", order: "asc" },
+  { value: "price-desc", label: "Price: high to low", sortBy: "price", order: "desc" },
+  { value: "rating-desc", label: "Rating: high to low", sortBy: "rating", order: "desc" },
+  { value: "title-asc", label: "Name A→Z", sortBy: "title", order: "asc" },
+] as const;
+
+/** The union "" | "price-asc" | ... built from the table above, so the two can never disagree. */
+export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
+
 /** Requests slower than this give up and show an error, so a hung server can't show a skeleton forever. */
 export const API_TIMEOUT_MS = 10000;
 

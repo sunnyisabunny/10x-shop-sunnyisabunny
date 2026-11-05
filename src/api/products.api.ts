@@ -1,14 +1,8 @@
 /**
- * NOTE: the API paths for products.
+ * NOTE: the API path for a single product.
  * Why it exists: pages shouldn't know URLs. If the API changes, only this file does.
- * Connects to: `CatalogPage` and `ProductPage` pass these paths to `useFetch`.
+ * Connects to: `ProductPage` passes this path to `useFetch`. The catalog's paths come from `utils/url.ts`.
  */
-import { PAGE_SIZE } from "../utils/constants";
-
-/** One page of products. `skip` is how many to jump over, so page 2 is skip = 12. */
-export function productsPath(skip = 0): string {
-  return `/products?limit=${PAGE_SIZE}&skip=${skip}`;
-}
 
 /** One product. */
 export function productPath(id: number): string {

@@ -23,6 +23,13 @@ export interface Product {
   images: string[];
 }
 
+/** One entry from `GET /products/categories`. `slug` goes in URLs, `name` is what people read. */
+export interface Category {
+  slug: string;
+  name: string;
+  url: string;
+}
+
 /** The API's list envelope. `total` is how many exist, not how many came back in `products`. */
 export interface ProductsResponse {
   products: Product[];
