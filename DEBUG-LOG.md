@@ -5,6 +5,25 @@ list only grows when a real bug turns up.
 
 ---
 
+## 7. Place order and Save changes ignored the first click after fixing a field
+
+**Symptom:** with an error showing under a field, I corrected the field and clicked the button straight away. Nothing happened. A second click worked.
+
+**Reproduce:**
+1. On Checkout, type `1` in Postal code and move to another field, so the error appears.
+2. Correct it to `0100`, leaving the cursor in the field.
+3. Click Place order once.
+
+**Tool:** my browser test for the Profile form failed on `saving says so`. A normal save worked in a separate one-off script, so the difference had to be the error that was showing. I then wrote the same steps as a test for Checkout, and it failed there too.
+
+**Root cause:** the browser fires `blur` on mouse down, and a click only counts if mouse down and mouse up land on the same element. Blur validation removed the error line, the form got shorter, and the button moved up about 23px between those two events. The mouse up landed below the button, so no click happened.
+
+**Fix:** [`e09faa1`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/e09faa1): every field keeps a reserved line for its error, whether it is showing or not, so validation never moves anything.
+
+**What it taught:** validating on blur changes the page at the exact moment someone is clicking. Anything that changes layout has to be checked against what the user is doing at that moment.
+
+---
+
 ## 1. Logging out of Checkout landed on Login instead of the catalog
 
 **Symptom:** pressing Log out on `/checkout` ended on `/login`. The PRD says logout returns to the catalog.
