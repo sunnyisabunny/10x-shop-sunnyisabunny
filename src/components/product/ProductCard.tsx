@@ -7,7 +7,7 @@
  * On a phone the card is a sideways shelf row (grid areas). From tablet width up it stacks vertically.
  */
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import type { Product } from "../../types/product";
 import { formatCategory } from "../../utils/format";
 import Button from "../ui/Button";
@@ -25,11 +25,14 @@ export interface ProductCardProps {
 export default function ProductCard({ product, code, onAdd }: ProductCardProps) {
   const isOut = product.stock === 0;
 
+  /** Where this card is. The product page uses it to know whether "Back to catalog" can just go back. */
+  const { pathname } = useLocation();
+
   /** The short message on the button after pressing it. Null shows the normal label. */
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  // Clears the message after a moment. The cleanup cancels the timer if the card disappears first, or
-  // if the button is pressed again. Without it, a stale timer would clear the newer message too early.
+  // Clears the message after a moment. The cleanup cancels the timer if the card disappears first, or if
+  // the message changes. Without it, a stale timer could clear a newer message too early.
   useEffect(() => {
     if (feedback === null) {
       return;
@@ -49,7 +52,9 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
       <div
         className={`${isOut ? "dim-glass" : "lit-glass"} relative flex min-h-[136px] items-end justify-center overflow-hidden [grid-area:bay] tablet:aspect-[1/0.82] tablet:min-h-0`}
       >
-        <span className="led-text absolute top-2 left-2 z-[2] rounded-[3px] bg-[#10141d] px-1.5 text-[15px] leading-[1.45] text-[#f2f5fa]">
+        {/* pointer-events-none on these labels lets a click reach the stretched link underneath. Without
+            it, clicking the slot code, the discount or the sold-out lamp would do nothing. */}
+        <span className="led-text pointer-events-none absolute top-2 left-2 z-[2] rounded-[3px] bg-[#10141d] px-1.5 text-[15px] leading-[1.45] text-[#f2f5fa]">
           {code}
         </span>
         <DiscountBadge discountPercentage={product.discountPercentage} />
@@ -59,7 +64,7 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
           <span
             aria-hidden="true"
             lang="ja"
-            className="absolute top-[42%] left-1/2 z-[2] -translate-x-1/2 -translate-y-1/2 -rotate-[7deg] rounded bg-sold-out px-2.5 py-0.5 font-dot text-2xl leading-[1.2] text-white shadow-[0_0_18px_rgb(212_21_42/0.65)]"
+            className="pointer-events-none absolute top-[42%] left-1/2 z-[2] -translate-x-1/2 -translate-y-1/2 -rotate-[7deg] rounded bg-sold-out px-2.5 py-0.5 font-dot text-2xl leading-[1.2] text-white shadow-[0_0_18px_rgb(212_21_42/0.65)]"
           >
             売切
           </span>
@@ -87,6 +92,7 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
             is still a real link for keyboards. A click handler on the <article> would not be. */}
         <Link
           to={`/products/${product.id}`}
+          state={{ fromCatalog: pathname === "/" }}
           className="line-clamp-2 text-[15px] leading-[1.4] font-semibold text-ink no-underline after:absolute after:inset-0 after:z-[1] hover:underline tablet:min-h-[2.8em]"
         >
           {product.title}

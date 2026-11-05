@@ -10,6 +10,7 @@ import { buttonStyles } from "../components/ui/Button";
 import FormField from "../components/ui/FormField";
 import { useAuth } from "../context/AuthContext";
 import type { LoginFormValues } from "../types/user";
+import { MIN_PASSWORD_LENGTH } from "../utils/constants";
 import { hasNoErrors, validateLogin, type FieldErrors } from "../utils/validation";
 
 /**
@@ -87,7 +88,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="text-[13px] text-ink-soft">
-          This login is simulated. Any username works, with a password of at least 6 characters.
+          This login is simulated. Any username works, with a password of at least {MIN_PASSWORD_LENGTH} characters.
         </p>
         <Link to="/" className="inline-flex min-h-11 items-center font-semibold text-ink-soft hover:text-ink hover:underline">
           ← Back to catalog

@@ -24,6 +24,9 @@ That is the minimum React Router 8 declares.
 **Why npm and not pnpm**
 The PRD's check is literally `npm install && npm run typecheck && npm run build`, so `package-lock.json` is what gets committed and tested.
 
+**Why `overrides` forces `minimatch` to 11.0.4**
+ESLint depends on an older `minimatch` with a known denial-of-service advisory (GHSA-g3hv-75wg-m249), which made `npm install` report 10 moderate vulnerabilities. It only runs on our own machines and never reaches the site, but it is one line to fix. ESLint was re-run with the override to confirm it still works and still rejects `any`.
+
 ## `package-lock.json`
 
 Written by npm. It records the exact version of every package, including the packages our packages depend on. `npm ci` in CI installs precisely this list.

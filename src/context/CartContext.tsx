@@ -7,7 +7,7 @@
  * reference, so if we changed the old array in place, it would see the same array and not redraw.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { CartItem } from "../types/cart";
+import type { CartItem, CartState } from "../types/cart";
 import type { Product } from "../types/product";
 import { STORAGE_KEYS } from "../utils/constants";
 import { discountedPrice } from "../utils/format";
@@ -15,8 +15,8 @@ import { discountedPrice } from "../utils/format";
 /** The product fields a cart line needs. `Pick` copies them from Product, so they can't fall out of sync. */
 export type CartProductInput = Pick<Product, "id" | "title" | "thumbnail" | "price" | "discountPercentage" | "stock">;
 
-interface CartContextValue {
-  items: CartItem[];
+/** Everything components get from `useCart()`: the cart's state, plus what is worked out from it and the actions. */
+interface CartContextValue extends CartState {
   /** Total units, used for the Header counter. Two of one product counts as 2. */
   itemCount: number;
   /** The sum of discounted price x quantity. */
@@ -31,31 +31,52 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 /**
- * Checks that something from localStorage really is a cart line. JSON has no types, and anyone can edit
- * storage in developer tools, so TypeScript can't promise this. `value is CartItem` is a type guard: when
- * it returns true, TypeScript treats the value as a CartItem from then on.
+ * Checks that something from localStorage really is a usable cart line. JSON has no types, and anyone can
+ * edit storage in developer tools, so TypeScript can't promise this. `value is CartItem` is a type guard:
+ * when it returns true, TypeScript treats the value as a CartItem from then on.
+ * Checking `typeof` alone isn't enough: a quantity of -3 is a number, and it would make the total negative.
  */
 function isCartItem(value: unknown): value is CartItem {
   if (typeof value !== "object" || value === null) {
     return false;
   }
+  // Only widens `object` so the fields can be read. Each field's real type is checked just below.
   const item = value as Record<string, unknown>;
   return (
-    typeof item.productId === "number" &&
+    Number.isInteger(item.productId) &&
     typeof item.title === "string" &&
     typeof item.thumbnail === "string" &&
     typeof item.price === "number" &&
+    item.price >= 0 &&
     typeof item.discountPercentage === "number" &&
+    item.discountPercentage >= 0 &&
+    item.discountPercentage <= 100 &&
     typeof item.stock === "number" &&
-    typeof item.quantity === "number"
+    typeof item.quantity === "number" &&
+    Number.isInteger(item.quantity) &&
+    item.quantity >= 1 &&
+    item.quantity <= item.stock
   );
 }
 
-/** Reads the saved cart. Broken or edited data gives an empty cart, not a crash on every page. */
+/**
+ * Reads the saved cart. Broken or edited data gives an empty cart, not a crash on every page. Repeated
+ * products are dropped too, because the Cart page uses `productId` as its React key, and keys must be unique.
+ */
 function readStoredCart(): CartItem[] {
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEYS.cart) ?? "[]");
-    return Array.isArray(parsed) ? parsed.filter(isCartItem) : [];
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    const seen = new Set<number>();
+    return parsed.filter(isCartItem).filter((item) => {
+      if (seen.has(item.productId)) {
+        return false;
+      }
+      seen.add(item.productId);
+      return true;
+    });
   } catch {
     return [];
   }
@@ -77,7 +98,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Runs after every cart change: remembers the newest items and saves them, so the cart survives a reload.
   useEffect(() => {
     latestItems.current = items;
-    localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(items));
+    // Saving can fail when storage is full or the visitor blocks site data. Without this catch, the error
+    // would crash the whole shop on load. The cart still works for this visit and is just not saved.
+    try {
+      localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(items));
+    } catch {
+      return;
+    }
   }, [items]);
 
   const addItem = useCallback((product: CartProductInput, quantity = 1): boolean => {
@@ -88,10 +115,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((current) => {
       const existing = current.find((item) => item.productId === product.id);
       if (existing) {
-        // Math.min is a second guard: two very fast clicks can both pass the check above, before the
-        // first update has landed, and this keeps the quantity from going over the stock anyway.
+        // The stock is refreshed from the product, because the saved number may be old. Math.min is a second
+        // guard: two very fast clicks can both pass the check above before the first update has landed.
         return current.map((item) =>
-          item.productId === product.id ? { ...item, quantity: Math.min(item.quantity + quantity, item.stock) } : item,
+          item.productId === product.id
+            ? { ...item, stock: product.stock, quantity: Math.min(item.quantity + quantity, product.stock) }
+            : item,
         );
       }
       const newItem: CartItem = {

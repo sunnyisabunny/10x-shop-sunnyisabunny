@@ -15,7 +15,10 @@ export default function App() {
     <ErrorBoundary>
       <AuthProvider>
         <CartProvider>
-          <BrowserRouter>
+          {/* useTransitions={false} makes a route change commit together with state changes. By default the
+              router delays its update as a transition, so on logout ProtectedRoute would see "logged out" while
+              the URL is still /checkout, and redirect to /login instead of the catalog. See DEBUG-LOG.md. */}
+          <BrowserRouter useTransitions={false}>
             <AppRoutes />
           </BrowserRouter>
         </CartProvider>

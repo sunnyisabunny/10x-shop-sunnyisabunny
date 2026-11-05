@@ -16,6 +16,11 @@ import type { Product } from "../types/product";
 import { formatCategory } from "../utils/format";
 import NotFoundPage from "./NotFoundPage";
 
+/** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */
+function cameFromCatalog(state: unknown): boolean {
+  return typeof state === "object" && state !== null && "fromCatalog" in state && state.fromCatalog === true;
+}
+
 /** The product's details and controls. Split out so its quantity starts fresh for each product. */
 function ProductDetails({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -118,11 +123,14 @@ export default function ProductPage() {
   }, [productId]);
 
   /**
-   * Back keeps the catalog as it was. On a direct visit there is no earlier page in this app, so
-   * going back would leave the shop. `location.key` is "default" in exactly that case.
+   * The PRD uses navigate(-1) here, so the catalog keeps its filters. That is only honest when the
+   * previous page really was the catalog, so a card from the catalog says so in `state`. Arriving any
+   * other way, such as from the Cart or a shared link, the link's plain "/" does the job.
+   * Ctrl-click and similar are left alone, so "open in a new tab" still works.
    */
   function handleBack(event: MouseEvent<HTMLAnchorElement>) {
-    if (location.key !== "default") {
+    const isPlainClick = !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
+    if (isPlainClick && cameFromCatalog(location.state)) {
       event.preventDefault();
       navigate(-1);
     }

@@ -24,7 +24,7 @@ export function PriceBlock({ price, discountPercentage, large = false, className
 
   return (
     <div className={`bg-led-panel shadow-[inset_0_1px_0_#000] ${large ? "rounded-md px-3.5 py-2.5" : "px-2.5 pt-1.5 pb-1"} ${className}`}>
-      <s className={`block text-[#dcaa45] ${large ? "h-5 text-sm leading-5" : "h-[18px] text-[13px] leading-[18px]"}`}>
+      <s className={`block text-led-soft ${large ? "h-5 text-sm leading-5" : "h-[18px] text-[13px] leading-[18px]"}`}>
         {showOldPrice ? formatPrice(price) : ""}
       </s>
       <span className={`led-text block leading-[1.15] tracking-[-0.01em] whitespace-nowrap [text-shadow:0_0_10px_rgb(255_182_39/0.35)] ${large ? "text-[42px]" : "text-2xl tablet:text-[27px]"}`}>
@@ -40,7 +40,7 @@ export function DiscountBadge({ discountPercentage }: { discountPercentage: numb
     return null;
   }
   return (
-    <span className="absolute top-2 right-2 z-[2] rounded-[3px] bg-discount px-[7px] py-px text-[13px] font-bold text-on-discount">
+    <span className="pointer-events-none absolute top-2 right-2 z-[2] rounded-[3px] bg-discount px-[7px] py-px text-[13px] font-bold text-on-discount">
       −{Math.round(discountPercentage)}%
     </span>
   );

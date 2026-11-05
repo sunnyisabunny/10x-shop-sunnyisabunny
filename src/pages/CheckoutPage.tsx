@@ -21,8 +21,6 @@ export default function CheckoutPage() {
   /** True for the short moment between pressing the button and the confirmation. */
   const [isPlacing, setIsPlacing] = useState(false);
 
-  const [failure, setFailure] = useState<string | null>(null);
-
   /** Holds the running timer, so it can be cancelled. A ref, because changing it needs no redraw. */
   const placeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -37,16 +35,10 @@ export default function CheckoutPage() {
    */
   function handlePlaceOrder() {
     setIsPlacing(true);
-    setFailure(null);
     placeTimer.current = setTimeout(() => {
-      try {
-        setPlacedTotal(total);
-        clear();
-      } catch {
-        setFailure("Your order could not be placed. Please try again.");
-      } finally {
-        setIsPlacing(false);
-      }
+      setPlacedTotal(total);
+      clear();
+      setIsPlacing(false);
     }, PLACE_ORDER_DELAY_MS);
   }
 
@@ -73,7 +65,7 @@ export default function CheckoutPage() {
     <section className="grid gap-3.5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
       <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Checkout</h1>
       <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
-        <CheckoutForm onPlaceOrder={handlePlaceOrder} isPlacing={isPlacing} failure={failure} />
+        <CheckoutForm onPlaceOrder={handlePlaceOrder} isPlacing={isPlacing} />
         <CartSummary total={total}>
           <ul className="grid gap-1 border-t border-edge pt-2.5 text-[13px] text-ink-soft">
             {items.map((item) => (

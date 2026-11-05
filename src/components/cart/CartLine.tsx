@@ -23,7 +23,8 @@ export default function CartLine({ item, onQuantityChange, onRemove }: CartLineP
         <img src={item.thumbnail} alt="" width={84} height={84} loading="lazy" className="size-[84%] object-contain" />
       </div>
       <div className="min-w-0">
-        <Link to={`/products/${item.productId}`} className="font-semibold underline-offset-2 hover:underline">
+        {/* min-h-11 keeps the tap area at 44px even when the title is one short word like "Lemon". */}
+        <Link to={`/products/${item.productId}`} className="flex min-h-11 items-center font-semibold underline-offset-2 hover:underline">
           {item.title}
         </Link>
         <div className="text-ink-soft">{formatPrice(unitPrice)} each</div>
