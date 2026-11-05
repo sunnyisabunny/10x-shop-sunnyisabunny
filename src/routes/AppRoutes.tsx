@@ -7,6 +7,7 @@
  * `lazy(() => import(...))` makes Vite put that page in its own file. A first visit downloads only the catalog,
  * and Formik and Yup only arrive with the login pages. `Layout` and `ProtectedRoute` are imported normally, because
  * every page needs them straight away. A failed download reaches the ErrorBoundary in `Layout`, which offers Reload.
+ * Reload is the real fix there: `lazy` remembers a failed download, so going to another page and back won't retry it.
  */
 import { lazy } from "react";
 import { Route, Routes } from "react-router";

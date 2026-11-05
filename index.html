@@ -9,9 +9,11 @@
     <meta name="theme-color" content="#0e121b" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- NOTE: opens the connections to the API and the image server early, which saves the handshake on slow
-         networks. The two fonts are the ones visible straight away: the wordmark and the reading text. Without the
-         preload, the browser only finds them once the CSS has loaded. -->
-    <link rel="preconnect" href="https://dummyjson.com" />
+         networks. `crossorigin` is on the API's link because fetch uses a separate kind of connection from images.
+         Without it, the browser would open this one and then not be able to use it. The two fonts are the ones visible
+         straight away: the wordmark and the reading text. Without the preload, the browser only finds them once the
+         CSS has loaded. -->
+    <link rel="preconnect" href="https://dummyjson.com" crossorigin />
     <link rel="preconnect" href="https://cdn.dummyjson.com" />
     <link rel="preload" href="/fonts/tilt-neon.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin />

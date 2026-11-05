@@ -3,8 +3,9 @@
  * Why it exists: pages now load on demand, so there is a moment when the code for the next page isn't here yet.
  * Connects to: the one `<Suspense>` in `Layout` uses this as its fallback.
  *
- * `role="status"` makes screen readers announce the hidden text. `page-spinner` is what `index.css` looks for to
- * hide the footer during that moment, so the footer can't jump when the page arrives.
+ * `role="status"` and the hidden text give screen readers the same information as the circle. Because they appear
+ * together, some screen readers may not read them out, which is acceptable for a wait this short. `page-spinner` is
+ * what `index.css` looks for to hide the footer during that moment, so the footer can't jump when the page arrives.
  */
 export default function Spinner() {
   return (
