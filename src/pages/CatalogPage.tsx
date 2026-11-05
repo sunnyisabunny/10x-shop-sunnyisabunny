@@ -55,7 +55,7 @@ export default function CatalogPage() {
         {isPriceSort && <p className="mt-2 text-[13px] text-ink-soft">Sorted by list price, before discount.</p>}
       </div>
 
-      <CatalogResults state={state} page={params.page} onRetry={retry} onPageChange={handlePageChange} />
+      <CatalogResults state={state} page={params.page} view={params.view} onRetry={retry} onPageChange={handlePageChange} />
     </section>
   );
 }

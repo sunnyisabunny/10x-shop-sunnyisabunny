@@ -7,9 +7,10 @@
  * On a phone the card is a sideways shelf row (grid areas). From tablet width up it stacks vertically.
  */
 import { memo } from "react";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import type { Product } from "../../types/product";
 import { formatCategory } from "../../utils/format";
+import type { CatalogView } from "../../utils/url";
 import Button from "../ui/Button";
 import { DiscountBadge, PriceBlock, StockBadge } from "./PriceBlock";
 
@@ -20,20 +21,47 @@ export interface ProductCardProps {
   code: string;
   /** A callback prop: the card only reports the press, and the parent decides what adding means. */
   onAdd: (product: Product) => void;
+  /** The card's shape. Grid is the default, because related products and the wishlist always use it. */
+  view?: CatalogView;
+  /** Whether this card is on the catalog page. The product page uses it to know whether "Back to catalog" can just go back. */
+  fromCatalog?: boolean;
 }
+
+/**
+ * The classes that differ between the two shapes. On a phone both are the same sideways row. From tablet width up,
+ * a grid card stacks vertically, and a list card stays a row with the button in its own column on the right.
+ */
+const cardShapes = {
+  grid: {
+    card: "tablet:flex tablet:flex-col",
+    bay: "tablet:aspect-[1/0.82] tablet:min-h-0",
+    image: "tablet:w-[78%]",
+    title: "tablet:min-h-[2.8em]",
+    button: "tablet:mx-3 tablet:mb-[13px]",
+  },
+  list: {
+    card: "tablet:grid-cols-[168px_minmax(0,1fr)_190px] tablet:[grid-template-areas:'bay_led_action'_'bay_meta_action']",
+    bay: "",
+    image: "",
+    title: "",
+    button: "tablet:col-span-1 tablet:m-3 tablet:self-center tablet:[grid-area:action]",
+  },
+};
 
 /**
  * Wrapped in `memo` further down, because it was measured first: without it, one Add to cart redrew all 12 cards,
  * even though only the Header's counter had changed. See DEBUG-LOG.md. `memo` skips a redraw when the props are the
  * same. That only works because `onAdd` keeps its identity (`useCallback` in `useAddToCart`) and `product` comes
- * from a list that doesn't change. Typing in Search and switching theme didn't redraw the cards at all, so nothing
- * else here needs `memo`.
+ * from a list that doesn't change. Switching theme, and typing in Search before it reaches the URL, didn't redraw
+ * the cards at all, so nothing else here needs `memo`.
+ *
+ * This card must not use a hook that reads a context which changes often. `memo` only looks at props, so a context
+ * gets straight through it. That is why `fromCatalog` is a prop: calling `useLocation` in here redrew all 12 cards on
+ * every URL change.
  */
-function ProductCard({ product, code, onAdd }: ProductCardProps) {
+function ProductCard({ product, code, onAdd, view = "grid", fromCatalog = false }: ProductCardProps) {
   const isOut = product.stock === 0;
-
-  /** Where this card is. The product page uses it to know whether "Back to catalog" can just go back. */
-  const { pathname } = useLocation();
+  const shape = cardShapes[view];
 
   // 92 products have no brand. Without this check they would show a dangling "Groceries · ".
   const subtitle = product.brand ? `${formatCategory(product.category)} · ${product.brand}` : formatCategory(product.category);
@@ -41,10 +69,10 @@ function ProductCard({ product, code, onAdd }: ProductCardProps) {
   return (
     <article
       data-slot={code}
-      className="relative grid min-w-0 grid-cols-[124px_minmax(0,1fr)] overflow-hidden rounded-lg bg-shelf shadow-[inset_0_0_0_1px_var(--edge)] transition-shadow duration-150 [grid-template-areas:'bay_led'_'bay_meta'] hover:shadow-[inset_0_0_0_1px_var(--edge-bright),0_0_0_1px_var(--edge-bright)] tablet:flex tablet:flex-col"
+      className={`relative grid min-w-0 grid-cols-[124px_minmax(0,1fr)] overflow-hidden rounded-lg bg-shelf shadow-[inset_0_0_0_1px_var(--edge)] transition-shadow duration-150 [grid-template-areas:'bay_led'_'bay_meta'] hover:shadow-[inset_0_0_0_1px_var(--edge-bright),0_0_0_1px_var(--edge-bright)] ${shape.card}`}
     >
       <div
-        className={`${isOut ? "dim-glass" : "lit-glass"} relative flex min-h-[136px] items-end justify-center overflow-hidden [grid-area:bay] tablet:aspect-[1/0.82] tablet:min-h-0`}
+        className={`${isOut ? "dim-glass" : "lit-glass"} relative flex min-h-[136px] items-end justify-center overflow-hidden [grid-area:bay] ${shape.bay}`}
       >
         {/* pointer-events-none on these labels lets a click reach the stretched link underneath. Without
             it, clicking the slot code, the discount or the sold-out lamp would do nothing. */}
@@ -71,7 +99,7 @@ function ProductCard({ product, code, onAdd }: ProductCardProps) {
           width={300}
           height={300}
           loading="lazy"
-          className={`relative z-[1] mb-1.5 aspect-square h-auto w-[88%] object-contain tablet:w-[78%] ${isOut ? "opacity-75 contrast-75 grayscale" : ""}`}
+          className={`relative z-[1] mb-1.5 aspect-square h-auto w-[88%] object-contain ${shape.image} ${isOut ? "opacity-75 contrast-75 grayscale" : ""}`}
         />
         <span
           aria-hidden="true"
@@ -86,8 +114,8 @@ function ProductCard({ product, code, onAdd }: ProductCardProps) {
             is still a real link for keyboards. A click handler on the <article> would not be. */}
         <Link
           to={`/products/${product.id}`}
-          state={{ fromCatalog: pathname === "/" }}
-          className="line-clamp-2 text-[15px] leading-[1.4] font-semibold text-ink no-underline after:absolute after:inset-0 after:z-[1] hover:underline tablet:min-h-[2.8em]"
+          state={{ fromCatalog }}
+          className={`line-clamp-2 text-[15px] leading-[1.4] font-semibold text-ink no-underline after:absolute after:inset-0 after:z-[1] hover:underline ${shape.title}`}
         >
           {product.title}
         </Link>
@@ -104,7 +132,7 @@ function ProductCard({ product, code, onAdd }: ProductCardProps) {
       <Button
         disabled={isOut}
         onClick={() => onAdd(product)}
-        className="relative z-[2] col-span-2 mx-2.5 mb-3 tablet:mx-3 tablet:mb-[13px]"
+        className={`relative z-[2] col-span-2 mx-2.5 mb-3 ${shape.button}`}
       >
         {isOut ? "Out of stock" : "Add to cart"}
       </Button>

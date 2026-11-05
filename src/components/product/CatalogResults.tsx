@@ -7,6 +7,7 @@ import { Link } from "react-router";
 import type { AsyncState } from "../../types/api";
 import type { ProductsResponse } from "../../types/product";
 import { PAGE_SIZE } from "../../utils/constants";
+import type { CatalogView } from "../../utils/url";
 import Button, { buttonStyles } from "../ui/Button";
 import StateMessage from "../ui/StateMessage";
 import Pagination from "./Pagination";
@@ -15,13 +16,14 @@ import ProductGrid, { ProductGridSkeleton } from "./ProductGrid";
 interface CatalogResultsProps {
   state: AsyncState<ProductsResponse>;
   page: number;
+  view: CatalogView;
   onRetry: () => void;
   onPageChange: (page: number) => void;
 }
 
-export default function CatalogResults({ state, page, onRetry, onPageChange }: CatalogResultsProps) {
+export default function CatalogResults({ state, page, view, onRetry, onPageChange }: CatalogResultsProps) {
   if (state.status === "idle" || state.status === "loading") {
-    return <ProductGridSkeleton />;
+    return <ProductGridSkeleton view={view} />;
   }
 
   if (state.status === "error") {
@@ -51,8 +53,9 @@ export default function CatalogResults({ state, page, onRetry, onPageChange }: C
   if (products.length === 0) {
     return (
       <StateMessage title="No products found.">
-        {/* Linking to the bare "/" empties the URL, and the URL is the only place filters live. */}
-        <Link to="/" className={buttonStyles.quiet}>
+        {/* Linking to the bare "/" empties the URL, and the URL is the only place filters live. The view isn't a
+            filter, so list view stays on. */}
+        <Link to={view === "list" ? "/?view=list" : "/"} className={buttonStyles.quiet}>
           Clear filters
         </Link>
       </StateMessage>
@@ -64,7 +67,7 @@ export default function CatalogResults({ state, page, onRetry, onPageChange }: C
 
   return (
     <>
-      <ProductGrid products={products} />
+      <ProductGrid products={products} view={view} />
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 px-1 tablet:px-0">
         <span className="text-ink-soft">
           Showing {firstShown}–{lastShown} of {total}

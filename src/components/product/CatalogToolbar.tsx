@@ -9,7 +9,7 @@ import { useFetch } from "../../hooks/useFetch";
 import type { Category } from "../../types/product";
 import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "../../utils/constants";
 import { formatCategory } from "../../utils/format";
-import { isSortValue, type CatalogChange, type CatalogParams } from "../../utils/url";
+import { isSortValue, type CatalogChange, type CatalogParams, type CatalogView } from "../../utils/url";
 import { inputStyles } from "../ui/FormField";
 
 interface CatalogToolbarProps {
@@ -18,6 +18,39 @@ interface CatalogToolbarProps {
 }
 
 const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
+
+/** The icon inside each view button. Decoration, because the button's `aria-label` already names it. */
+function ViewIcon({ view }: { view: CatalogView }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      {view === "grid" ? <path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z" /> : <path d="M3 4h18v4H3zM3 10h18v4H3zM3 16h18v4H3z" />}
+    </svg>
+  );
+}
+
+/**
+ * The grid and list switch (BONUS). It is hidden on a phone, where both views are the same sideways rows.
+ * `aria-pressed` tells screen readers which one is on, and the same attribute drives the highlight.
+ * `hocus:` is this project's own variant from `index.css`: the hover style also appears on keyboard focus.
+ */
+function ViewToggle({ view, onChange }: { view: CatalogView; onChange: (view: CatalogView) => void }) {
+  return (
+    <div role="group" aria-label="View" className="hidden gap-1 tablet:flex">
+      {(["grid", "list"] as const).map((option) => (
+        <button
+          key={option}
+          type="button"
+          aria-label={option === "grid" ? "Grid view" : "List view"}
+          aria-pressed={view === option}
+          onClick={() => onChange(option)}
+          className="inline-flex size-11 items-center justify-center rounded-md bg-well text-ink-soft shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hocus:text-ink aria-pressed:bg-led-panel aria-pressed:text-led"
+        >
+          <ViewIcon view={option} />
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps) {
   const { state: categories } = useFetch<Category[]>("/products/categories");
@@ -119,6 +152,8 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
           ))}
         </select>
       </label>
+
+      <ViewToggle view={params.view} onChange={(view) => onChange({ type: "view", view })} />
     </div>
   );
 }
