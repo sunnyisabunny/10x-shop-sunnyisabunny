@@ -1,25 +1,27 @@
 /**
  * NOTE: the shopping cart, shared with the whole app through React Context (PRD P4, step 12).
  * Why it exists: the Header's counter, the Cart page, the cards and Checkout must all show the same cart.
- * Connects to: `App.tsx` wraps the app in `CartProvider`, and anything can call `useCart()`.
+ * Connects to: `App.tsx` wraps the app in `CartProvider`, and anything can call `useCart()`. The update rules
+ * live in `cart.reducer.ts`, and the money maths in `models/Cart.ts`.
  *
- * Every update makes a new array and never changes the old one ("immutable"). React compares by
- * reference, so if we changed the old array in place, it would see the same array and not redraw.
+ * This started as useState with five callbacks. It moved to useReducer once promo codes arrived, because
+ * the rules had grown enough to deserve one place, and a pure reducer can be read and tested alone.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { CartItem, CartState } from "../types/cart";
-import type { Product } from "../types/product";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
+import { Cart } from "../models/Cart";
+import { StorageService } from "../models/StorageService";
+import type { CartItem, CartProductInput, CartState } from "../types/cart";
 import { STORAGE_KEYS } from "../utils/constants";
-import { discountedPrice } from "../utils/format";
-
-/** The product fields a cart line needs. `Pick` copies them from Product, so they can't fall out of sync. */
-export type CartProductInput = Pick<Product, "id" | "title" | "thumbnail" | "price" | "discountPercentage" | "stock">;
+import { parseCartState } from "../utils/guards";
+import { cartReducer } from "./cart.reducer";
 
 /** Everything components get from `useCart()`: the cart's state, plus what is worked out from it and the actions. */
 interface CartContextValue extends CartState {
-  /** Total units, used for the Header counter. Two of one product counts as 2. */
+  /** Total units, used for the Header counter. */
   itemCount: number;
-  /** The sum of discounted price x quantity. */
+  subtotal: number;
+  discount: number;
+  shipping: number;
   total: number;
   /** Returns false when that many would exceed the stock, so the caller can say so. */
   addItem: (product: CartProductInput, quantity?: number) => boolean;
@@ -28,141 +30,97 @@ interface CartContextValue extends CartState {
   removeItem: (productId: number) => void;
   setQuantity: (productId: number, quantity: number) => void;
   clear: () => void;
+  /** Returns false for a wrong code, so the form can show its error. */
+  applyPromo: (code: string) => boolean;
+  removePromo: () => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-/**
- * Checks that something from localStorage really is a usable cart line. JSON has no types, and anyone can
- * edit storage in developer tools, so TypeScript can't promise this. `value is CartItem` is a type guard:
- * when it returns true, TypeScript treats the value as a CartItem from then on.
- * Checking `typeof` alone isn't enough: a quantity of -3 is a number, and it would make the total negative.
- */
-function isCartItem(value: unknown): value is CartItem {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-  // Only widens `object` so the fields can be read. Each field's real type is checked just below.
-  const item = value as Record<string, unknown>;
-  return (
-    Number.isInteger(item.productId) &&
-    typeof item.title === "string" &&
-    typeof item.thumbnail === "string" &&
-    typeof item.price === "number" &&
-    item.price >= 0 &&
-    typeof item.discountPercentage === "number" &&
-    item.discountPercentage >= 0 &&
-    item.discountPercentage <= 100 &&
-    typeof item.stock === "number" &&
-    typeof item.quantity === "number" &&
-    Number.isInteger(item.quantity) &&
-    item.quantity >= 1 &&
-    item.quantity <= item.stock
-  );
-}
+/** The one way this app reads and writes the cart in localStorage. */
+const cartStorage = new StorageService<CartState>(STORAGE_KEYS.cart, parseCartState);
 
-/**
- * Reads the saved cart. Broken or edited data gives an empty cart, not a crash on every page. Repeated
- * products are dropped too, because the Cart page uses `productId` as its React key, and keys must be unique.
- */
-function readStoredCart(): CartItem[] {
-  try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEYS.cart) ?? "[]");
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-    const seen = new Set<number>();
-    return parsed.filter(isCartItem).filter((item) => {
-      if (seen.has(item.productId)) {
-        return false;
-      }
-      seen.add(item.productId);
-      return true;
-    });
-  } catch {
-    return [];
-  }
+/** The starting state. A function, so React runs it once ("lazy init") and not on every render. */
+function loadCart(): CartState {
+  return cartStorage.get() ?? { items: [], promoCode: null };
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  /**
-   * The cart lines. Passing the function itself, not its result, is "lazy init": React runs it only on the
-   * first render. Otherwise it would parse localStorage again on every render.
-   */
-  const [items, setItems] = useState<CartItem[]>(readStoredCart);
+  /** The third argument is the lazy init: the reducer starts from whatever is saved. */
+  const [state, dispatch] = useReducer(cartReducer, undefined, loadCart);
 
   /**
-   * Always holds the newest items, so `addItem` can check the stock without depending on `items`. If it
-   * depended on `items`, it would be a new function after every change, and every memoised card would redraw.
+   * Always holds the newest items, so `addItem` can check the stock without depending on them. If it
+   * depended on the items, it would be a new function after every change, and every memoised card would redraw.
    */
-  const latestItems = useRef(items);
+  const latestItems = useRef<CartItem[]>(state.items);
 
-  // Runs after every cart change: remembers the newest items and saves them, so the cart survives a reload.
+  // Runs after every cart change: remembers the newest items and saves them. The reducer can't do this,
+  // because it must stay pure. If saving fails, the cart still works for this visit.
   useEffect(() => {
-    latestItems.current = items;
-    // Saving can fail when storage is full or the visitor blocks site data. Without this catch, the error
-    // would crash the whole shop on load. The cart still works for this visit and is just not saved.
-    try {
-      localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(items));
-    } catch {
-      return;
+    latestItems.current = state.items;
+    cartStorage.set(state);
+  }, [state]);
+
+  // Keeps other tabs honest. The browser fires `storage` only in the tabs that did NOT make the change.
+  // Without this, each tab keeps its own copy, and the last one to change overwrites the other's cart.
+  useEffect(() => {
+    function handleStorage(event: StorageEvent) {
+      if (event.key === STORAGE_KEYS.cart) {
+        dispatch({ type: "REPLACE", state: loadCart() });
+      }
     }
-  }, [items]);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const quantityOf = useCallback((productId: number): number => {
     return latestItems.current.find((item) => item.productId === productId)?.quantity ?? 0;
   }, []);
 
-  const addItem = useCallback((product: CartProductInput, quantity = 1): boolean => {
-    if (quantityOf(product.id) + quantity > product.stock) {
+  const addItem = useCallback(
+    (product: CartProductInput, quantity = 1): boolean => {
+      if (quantityOf(product.id) + quantity > product.stock) {
+        return false;
+      }
+      dispatch({ type: "ADD_ITEM", product, qty: quantity });
+      return true;
+    },
+    [quantityOf],
+  );
+
+  const removeItem = useCallback((productId: number) => dispatch({ type: "REMOVE_ITEM", productId }), []);
+  const setQuantity = useCallback((productId: number, qty: number) => dispatch({ type: "SET_QTY", productId, qty }), []);
+  const clear = useCallback(() => dispatch({ type: "CLEAR" }), []);
+  const removePromo = useCallback(() => dispatch({ type: "REMOVE_PROMO" }), []);
+
+  const applyPromo = useCallback((code: string): boolean => {
+    if (!Cart.isValidPromo(code)) {
       return false;
     }
-    setItems((current) => {
-      const existing = current.find((item) => item.productId === product.id);
-      if (existing) {
-        // The stock is refreshed from the product, because the saved number may be old. Math.min is a second
-        // guard: two very fast clicks can both pass the check above before the first update has landed.
-        return current.map((item) =>
-          item.productId === product.id
-            ? { ...item, stock: product.stock, quantity: Math.min(item.quantity + quantity, product.stock) }
-            : item,
-        );
-      }
-      const newItem: CartItem = {
-        productId: product.id,
-        title: product.title,
-        thumbnail: product.thumbnail,
-        price: product.price,
-        discountPercentage: product.discountPercentage,
-        stock: product.stock,
-        quantity,
-      };
-      return [...current, newItem];
-    });
+    dispatch({ type: "APPLY_PROMO", code: code.trim().toUpperCase() });
     return true;
-  }, [quantityOf]);
-
-  const removeItem = useCallback((productId: number) => {
-    setItems((current) => current.filter((item) => item.productId !== productId));
   }, []);
 
-  /** Keeps the quantity between 1 and the stock, as the PRD says. Removing is a separate, deliberate action. */
-  const setQuantity = useCallback((productId: number, quantity: number) => {
-    setItems((current) =>
-      current.map((item) =>
-        item.productId === productId ? { ...item, quantity: Math.min(Math.max(1, quantity), item.stock) } : item,
-      ),
-    );
-  }, []);
-
-  const clear = useCallback(() => setItems([]), []);
-
+  /** `useMemo` rebuilds this only when the cart changes, so a redraw elsewhere doesn't redraw every user of it. */
   const value = useMemo<CartContextValue>(() => {
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const total = items.reduce((sum, item) => sum + discountedPrice(item.price, item.discountPercentage) * item.quantity, 0);
-    // Rounded to cents, because adding many decimals can leave a tiny floating-point remainder.
-    return { items, itemCount, total: Math.round(total * 100) / 100, addItem, quantityOf, removeItem, setQuantity, clear };
-  }, [items, addItem, quantityOf, removeItem, setQuantity, clear]);
+    const cart = new Cart(state.items, state.promoCode);
+    return {
+      ...state,
+      itemCount: cart.itemCount,
+      subtotal: cart.subtotal(),
+      discount: cart.discount(),
+      shipping: cart.shipping(),
+      total: cart.total(),
+      addItem,
+      quantityOf,
+      removeItem,
+      setQuantity,
+      clear,
+      applyPromo,
+      removePromo,
+    };
+  }, [state, addItem, quantityOf, removeItem, setQuantity, clear, applyPromo, removePromo]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

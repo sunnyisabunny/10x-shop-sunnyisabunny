@@ -66,7 +66,7 @@ export default function CheckoutPage() {
       <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Checkout</h1>
       <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
         <CheckoutForm onPlaceOrder={handlePlaceOrder} isPlacing={isPlacing} />
-        <CartSummary total={total}>
+        <CartSummary>
           <ul className="grid gap-1 border-t border-edge pt-2.5 text-[13px] text-ink-soft">
             {items.map((item) => (
               <li key={item.productId} className="flex justify-between gap-3">

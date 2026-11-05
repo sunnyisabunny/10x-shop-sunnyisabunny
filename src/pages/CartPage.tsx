@@ -10,9 +10,10 @@ import Button, { buttonStyles } from "../components/ui/Button";
 import StateMessage from "../components/ui/StateMessage";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import { formatItemCount } from "../utils/format";
 
 export default function CartPage() {
-  const { items, itemCount, total, removeItem, setQuantity, clear } = useCart();
+  const { items, itemCount, removeItem, setQuantity, clear } = useCart();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -33,7 +34,7 @@ export default function CartPage() {
     <section className="grid gap-3.5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
       <div className="flex flex-wrap items-baseline gap-x-3.5">
         <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Cart</h1>
-        {itemCount > 0 && <span className="text-ink-soft">{itemCount === 1 ? "1 item" : `${itemCount} items`}</span>}
+        {itemCount > 0 && <span className="text-ink-soft">{formatItemCount(itemCount)}</span>}
       </div>
 
       {items.length === 0 ? (
@@ -56,7 +57,7 @@ export default function CartPage() {
               Clear cart
             </button>
           </div>
-          <CartSummary total={total}>
+          <CartSummary showPromoForm>
             {/* The login check isn't repeated here. ProtectedRoute does it, as the PRD says. */}
             <Button onClick={() => navigate("/checkout")}>Proceed to checkout</Button>
           </CartSummary>
