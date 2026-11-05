@@ -6,9 +6,11 @@
  *
  * On a phone the card is a sideways shelf row (grid areas). From tablet width up it stacks vertically.
  */
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import type { Product } from "../../types/product";
 import { formatCategory } from "../../utils/format";
+import Button from "../ui/Button";
 import { DiscountBadge, PriceBlock, StockBadge } from "./PriceBlock";
 
 /** The props are an interface, as the PRD asks: every component's inputs are named and typed. */
@@ -16,10 +18,25 @@ export interface ProductCardProps {
   product: Product;
   /** The machine's label for this position, such as "B3". */
   code: string;
+  /** Asks the parent to add this product. Returns false when the stock has run out. */
+  onAdd: (product: Product) => boolean;
 }
 
-export default function ProductCard({ product, code }: ProductCardProps) {
+export default function ProductCard({ product, code, onAdd }: ProductCardProps) {
   const isOut = product.stock === 0;
+
+  /** The short message on the button after pressing it. Null shows the normal label. */
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Clears the message after a moment. The cleanup cancels the timer if the card disappears first, or
+  // if the button is pressed again. Without it, a stale timer would clear the newer message too early.
+  useEffect(() => {
+    if (feedback === null) {
+      return;
+    }
+    const timer = setTimeout(() => setFeedback(null), 1800);
+    return () => clearTimeout(timer);
+  }, [feedback]);
 
   // 92 products have no brand. Without this check they would show a dangling "Groceries · ".
   const subtitle = product.brand ? `${formatCategory(product.category)} · ${product.brand}` : formatCategory(product.category);
@@ -81,6 +98,16 @@ export default function ProductCard({ product, code }: ProductCardProps) {
           <StockBadge stock={product.stock} />
         </div>
       </div>
+
+      {/* relative + z-[2] lifts the button above the card's stretched link, so pressing it adds to the
+          cart rather than opening the product. */}
+      <Button
+        disabled={isOut}
+        onClick={() => setFeedback(onAdd(product) ? "Added to cart ✓" : `Only ${product.stock} available`)}
+        className="relative z-[2] col-span-2 mx-2.5 mb-3 tablet:mx-3 tablet:mb-[13px]"
+      >
+        {isOut ? "Out of stock" : (feedback ?? "Add to cart")}
+      </Button>
     </article>
   );
 }
