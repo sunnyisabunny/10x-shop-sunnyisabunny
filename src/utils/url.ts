@@ -6,12 +6,16 @@
  */
 import { PAGE_SIZE, SORT_OPTIONS, type SortValue } from "./constants";
 
+/** How the products are drawn. The default is left out of the URL, so a clean catalog keeps a clean address. */
+export type CatalogView = "grid" | "list";
+
 /** What the catalog is showing, read from the URL. */
 export interface CatalogParams {
   q: string;
   category: string;
   sort: SortValue;
   page: number;
+  view: CatalogView;
 }
 
 /**
@@ -22,7 +26,8 @@ export type CatalogChange =
   | { type: "search"; q: string }
   | { type: "category"; category: string }
   | { type: "sort"; sort: SortValue }
-  | { type: "page"; page: number };
+  | { type: "page"; page: number }
+  | { type: "view"; view: CatalogView };
 
 /** A type guard: is this text one of our sort values? The URL can hold anything, because anyone can edit it. */
 export function isSortValue(value: string): value is SortValue {
@@ -44,6 +49,7 @@ export function parseCatalogParams(searchParams: URLSearchParams): CatalogParams
     category: q === "" ? (searchParams.get("category") ?? "") : "",
     sort: isSortValue(sort) ? sort : "",
     page: Number.isSafeInteger(page) ? page : 1,
+    view: searchParams.get("view") === "list" ? "list" : "grid",
   };
 }
 
@@ -81,6 +87,10 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
       break;
     case "page":
       setOrDelete(next, "page", change.page > 1 ? String(change.page) : "");
+      break;
+    case "view":
+      // Unlike a filter, this keeps the page: the same products are just drawn differently.
+      setOrDelete(next, "view", change.view === "list" ? "list" : "");
       break;
   }
   return next;

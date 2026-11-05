@@ -15,7 +15,7 @@ import { formatItemCount } from "../../utils/format";
  * min-h-11 keeps each link at 44px, the spec's minimum tap size.
  */
 function navLinkClass({ isActive }: { isActive: boolean }): string {
-  const base = "inline-flex min-h-11 items-center gap-2 rounded-md px-3 font-semibold no-underline transition-colors duration-150 hover:bg-steel-raised hover:text-ink";
+  const base = "inline-flex min-h-11 items-center gap-2 rounded-md px-3 font-semibold no-underline transition-colors duration-150 hocus:bg-steel-raised hocus:text-ink";
   return isActive ? `${base} text-ink shadow-[inset_0_-2px_0_var(--color-pink)]` : `${base} text-ink-soft`;
 }
 

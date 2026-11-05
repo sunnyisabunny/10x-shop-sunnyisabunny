@@ -89,6 +89,10 @@
    in the Header couldn't reach any `dark:` class. `:where` adds no weight, so these classes stay easy to override. */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Our own variant: `hocus:` applies a style on mouse hover and on keyboard focus together. Plain `hover:` alone
+   would leave keyboard users without the same feedback. */
+@custom-variant hocus (&:hover, &:focus-visible);
+
 /* `inline` makes each class use the variable itself, e.g. `.bg-steel { background: var(--steel) }`.
    Without `inline` the class would freeze the value and the theme switch would not reach it. */
 @theme inline {
