@@ -1,5 +1,5 @@
 /**
- * NOTE: the simulated login, shared with the whole app through React Context.
+ * NOTE: the simulated login and the user's profile, shared with the whole app through React Context.
  * Why it exists: the Header, the Checkout guard and the Login page all need to know who is logged in.
  * Passing that through props would mean threading it through every component in between ("prop drilling").
  * Connects to: `App.tsx` wraps the app in `AuthProvider`, and anything can then call `useAuth()`.
@@ -8,39 +8,86 @@
  * is never kept anywhere. In a browser-only app a real login is impossible, because anyone can edit
  * this state with developer tools.
  */
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
-import type { AuthUser } from "../types/user";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { StorageService } from "../models/StorageService";
+import type { AuthUser, Profile, StoredProfiles } from "../types/user";
+import { STORAGE_KEYS } from "../utils/constants";
+import { parseAuthUser, parseStoredProfiles } from "../utils/guards";
 
 /** Everything components get from `useAuth()`. */
 interface AuthContextValue {
   /** The logged-in user, or null for a guest. */
   user: AuthUser | null;
   isLoggedIn: boolean;
+  /** This user's saved profile, or null if they haven't saved one yet. */
+  profile: Profile | null;
+  /** The name to show: from the profile if it has one, otherwise the username. Null for a guest. */
+  displayName: string | null;
   login: (username: string) => void;
   logout: () => void;
+  updateProfile: (profile: Profile) => void;
 }
 
 /** Starts as null so `useAuth` can notice when a component is used outside the provider. */
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/** Only the username is ever saved. There is no password to save, because login never keeps one. */
+const userStorage = new StorageService<AuthUser>(STORAGE_KEYS.user, parseAuthUser);
+const profileStorage = new StorageService<StoredProfiles>(STORAGE_KEYS.profiles, parseStoredProfiles);
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  /**
-   * The one piece of state: who is logged in. A reload clears it, and the PRD allows that at CORE level.
-   */
-  const [user, setUser] = useState<AuthUser | null>(null);
+  /** Who is logged in. Restored from storage, so a reload on /orders doesn't send you back to Login. */
+  const [user, setUser] = useState<AuthUser | null>(() => userStorage.get());
+
+  /** Everyone's saved profiles, by username, so logging out and back in keeps your details. */
+  const [profiles, setProfiles] = useState<StoredProfiles>(() => profileStorage.get() ?? {});
+
+  // Saves the login whenever it changes. Logging out removes it.
+  useEffect(() => {
+    if (user === null) {
+      userStorage.remove();
+    } else {
+      userStorage.set(user);
+    }
+  }, [user]);
 
   /** `useCallback` keeps the same function between renders, so memoised children don't redraw needlessly. */
   const login = useCallback((username: string) => setUser({ username }), []);
   const logout = useCallback(() => setUser(null), []);
 
+  const username = user?.username ?? null;
+
+  const updateProfile = useCallback(
+    (profile: Profile) => {
+      if (username === null) {
+        return;
+      }
+      setProfiles((current) => {
+        const next = { ...current, [username]: profile };
+        profileStorage.set(next);
+        return next;
+      });
+    },
+    [username],
+  );
+
   /**
-   * `useMemo` builds a new value only when `user` changes. Without it, every render of this provider
+   * `useMemo` builds a new value only when something in it changes. Without it, every render of this provider
    * would create a new object, and every component using `useAuth` would redraw.
    */
-  const value = useMemo<AuthContextValue>(
-    () => ({ user, isLoggedIn: user !== null, login, logout }),
-    [user, login, logout],
-  );
+  const value = useMemo<AuthContextValue>(() => {
+    const profile = username === null ? null : (profiles[username] ?? null);
+    const fullName = profile ? `${profile.firstName} ${profile.lastName}`.trim() : "";
+    return {
+      user,
+      isLoggedIn: user !== null,
+      profile,
+      displayName: fullName !== "" ? fullName : username,
+      login,
+      logout,
+      updateProfile,
+    };
+  }, [user, username, profiles, login, logout, updateProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

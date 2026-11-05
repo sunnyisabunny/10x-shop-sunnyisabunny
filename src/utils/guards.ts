@@ -10,6 +10,7 @@ import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
 import type { OrderRecord, ShippingInfo } from "../types/order";
 import type { Review, StoredReviews } from "../types/product";
+import type { AuthUser, Profile, StoredProfiles } from "../types/user";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -63,6 +64,44 @@ export function parseCartState(value: unknown): CartState | null {
     return true;
   });
   return { items, promoCode: typeof value.promoCode === "string" ? value.promoCode : null };
+}
+
+/** The two themes. A union, so "dakr" doesn't compile. */
+export type Theme = "dark" | "light";
+
+/** Reads a saved theme. Anything else counts as nothing saved. */
+export function parseTheme(value: unknown): Theme | null {
+  return value === "dark" || value === "light" ? value : null;
+}
+
+/** Reads a saved login. Only the username exists, and a blank one isn't a login. */
+export function parseAuthUser(value: unknown): AuthUser | null {
+  return isRecord(value) && typeof value.username === "string" && value.username.trim() !== "" ? { username: value.username } : null;
+}
+
+/** Checks that something is a usable profile. */
+function isProfile(value: unknown): value is Profile {
+  return (
+    isRecord(value) &&
+    typeof value.firstName === "string" &&
+    typeof value.lastName === "string" &&
+    typeof value.email === "string" &&
+    typeof value.phone === "string"
+  );
+}
+
+/** Reads saved profiles, keeping only the good ones. */
+export function parseStoredProfiles(value: unknown): StoredProfiles | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const profiles: StoredProfiles = {};
+  for (const [username, profile] of Object.entries(value)) {
+    if (isProfile(profile)) {
+      profiles[username] = profile;
+    }
+  }
+  return profiles;
 }
 
 /** Checks that every shipping field is present as text. */

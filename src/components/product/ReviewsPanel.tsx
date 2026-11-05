@@ -23,7 +23,7 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPanel({ reviews, onAdd }: ReviewsPanelProps) {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
   const { showToast } = useToast();
 
   /** The chosen rating as text, because that is what a <select> holds. Empty means nothing chosen yet. */
@@ -47,7 +47,7 @@ export default function ReviewsPanel({ reviews, onAdd }: ReviewsPanelProps) {
       rating: Number(rating),
       comment: comment.trim(),
       date: new Date().toISOString(),
-      reviewerName: user?.username ?? "Guest",
+      reviewerName: displayName ?? "Guest",
     });
     setRating("");
     setComment("");

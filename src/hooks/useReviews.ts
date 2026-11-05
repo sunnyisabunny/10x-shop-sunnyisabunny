@@ -44,3 +44,9 @@ export function useReviews(product: Product): UseReviewsResult {
 
   return { reviews, average, addReview };
 }
+
+/** Profile's "Clear local data" deletes every product's reviews, so it needs no particular product. */
+export function useClearReviews(): () => void {
+  const [, , clearReviews] = useLocalStorage<StoredReviews>(STORAGE_KEYS.reviews, {}, parseStoredReviews);
+  return clearReviews;
+}

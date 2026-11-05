@@ -5,8 +5,8 @@
  * Connects to: `pages/LoginPage.tsx` now, and the Checkout form next.
  */
 import type { ShippingInfo } from "../types/order";
-import type { LoginFormValues } from "../types/user";
-import { MIN_ADDRESS_LENGTH, MIN_FULL_NAME_LENGTH, MIN_PASSWORD_LENGTH } from "./constants";
+import type { LoginFormValues, Profile } from "../types/user";
+import { MIN_ADDRESS_LENGTH, MIN_FULL_NAME_LENGTH, MIN_NAME_LENGTH, MIN_PASSWORD_LENGTH } from "./constants";
 
 /**
  * A possible error message per field of any form. For a form with fields `username` and `password`
@@ -45,6 +45,26 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** True for a plausible phone number: an optional leading +, then 9 to 15 digits, with spaces allowed. */
 function isValidPhone(phone: string): boolean {
   return /^\+?\d{9,15}$/.test(phone.replace(/\s/g, ""));
+}
+
+/** PRD P7.2. Phone is optional, so it is only checked when something is typed in it. */
+export function validateProfile(values: Profile): FieldErrors<Profile> {
+  const errors: FieldErrors<Profile> = {};
+
+  if (values.firstName.trim().length < MIN_NAME_LENGTH) {
+    errors.firstName = `First name must be at least ${MIN_NAME_LENGTH} characters`;
+  }
+  if (values.lastName.trim().length < MIN_NAME_LENGTH) {
+    errors.lastName = `Last name must be at least ${MIN_NAME_LENGTH} characters`;
+  }
+  if (!EMAIL_PATTERN.test(values.email.trim())) {
+    errors.email = "Please enter a valid email address";
+  }
+  if (values.phone.trim() !== "" && !isValidPhone(values.phone)) {
+    errors.phone = "Please enter a valid phone number";
+  }
+
+  return errors;
 }
 
 /** PRD P5.2. Everything is trimmed first, so a field of only spaces doesn't count as filled in. */

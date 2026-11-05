@@ -17,16 +17,18 @@ export interface UseOrdersResult {
   records: OrderRecord[];
   /** Saves an order. Returns false if storage refused, so the page can say the order wasn't placed. */
   addOrder: (order: Order) => boolean;
+  /** Deletes every saved order, for Profile's "Clear local data". */
+  clearOrders: () => void;
 }
 
 export function useOrders(): UseOrdersResult {
-  const [records, setRecords] = useLocalStorage<OrderRecord[]>(STORAGE_KEYS.orders, [], parseOrders);
+  const [records, setRecords, clearOrders] = useLocalStorage<OrderRecord[]>(STORAGE_KEYS.orders, [], parseOrders);
 
   const orders = useMemo(() => records.map(Order.from).sort((a, b) => b.id - a.id), [records]);
 
   const addOrder = useCallback((order: Order): boolean => setRecords([...records, order.toJSON()]), [records, setRecords]);
 
-  return { orders, records, addOrder };
+  return { orders, records, addOrder, clearOrders };
 }
 
 /**

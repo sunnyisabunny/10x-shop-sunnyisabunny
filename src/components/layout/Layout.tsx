@@ -52,7 +52,8 @@ export default function Layout() {
       <ScrollToTop />
       <Street />
       <div className="tablet:px-6 tablet:pt-[72px] tablet:pb-[88px]">
-        <div className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
+        {/* `dark:` is the custom variant from index.css: a shadow this heavy only looks right at night. */}
+        <div className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
           <Header />
           {/* `key` gives each path a fresh boundary. Without it, after one crash the error
               message would stay on screen on every page you visit next. */}

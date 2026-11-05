@@ -13,6 +13,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import OrderDetailPage from "../pages/OrderDetailPage";
 import OrdersPage from "../pages/OrdersPage";
 import ProductPage from "../pages/ProductPage";
+import ProfilePage from "../pages/ProfilePage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -28,6 +29,7 @@ export default function AppRoutes() {
           <Route path="checkout" element={<CheckoutPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="orders/:id" element={<OrderDetailPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
         {/* `*` matches anything not listed above, so unknown URLs get the 404 page. */}
         <Route path="*" element={<NotFoundPage />} />

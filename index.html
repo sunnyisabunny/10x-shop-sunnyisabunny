@@ -9,6 +9,15 @@
     <meta name="theme-color" content="#05070c" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>10X Shop</title>
+    <!-- NOTE: applies the saved theme before anything is drawn. React loads later, so without this a daylight
+         visitor would see a flash of the dark theme on every page load. -->
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("shop_theme") === '"light"' ? "light" : "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
