@@ -10,6 +10,8 @@ import CatalogPage from "../pages/CatalogPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import LoginPage from "../pages/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import OrderDetailPage from "../pages/OrderDetailPage";
+import OrdersPage from "../pages/OrdersPage";
 import ProductPage from "../pages/ProductPage";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -24,6 +26,8 @@ export default function AppRoutes() {
         {/* Everything nested here needs a login. ProtectedRoute decides whether to show it. */}
         <Route element={<ProtectedRoute />}>
           <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
         </Route>
         {/* `*` matches anything not listed above, so unknown URLs get the 404 page. */}
         <Route path="*" element={<NotFoundPage />} />

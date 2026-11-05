@@ -104,6 +104,9 @@ export default function Header() {
         </NavLink>
         {isLoggedIn ? (
           <>
+            <NavLink to="/orders" onClick={closeMenu} className={navLinkClass}>
+              Orders
+            </NavLink>
             <span className="inline-flex min-h-11 items-center px-3 text-ink-soft">{user?.username}</span>
             <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
               Log out
