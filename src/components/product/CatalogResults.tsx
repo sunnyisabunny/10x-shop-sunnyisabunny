@@ -35,6 +35,18 @@ export default function CatalogResults({ state, page, onRetry, onPageChange }: C
   }
 
   const { products, total } = state.data;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  // Products exist but not on this page, as with an old link to ?page=99. "No products found" would be false.
+  if (products.length === 0 && total > 0) {
+    return (
+      <StateMessage title={`This page is past the end of the list. There are ${totalPages} pages.`}>
+        <Button variant="quiet" onClick={() => onPageChange(totalPages)}>
+          Go to the last page
+        </Button>
+      </StateMessage>
+    );
+  }
 
   if (products.length === 0) {
     return (
@@ -47,7 +59,6 @@ export default function CatalogResults({ state, page, onRetry, onPageChange }: C
     );
   }
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
   const firstShown = (page - 1) * PAGE_SIZE + 1;
   const lastShown = firstShown + products.length - 1;
 

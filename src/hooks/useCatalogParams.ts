@@ -23,11 +23,13 @@ export function useCatalogParams(): UseCatalogParamsResult {
 
   const change = useCallback(
     (catalogChange: CatalogChange) => {
-      // Each search keystroke replaces the history entry, so Back goes to the previous page and not to
-      // every half-typed word. Other changes add an entry, so Back undoes them one at a time.
-      setSearchParams((current) => nextSearchParams(current, catalogChange), { replace: catalogChange.type === "search" });
+      // Refining a search replaces its history entry, so Back doesn't walk through every half-typed word.
+      // The first word of a search adds an entry, so Back still returns to the view you had before it.
+      // Other changes add an entry too, so Back undoes them one at a time.
+      const isRefiningSearch = catalogChange.type === "search" && searchParams.has("q");
+      setSearchParams((current) => nextSearchParams(current, catalogChange), { replace: isRefiningSearch });
     },
-    [setSearchParams],
+    [searchParams, setSearchParams],
   );
 
   return { params, change };

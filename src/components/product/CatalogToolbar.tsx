@@ -7,18 +7,14 @@ import { useEffect, useRef, useState } from "react";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useFetch } from "../../hooks/useFetch";
 import type { Category } from "../../types/product";
-import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS, type SortValue } from "../../utils/constants";
-import type { CatalogChange, CatalogParams } from "../../utils/url";
+import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "../../utils/constants";
+import { formatCategory } from "../../utils/format";
+import { isSortValue, type CatalogChange, type CatalogParams } from "../../utils/url";
 import { inputStyles } from "../ui/FormField";
 
 interface CatalogToolbarProps {
   params: CatalogParams;
   onChange: (change: CatalogChange) => void;
-}
-
-/** A type guard for the sort dropdown. Its `value` is a plain string, so it can't be trusted as a SortValue. */
-function isSortOption(value: string): value is SortValue {
-  return SORT_OPTIONS.some((option) => option.value === value);
 }
 
 const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
@@ -39,21 +35,36 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
    */
   const isTyping = useRef(false);
 
-  // Keeps the box in step when the URL changes some other way: Back, Clear filters, or choosing a category.
+  // Keeps the box in step when the URL changes some other way: Back or Clear filters. It never touches the
+  // box mid-typing, or letters typed just as a search reached the URL would be overwritten. The trim check
+  // leaves a trailing space alone, or the space in "red shoes" would vanish the moment "red " was sent.
   useEffect(() => {
-    setText(params.q);
-    isTyping.current = false;
+    if (!isTyping.current) {
+      setText((current) => (current.trim() === params.q ? current : params.q));
+    }
   }, [params.q]);
 
   // Sends the search to the URL once typing has paused.
   useEffect(() => {
     if (isTyping.current && debouncedText === text) {
       isTyping.current = false;
-      if (text !== params.q) {
+      if (text.trim() !== params.q) {
         onChange({ type: "search", q: text });
       }
     }
   }, [debouncedText, text, params.q, onChange]);
+
+  /** Choosing a category replaces any search, including one still being typed, so that text is dropped now. */
+  function handleCategoryChange(category: string) {
+    isTyping.current = false;
+    setText("");
+    onChange({ type: "category", category });
+  }
+
+  // The URL can name a category that isn't in the list: an old link, or the list failing to load. It still
+  // gets an option, so the dropdown tells the truth about the filter and "All categories" can clear it.
+  const isKnownCategory = categories.status === "success" && categories.data.some((category) => category.slug === params.category);
+  const showUrlCategory = params.category !== "" && !isKnownCategory;
 
   return (
     <div role="search" className="flex flex-wrap items-end gap-2.5">
@@ -75,10 +86,12 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
         Category
         <select
           value={params.category}
-          onChange={(event) => onChange({ type: "category", category: event.target.value })}
+          onChange={(event) => handleCategoryChange(event.target.value)}
           className={inputStyles}
         >
           <option value="">All categories</option>
+          {showUrlCategory && <option value={params.category}>{formatCategory(params.category)}</option>}
+          {categories.status === "error" && <option disabled>Could not load categories</option>}
           {categories.status === "success" &&
             categories.data.map((category) => (
               <option key={category.slug} value={category.slug}>
@@ -93,7 +106,7 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
         <select
           value={params.sort}
           onChange={(event) => {
-            if (isSortOption(event.target.value)) {
+            if (isSortValue(event.target.value)) {
               onChange({ type: "sort", sort: event.target.value });
             }
           }}

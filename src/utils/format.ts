@@ -23,6 +23,11 @@ export function formatPrice(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 }
 
+/** "1 item" or "5 items". Search and filters make a single result possible, and "1 items" reads as a bug. */
+export function formatItemCount(count: number): string {
+  return count === 1 ? "1 item" : `${count} items`;
+}
+
 /** Turns the API's "mobile-accessories" into "Mobile accessories" for display. */
 export function formatCategory(slug: string): string {
   const words = slug.replaceAll("-", " ");

@@ -25,19 +25,25 @@ export type CatalogChange =
   | { type: "page"; page: number };
 
 /** A type guard: is this text one of our sort values? The URL can hold anything, because anyone can edit it. */
-function isSortValue(value: string): value is SortValue {
+export function isSortValue(value: string): value is SortValue {
   return SORT_OPTIONS.some((option) => option.value === value);
 }
 
-/** Reads the URL into typed values. Anything nonsense falls back to the default instead of breaking the page. */
+/**
+ * Reads the URL into typed values. Anything nonsense falls back to the default instead of breaking the page.
+ * A hand-written URL could hold both `q` and `category`, but the API can't combine them, so the search wins.
+ * The page uses a regex because Number("1e3") would count as page 1000.
+ */
 export function parseCatalogParams(searchParams: URLSearchParams): CatalogParams {
+  const q = (searchParams.get("q") ?? "").trim();
   const sort = searchParams.get("sort") ?? "";
-  const page = Number(searchParams.get("page"));
+  const pageText = searchParams.get("page") ?? "";
+  const page = /^[1-9]\d*$/.test(pageText) ? Number(pageText) : 1;
   return {
-    q: searchParams.get("q") ?? "",
-    category: searchParams.get("category") ?? "",
+    q,
+    category: q === "" ? (searchParams.get("category") ?? "") : "",
     sort: isSortValue(sort) ? sort : "",
-    page: Number.isInteger(page) && page > 0 ? page : 1,
+    page: Number.isSafeInteger(page) ? page : 1,
   };
 }
 
@@ -59,7 +65,8 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
   const next = new URLSearchParams(current);
   switch (change.type) {
     case "search":
-      setOrDelete(next, "q", change.q);
+      // Trimmed here so the URL holds what is really searched, and spaces alone count as no search.
+      setOrDelete(next, "q", change.q.trim());
       next.delete("category");
       next.delete("page");
       break;
@@ -92,9 +99,8 @@ export function buildProductsUrl(params: CatalogParams): string {
     query.set("order", sortOption.order);
   }
 
-  const searchText = params.q.trim();
-  if (searchText !== "") {
-    query.set("q", searchText);
+  if (params.q !== "") {
+    query.set("q", params.q);
     return `/products/search?${query}`;
   }
   if (params.category !== "") {

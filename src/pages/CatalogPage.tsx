@@ -6,11 +6,13 @@
  * The URL is the single source of truth. A change goes: control -> URL -> `params` -> API path -> new data.
  * That is why refresh, Back/Forward and shared links all restore the same view with no extra code.
  */
+import { useRef } from "react";
 import CatalogResults from "../components/product/CatalogResults";
 import CatalogToolbar from "../components/product/CatalogToolbar";
 import { useCatalogParams } from "../hooks/useCatalogParams";
 import { useFetch } from "../hooks/useFetch";
 import type { ProductsResponse } from "../types/product";
+import { formatItemCount } from "../utils/format";
 import { buildProductsUrl } from "../utils/url";
 
 export default function CatalogPage() {
@@ -20,10 +22,18 @@ export default function CatalogPage() {
   // request and starts the new one by itself.
   const { state, retry } = useFetch<ProductsResponse>(buildProductsUrl(params));
 
-  /** PRD P2 element 6: changing page also returns to the top, since the new products start there. */
+  /** The page heading, so keyboard focus has somewhere sensible to go after changing page. */
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  /**
+   * PRD P2 element 6: changing page returns to the top, since the new products start there. Focus goes there
+   * too: the button just pressed disappears while the page loads, and focus would otherwise fall out of the
+   * page, leaving keyboard users to tab through everything again.
+   */
   function handlePageChange(page: number) {
     change({ type: "page", page });
     window.scrollTo(0, 0);
+    headingRef.current?.focus();
   }
 
   // The caption's reason: the API sorts by list price, but cards show the price after discount, so a price
@@ -33,8 +43,11 @@ export default function CatalogPage() {
   return (
     <section className="grid gap-3.5 p-2.5 tablet:px-6 tablet:pt-5 tablet:pb-4">
       <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 px-1 tablet:px-0">
-        <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Catalog</h1>
-        {state.status === "success" && <span className="text-ink-soft">{state.data.total} items</span>}
+        {/* tabIndex -1 lets code focus the heading without adding it to the Tab order. */}
+        <h1 ref={headingRef} tabIndex={-1} className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em] outline-none">
+          Catalog
+        </h1>
+        {state.status === "success" && <span className="text-ink-soft">{formatItemCount(state.data.total)}</span>}
       </div>
 
       <div className="px-1 tablet:px-0">
