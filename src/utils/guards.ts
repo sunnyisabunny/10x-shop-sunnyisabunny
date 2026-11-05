@@ -90,18 +90,15 @@ function isProfile(value: unknown): value is Profile {
   );
 }
 
-/** Reads saved profiles, keeping only the good ones. */
+/**
+ * Reads saved profiles, keeping only the good ones. `Object.fromEntries` matters here: writing
+ * `profiles["__proto__"] = ...` in a loop would change the object's prototype instead of adding a username.
+ */
 export function parseStoredProfiles(value: unknown): StoredProfiles | null {
   if (!isRecord(value)) {
     return null;
   }
-  const profiles: StoredProfiles = {};
-  for (const [username, profile] of Object.entries(value)) {
-    if (isProfile(profile)) {
-      profiles[username] = profile;
-    }
-  }
-  return profiles;
+  return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, Profile] => isProfile(entry[1])));
 }
 
 /** Checks that every shipping field is present as text. */

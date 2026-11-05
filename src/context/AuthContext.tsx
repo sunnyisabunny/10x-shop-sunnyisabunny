@@ -66,9 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * `useMemo` builds a new value only when something in it changes. Without it, every render of this provider
    * would create a new object, and every component using `useAuth` would redraw.
+   *
+   * `Object.hasOwn` matters because any username is allowed. Every plain object inherits `constructor`, so
+   * `profiles["constructor"]` would find a function and treat it as a saved profile. See DEBUG-LOG.md.
    */
   const value = useMemo<AuthContextValue>(() => {
-    const profile = username === null ? null : (profiles[username] ?? null);
+    const profile = username !== null && Object.hasOwn(profiles, username) ? profiles[username] : null;
     const fullName = profile ? `${profile.firstName} ${profile.lastName}`.trim() : "";
     return {
       user,
