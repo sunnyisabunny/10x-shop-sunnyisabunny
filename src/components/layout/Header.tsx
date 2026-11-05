@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 /**
  * NavLink calls this with `isActive`, so the current page can be highlighted (PRD P0.1).
@@ -16,11 +17,30 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
   return isActive ? `${base} text-ink shadow-[inset_0_-2px_0_var(--color-pink)]` : `${base} text-ink-soft`;
 }
 
+/**
+ * The cart badge, styled as the machine's coin counter. The PRD says it shows the total quantity and
+ * hides at 0. padStart keeps two digits, like a real LED display.
+ */
+function CoinCounter({ count, className = "" }: { count: number; className?: string }) {
+  if (count === 0) {
+    return null;
+  }
+  return (
+    <span
+      aria-label={`${count} items`}
+      className={`led-text inline-block min-w-[42px] rounded bg-led-panel px-[7px] py-px text-center text-[21px] leading-[1.35] shadow-[inset_0_0_0_1px_rgb(255_182_39/0.22),inset_0_0_12px_rgb(255_182_39/0.12)] ${className}`}
+    >
+      {String(count).padStart(2, "0")}
+    </span>
+  );
+}
+
 export default function Header() {
   /** Whether the phone menu is open. Above 480px the links always show, so this has no effect there. */
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { user, isLoggedIn, logout } = useAuth();
+  const { itemCount } = useCart();
   const navigate = useNavigate();
 
   /** Closes the phone menu after a tap. Without this it would stay open over the new page. */
@@ -42,13 +62,18 @@ export default function Header() {
         <span className="hidden whitespace-nowrap text-ink-soft desktop:inline">Open all night.</span>
       </Link>
 
+      {/* On a phone the links are folded away, so the counter stays visible beside the burger. */}
+      <Link to="/cart" onClick={closeMenu} aria-label="Cart" className="ml-auto inline-flex min-h-11 items-center tablet:hidden">
+        <CoinCounter count={itemCount} />
+      </Link>
+
       <button
         type="button"
         aria-label="Menu"
         aria-expanded={menuOpen}
         aria-controls="main-nav"
         onClick={() => setMenuOpen((open) => !open)}
-        className="ml-auto inline-flex size-11 items-center justify-center rounded-md text-ink tablet:hidden"
+        className="inline-flex size-11 items-center justify-center rounded-md text-ink tablet:hidden"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M4 7h16M4 12h16M4 17h16" />
@@ -66,6 +91,7 @@ export default function Header() {
         </NavLink>
         <NavLink to="/cart" onClick={closeMenu} className={navLinkClass}>
           Cart
+          <CoinCounter count={itemCount} className="max-tablet:hidden" />
         </NavLink>
         {isLoggedIn ? (
           <>

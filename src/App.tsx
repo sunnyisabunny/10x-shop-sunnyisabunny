@@ -6,6 +6,7 @@
 import { BrowserRouter } from "react-router";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
@@ -13,9 +14,11 @@ export default function App() {
     // This outer boundary catches a crash in the Header or Layout itself. Layout has its own for pages.
     <ErrorBoundary>
       <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </CartProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
