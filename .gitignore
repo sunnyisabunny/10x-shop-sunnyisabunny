@@ -1,0 +1,16 @@
+# Installed packages and build output are rebuilt from package-lock.json, so they never go in Git.
+node_modules
+dist
+
+# Local settings and logs
+.env
+.env.*
+*.log
+*.local
+.vercel
+
+# Editors and operating systems
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

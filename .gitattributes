@@ -1,0 +1,5 @@
+# Keep line endings the same on Windows and Linux, so diffs only show real changes.
+* text=auto eol=lf
+*.png binary
+*.woff2 binary
+*.webp binary
