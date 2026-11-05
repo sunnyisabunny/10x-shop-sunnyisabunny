@@ -4,8 +4,9 @@
  * texts must match the PRD word for word, so they live in one place.
  * Connects to: `pages/LoginPage.tsx` now, and the Checkout form next.
  */
+import type { ShippingInfo } from "../types/order";
 import type { LoginFormValues } from "../types/user";
-import { MIN_PASSWORD_LENGTH } from "./constants";
+import { MIN_ADDRESS_LENGTH, MIN_FULL_NAME_LENGTH, MIN_PASSWORD_LENGTH } from "./constants";
 
 /**
  * A possible error message per field of any form. For a form with fields `username` and `password`
@@ -30,6 +31,32 @@ export function validateLogin(values: LoginFormValues): FieldErrors<LoginFormVal
     errors.password = "Password is required";
   } else if (values.password.length < MIN_PASSWORD_LENGTH) {
     errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+  }
+
+  return errors;
+}
+
+/**
+ * A simple email shape check: something, then @, then something with a dot. It can't prove an address
+ * exists. Only sending a real email could, and this shop sends nothing.
+ */
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** PRD P5.2. Everything is trimmed first, so a field of only spaces doesn't count as filled in. */
+export function validateCheckout(values: ShippingInfo): FieldErrors<ShippingInfo> {
+  const errors: FieldErrors<ShippingInfo> = {};
+
+  if (values.fullName.trim().length < MIN_FULL_NAME_LENGTH) {
+    errors.fullName = `Full name must be at least ${MIN_FULL_NAME_LENGTH} characters`;
+  }
+  if (!EMAIL_PATTERN.test(values.email.trim())) {
+    errors.email = "Please enter a valid email address";
+  }
+  if (values.address.trim().length < MIN_ADDRESS_LENGTH) {
+    errors.address = `Address must be at least ${MIN_ADDRESS_LENGTH} characters`;
+  }
+  if (values.city.trim() === "") {
+    errors.city = "City is required";
   }
 
   return errors;
