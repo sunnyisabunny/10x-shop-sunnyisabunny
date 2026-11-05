@@ -31,7 +31,8 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 
 - **WebKit** reports a request cancelled by leaving the page as a page error reading `due to access control checks`. The tests ignore that message, because a real failure would also leave the page without products, and other checks would catch it.
 - **Firefox** logs `Image corrupt or truncated` when leaving a page interrupts a product image download. The page isn't affected.
+- **Safari and WebKit** leave links out of the Tab order by default. It is a browser setting, and a page can't change it. Buttons and form fields are reachable as usual, and links can be reached with Option+Tab in real Safari. In the WebKit test, the two link steps focus the link directly.
 
 ## Accessibility
 
-Audited with axe on every route in both themes, at 375px and 1440px, with no violations. Every link, button and field on those routes is at least 44px tall, apart from card title links, whose clickable area covers the whole card. The keyboard path from the PRD works end to end: Tab through the catalog, Enter opens a product, Tab to Add to cart, then fill in Checkout and place the order.
+Audited with axe on every route in both themes, at 375px and 1440px, with no violations. Every link, button and field on those routes is at least 44px tall, apart from card title links, whose clickable area covers the whole card. The keyboard path from the PRD works end to end in Chromium and Firefox: Tab through the catalog, Enter opens a product, Tab to Add to cart, then fill in Checkout and place the order.
