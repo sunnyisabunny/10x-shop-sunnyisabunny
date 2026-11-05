@@ -14,6 +14,8 @@ import OrderDetailPage from "../pages/OrderDetailPage";
 import OrdersPage from "../pages/OrdersPage";
 import ProductPage from "../pages/ProductPage";
 import ProfilePage from "../pages/ProfilePage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
+import SignUpPage from "../pages/SignUpPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -22,6 +24,8 @@ export default function AppRoutes() {
       <Route element={<Layout />}>
         <Route index element={<CatalogPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignUpPage />} />
+        <Route path="reset-password" element={<ResetPasswordPage />} />
         <Route path="products/:id" element={<ProductPage />} />
         <Route path="cart" element={<CartPage />} />
         {/* Everything nested here needs a login. ProtectedRoute decides whether to show it. */}

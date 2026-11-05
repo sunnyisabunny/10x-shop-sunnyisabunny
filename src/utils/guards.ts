@@ -68,6 +68,14 @@ export function parseCartState(value: unknown): CartState | null {
   return { items, promoCode: value.promoCode === PROMO_CODE ? PROMO_CODE : null };
 }
 
+/**
+ * Reads where to go after logging in. `location.state` has the type `any`, so this checks its real shape at
+ * runtime instead of trusting it. Anything unexpected falls back to the catalog.
+ */
+export function readFromPath(state: unknown): string {
+  return isRecord(state) && typeof state.from === "string" ? state.from : "/";
+}
+
 /** The two themes. A union, so "dakr" doesn't compile. */
 export type Theme = "dark" | "light";
 
@@ -153,18 +161,19 @@ export function isReview(value: unknown): value is Review {
   );
 }
 
-/** Turns saved reviews into a map of product id to reviews, keeping only the good ones. */
+/**
+ * Turns saved reviews into a map of product id to reviews, keeping only the good ones. `Object.fromEntries` for the
+ * same reason as `parseStoredProfiles`: an edited `__proto__` key would otherwise break every product page.
+ */
 export function parseStoredReviews(value: unknown): StoredReviews | null {
   if (!isRecord(value)) {
     return null;
   }
-  const reviews: StoredReviews = {};
-  for (const [productId, list] of Object.entries(value)) {
-    if (Array.isArray(list)) {
-      reviews[productId] = list.filter(isReview);
-    }
-  }
-  return reviews;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter((entry): entry is [string, unknown[]] => Array.isArray(entry[1]))
+      .map(([productId, list]) => [productId, list.filter(isReview)]),
+  );
 }
 
 /**
