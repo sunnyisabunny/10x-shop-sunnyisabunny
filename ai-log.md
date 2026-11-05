@@ -47,3 +47,40 @@ The AI proposed four concepts and made recommendations. These decisions were min
 
 **Prompt (verbatim):**
 > i'll be up all night, so just keep working, and guide me step by step on every thing i need to do by hand
+
+**Result:** the AI kept building and told me each step it couldn't do for me, with the exact clicks.
+
+---
+
+## Entry 5: what I decided after seeing the design
+
+**Prompt (verbatim):**
+> gh auth is done, design looks very good, continue, what else has to be done by hand by me?
+
+**Result:** the pink buttons and the side panel stayed, as designed.
+
+---
+
+## Entry 6: the demo video and the deployment
+
+**Prompt (verbatim):**
+> the video we can definitely do with the brag skills, give me a step by step guide on deploying to vercel, and other things i need to do by hand. continue
+
+**Result:** a step-by-step Vercel guide. The AI pointed out that the PRD asks for a screen recording, so the video starts from a real recording of the live site, with polish added around it.
+
+---
+
+## Entry 7: code review, and what was rejected
+
+The AI ran a code review on its own work twice during the FULL stage. Each finding started as a claim from reading the code, so it first had to fail in a browser test before anything changed.
+
+| Review finding | Outcome |
+|---|---|
+| A failed order saves twice on retry | Real. Reproduced and fixed (`DEBUG-LOG.md` entry 8) |
+| A username of `constructor` breaks Profile | Real. Reproduced and fixed (entry 9) |
+| Reviews in two tabs overwrite each other | Real. Reproduced and fixed (entry 10) |
+| Two tabs can overwrite each other's orders | **Not reachable.** Placing an order empties the shared cart, so the other tab's Checkout redirects first. The test the AI wrote for this failed for that reason. The real risk was in reviews |
+| Orders should belong to a username | **Rejected.** The annex's Order model has no owner field. Disclosed in `REPORT.md` |
+| Migrate the old cart format | **Rejected.** The site had never been deployed, so no old carts exist |
+
+**Corrections to the AI's own work:** its first fix for the footer's layout shift did nothing, because the rule was in the wrong CSS layer. Lighthouse showed the score hadn't moved, so it had to find out why (entry 14). A tool it wrote to split commits also corrupted line endings on Windows, which put the wrong contents in two unpushed commits. It redid them.
