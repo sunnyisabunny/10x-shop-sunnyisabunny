@@ -7,7 +7,7 @@
  * reference, so if we changed the old array in place, it would see the same array and not redraw.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { CartItem } from "../types/cart";
+import type { CartItem, CartState } from "../types/cart";
 import type { Product } from "../types/product";
 import { STORAGE_KEYS } from "../utils/constants";
 import { discountedPrice } from "../utils/format";
@@ -15,8 +15,8 @@ import { discountedPrice } from "../utils/format";
 /** The product fields a cart line needs. `Pick` copies them from Product, so they can't fall out of sync. */
 export type CartProductInput = Pick<Product, "id" | "title" | "thumbnail" | "price" | "discountPercentage" | "stock">;
 
-interface CartContextValue {
-  items: CartItem[];
+/** Everything components get from `useCart()`: the cart's state, plus what is worked out from it and the actions. */
+interface CartContextValue extends CartState {
   /** Total units, used for the Header counter. Two of one product counts as 2. */
   itemCount: number;
   /** The sum of discounted price x quantity. */
@@ -115,10 +115,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((current) => {
       const existing = current.find((item) => item.productId === product.id);
       if (existing) {
-        // Math.min is a second guard: two very fast clicks can both pass the check above, before the
-        // first update has landed, and this keeps the quantity from going over the stock anyway.
+        // The stock is refreshed from the product, because the saved number may be old. Math.min is a second
+        // guard: two very fast clicks can both pass the check above before the first update has landed.
         return current.map((item) =>
-          item.productId === product.id ? { ...item, quantity: Math.min(item.quantity + quantity, item.stock) } : item,
+          item.productId === product.id
+            ? { ...item, stock: product.stock, quantity: Math.min(item.quantity + quantity, product.stock) }
+            : item,
         );
       }
       const newItem: CartItem = {
