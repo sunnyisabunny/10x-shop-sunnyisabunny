@@ -16,11 +16,9 @@ interface CheckoutFormProps {
   onPlaceOrder: (shipping: ShippingInfo) => void;
   /** True while the order is being placed. Disables the button, so a double click can't order twice. */
   isPlacing: boolean;
-  /** A failure from placing the order, shown here. The form keeps what was typed. */
-  failure: string | null;
 }
 
-export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: CheckoutFormProps) {
+export default function CheckoutForm({ onPlaceOrder, isPlacing }: CheckoutFormProps) {
   /** What is typed in each field. `value` and `onChange` on every input make this a controlled form. */
   const [values, setValues] = useState<ShippingInfo>({ fullName: "", email: "", address: "", city: "" });
 
@@ -48,11 +46,6 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
       <FormField id="email" name="email" label="Email" type="email" autoComplete="email" value={values.email} onChange={handleChange} error={errors.email} />
       <FormField id="address" name="address" label="Address" autoComplete="street-address" value={values.address} onChange={handleChange} error={errors.address} />
       <FormField id="city" name="city" label="City" autoComplete="address-level2" value={values.city} onChange={handleChange} error={errors.city} />
-      {failure !== null && (
-        <p role="alert" className="font-semibold text-error">
-          {failure}
-        </p>
-      )}
       <button type="submit" disabled={isPlacing} className={buttonStyles.primary}>
         Place order
       </button>
