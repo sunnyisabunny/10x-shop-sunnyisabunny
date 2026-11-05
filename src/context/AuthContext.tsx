@@ -25,6 +25,8 @@ interface AuthContextValue {
   /** The name to show: from the profile if it has one, otherwise the username. Null for a guest. */
   displayName: string | null;
   login: (username: string) => void;
+  /** Logs in and remembers the email. No password goes in, so there is none that could be saved. */
+  signUp: (username: string, email: string) => void;
   logout: () => void;
   /** Saves the profile. Returns false if storage refused, so the page can say so. */
   updateProfile: (profile: Profile) => boolean;
@@ -56,6 +58,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((username: string) => setUser({ username }), []);
   const logout = useCallback(() => setUser(null), []);
 
+  /**
+   * Keeps an existing profile's other details, and starts the rest empty. If saving the email fails, the login
+   * still works, because it lives in React state. The email can be typed again on Profile.
+   */
+  const signUp = useCallback(
+    (username: string, email: string) => {
+      const existing = Object.hasOwn(profiles, username) ? profiles[username] : { firstName: "", lastName: "", phone: "" };
+      saveProfiles({ ...profiles, [username]: { ...existing, email } });
+      setUser({ username });
+    },
+    [profiles, saveProfiles],
+  );
+
   const username = user?.username ?? null;
 
   const updateProfile = useCallback(
@@ -79,10 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       displayName: fullName !== "" ? fullName : username,
       login,
+      signUp,
       logout,
       updateProfile,
     };
-  }, [user, username, profiles, login, logout, updateProfile]);
+  }, [user, username, profiles, login, signUp, logout, updateProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
