@@ -47,7 +47,7 @@ function PromoForm() {
         />
         <button
           type="submit"
-          className="inline-flex min-h-11 items-center rounded-md bg-steel px-3.5 font-semibold text-ink shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hover:bg-edge"
+          className="inline-flex min-h-11 shrink-0 items-center rounded-md bg-steel px-3.5 font-semibold whitespace-nowrap text-ink shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hover:bg-edge"
         >
           Apply
         </button>
