@@ -29,6 +29,12 @@ export const PLACE_ORDER_DELAY_MS = 600;
 /** The API every product request goes to. */
 export const API_BASE_URL = "https://dummyjson.com";
 
+/** Requests slower than this give up and show an error, so a hung server can't show a skeleton forever. */
+export const API_TIMEOUT_MS = 10000;
+
+/** How long a toast message stays on screen, in milliseconds. */
+export const TOAST_MS = 3000;
+
 /** The localStorage keys. `as const` makes each value its exact text, so a typo is a type error. */
 export const STORAGE_KEYS = {
   cart: "shop_cart",
