@@ -1,22 +1,29 @@
 /**
- * NOTE: the map from URL to page (PRD A1.2).
+ * NOTE: the map from URL to page (PRD A1.2), with each page loaded only when it is opened (PRD O1).
  * Why it exists: one place to see every page the app has.
- * Connects to: `Layout`, which is the parent, so each page below appears inside its `<Outlet />`.
+ * Connects to: `Layout`, which is the parent, so each page below appears inside its `<Outlet />`. The `<Suspense>`
+ * in `Layout` shows the spinner while a page's code downloads.
+ *
+ * `lazy(() => import(...))` makes Vite put that page in its own file. A first visit downloads only the catalog,
+ * and Formik and Yup only arrive with the login pages. `Layout` and `ProtectedRoute` are imported normally, because
+ * every page needs them straight away. A failed download reaches the ErrorBoundary in `Layout`, which offers Reload.
  */
+import { lazy } from "react";
 import { Route, Routes } from "react-router";
 import Layout from "../components/layout/Layout";
-import CartPage from "../pages/CartPage";
-import CatalogPage from "../pages/CatalogPage";
-import CheckoutPage from "../pages/CheckoutPage";
-import LoginPage from "../pages/LoginPage";
-import NotFoundPage from "../pages/NotFoundPage";
-import OrderDetailPage from "../pages/OrderDetailPage";
-import OrdersPage from "../pages/OrdersPage";
-import ProductPage from "../pages/ProductPage";
-import ProfilePage from "../pages/ProfilePage";
-import ResetPasswordPage from "../pages/ResetPasswordPage";
-import SignUpPage from "../pages/SignUpPage";
 import ProtectedRoute from "./ProtectedRoute";
+
+const CartPage = lazy(() => import("../pages/CartPage"));
+const CatalogPage = lazy(() => import("../pages/CatalogPage"));
+const CheckoutPage = lazy(() => import("../pages/CheckoutPage"));
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
+const OrdersPage = lazy(() => import("../pages/OrdersPage"));
+const ProductPage = lazy(() => import("../pages/ProductPage"));
+const ProfilePage = lazy(() => import("../pages/ProfilePage"));
+const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
+const SignUpPage = lazy(() => import("../pages/SignUpPage"));
 
 export default function AppRoutes() {
   return (
