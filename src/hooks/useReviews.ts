@@ -13,7 +13,8 @@ import { useLocalStorage } from "./useLocalStorage";
 export interface UseReviewsResult {
   reviews: Review[];
   average: number;
-  addReview: (review: Review) => void;
+  /** Saves a review. Returns false if storage refused, so the form can say so and keep what was typed. */
+  addReview: (review: Review) => boolean;
 }
 
 export function useReviews(product: Product): UseReviewsResult {
@@ -36,11 +37,15 @@ export function useReviews(product: Product): UseReviewsResult {
   }, [reviews, product.rating]);
 
   const addReview = useCallback(
-    (review: Review) => {
-      setStored({ ...stored, [product.id]: [review, ...(stored[product.id] ?? [])] });
-    },
+    (review: Review) => setStored({ ...stored, [product.id]: [review, ...(stored[product.id] ?? [])] }),
     [stored, product.id, setStored],
   );
 
   return { reviews, average, addReview };
+}
+
+/** Profile's "Clear local data" deletes every product's reviews, so it needs no particular product. */
+export function useClearReviews(): () => void {
+  const [, , clearReviews] = useLocalStorage<StoredReviews>(STORAGE_KEYS.reviews, {}, parseStoredReviews);
+  return clearReviews;
 }

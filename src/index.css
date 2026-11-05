@@ -51,10 +51,43 @@
   --neon-core: #ffe3ea;
   --neon-glow: 0 0 3px #ff2e63, 0 0 10px #ff2e63, 0 0 26px rgb(255 46 99 / 0.75), 0 0 60px rgb(255 46 99 / 0.35);
   --machine-glow: rgb(170 205 255 / 0.12);
+  --street-glow: rgb(255 46 99 / 0.2);
   --sign-a: #ff5c86;
   --sign-b: #ffb627;
   color-scheme: dark;
 }
+
+/* The light theme: the same machine in white enamel, on a grey morning street. Only the values change, so no
+   component needs to know which theme is on. `color-scheme` also switches the browser's own controls and
+   scrollbars. This must stay below `:root`: the two selectors weigh the same, so the later one wins. */
+[data-theme="light"] {
+  --night-sky: #e6e8e8;
+  --night: #c6cbcf;
+  --steel: #f2f2ed;
+  --steel-raised: #e7e7e0;
+  --edge: #bdbfb8;
+  --edge-bright: #8a8d86;
+  --well: #ffffff;
+  --shelf: #fbfbf8;
+  --interior: #d3d6d4;
+  --marquee: #fafaf6;
+  --ink: #12161f;
+  --ink-soft: #4a5261;
+  --error: #b3123a;
+  --neon-core: #c81345;
+  --neon-glow: none;
+  --machine-glow: rgb(60 70 80 / 0.14);
+  --street-glow: rgb(255 255 255 / 0.5);
+  --sign-a: #2a3140;
+  --sign-b: #2a3140;
+  /* The night theme's pale blue focus ring would vanish on white. */
+  --color-focus: #0b6bcb;
+  color-scheme: light;
+}
+
+/* Makes Tailwind's `dark:` prefix follow our attribute instead of the system setting. Without this, the switch
+   in the Header couldn't reach any `dark:` class. `:where` adds no weight, so these classes stay easy to override. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* `inline` makes each class use the variable itself, e.g. `.bg-steel { background: var(--steel) }`.
    Without `inline` the class would freeze the value and the theme switch would not reach it. */
@@ -203,7 +236,7 @@
     overflow: hidden;
     pointer-events: none;
     background:
-      radial-gradient(70% 420px at 50% 100%, rgb(255 46 99 / 0.2), transparent 72%),
+      radial-gradient(70% 420px at 50% 100%, var(--street-glow), transparent 72%),
       radial-gradient(80% 700px at 50% 0%, var(--night-sky), transparent 75%),
       var(--night);
   }
@@ -225,6 +258,12 @@
     .sign {
       display: block;
     }
+  }
+  /* In daylight the signs aren't lit: just faint paint, with no glow. */
+  [data-theme="light"] .sign {
+    opacity: 0.22;
+    filter: none;
+    text-shadow: none;
   }
 
   /* Rain: two layers of hairline streaks.
@@ -276,6 +315,10 @@
     .rain {
       display: none;
     }
+  }
+  /* It only rains at night. `display: none` also frees the layers' memory. */
+  [data-theme="light"] .rain {
+    display: none;
   }
 }
 

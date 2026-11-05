@@ -68,7 +68,19 @@ export const STORAGE_KEYS = {
   cart: "shop_cart",
   reviews: "shop_reviews",
   orders: "shop_orders",
+  user: "shop_user",
+  profiles: "shop_profile",
+  theme: "shop_theme",
 } as const;
+
+/**
+ * The colour of a phone's browser bar in each theme: the header's own colour, so the two blend together.
+ * `index.html` keeps a copy of these, because it runs before any of this code loads.
+ */
+export const THEME_BAR_COLORS = { dark: "#0e121b", light: "#fafaf6" } as const;
+
+/** Profile: shortest accepted first or last name, after trimming spaces. */
+export const MIN_NAME_LENGTH = 2;
 
 /**
  * Orders: how long each status lasts, counted from when the order was placed (PRD P6.2). `satisfies` checks

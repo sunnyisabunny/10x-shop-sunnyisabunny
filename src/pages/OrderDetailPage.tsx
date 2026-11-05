@@ -3,6 +3,7 @@
  * Why it exists: this is also where a new order lands, with the Thank-you banner on top.
  * Connects to: `useOrders` and `useNow`. `useCart` is what Reorder adds to.
  */
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { OrderStatusBadge, OrderTimeline } from "../components/order/OrderStatus";
 import Button from "../components/ui/Button";
@@ -23,9 +24,23 @@ export default function OrderDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { orders } = useOrders();
-  const { addItem } = useCart();
+  const { addItem, quantityOf } = useCart();
   const { showToast } = useToast();
   const now = useNow();
+
+  /** Whether this visit is the one right after ordering. Read once, because the effect below clears the source. */
+  const [justPlaced] = useState(() => isJustPlaced(location.state));
+
+  /**
+   * Forgets the "just placed" mark straight after reading it. The browser keeps `location.state` in its
+   * history, so otherwise every reload and every Back to this page would say thank you again, as if another
+   * order had gone through.
+   */
+  useEffect(() => {
+    if (isJustPlaced(location.state)) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   const order = orders.find((candidate) => String(candidate.id) === id);
 
@@ -33,12 +48,21 @@ export default function OrderDetailPage() {
     return <NotFoundPage />;
   }
 
-  /** PRD P6: puts the same items back in the cart and goes there. The stock limit still applies. */
+  /**
+   * PRD P6: puts the same items back in the cart and goes there. The stock limit still applies, so each line adds
+   * what fits, and the message says what really happened. `addItem` itself would refuse a line that doesn't fit.
+   */
   function handleReorder(items: CartItem[]) {
-    const allAdded = items
-      .map((item) => addItem({ id: item.productId, title: item.title, thumbnail: item.thumbnail, price: item.price, discountPercentage: item.discountPercentage, stock: item.stock }, item.quantity))
-      .every(Boolean);
-    showToast(allAdded ? "Items added to cart ✓" : "Items added to cart ✓ Some were limited by stock.");
+    const added = items.map((item) => {
+      const quantity = Math.min(item.quantity, item.stock - quantityOf(item.productId));
+      const product = { id: item.productId, title: item.title, thumbnail: item.thumbnail, price: item.price, discountPercentage: item.discountPercentage, stock: item.stock };
+      return quantity > 0 && addItem(product, quantity) ? quantity : 0;
+    });
+    if (added.every((quantity) => quantity === 0)) {
+      showToast("Nothing added. Your cart already holds all the stock of these items.");
+    } else {
+      showToast(added.every((quantity, index) => quantity === items[index].quantity) ? "Items added to cart ✓" : "Items added to cart ✓ Some were limited by stock.");
+    }
     navigate("/cart");
   }
 
@@ -46,7 +70,7 @@ export default function OrderDetailPage() {
 
   return (
     <section className="grid gap-5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
-      {isJustPlaced(location.state) && (
+      {justPlaced && (
         <div role="status" className="rounded-[10px] bg-discount p-4 text-on-discount">
           <h1 className="text-[26px] leading-[1.15] font-bold">Thank you! Your order has been placed.</h1>
           <p className="mt-1 font-semibold">Total {formatPrice(order.total)}. No payment was taken.</p>
@@ -56,7 +80,7 @@ export default function OrderDetailPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           {/* The page's main heading, unless the banner above already holds it. */}
-          {isJustPlaced(location.state) ? (
+          {justPlaced ? (
             <h2 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h2>
           ) : (
             <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h1>

@@ -10,6 +10,8 @@ import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
 import type { OrderRecord, ShippingInfo } from "../types/order";
 import type { Review, StoredReviews } from "../types/product";
+import type { AuthUser, Profile, StoredProfiles } from "../types/user";
+import { PROMO_CODE } from "./constants";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -48,7 +50,8 @@ export function isCartItem(value: unknown): value is CartItem {
 
 /**
  * Turns saved data into a usable cart, keeping the good lines and dropping the rest. Repeated products are
- * dropped too, because the Cart page uses `productId` as its React key, and keys must be unique.
+ * dropped too, because the Cart page uses `productId` as its React key, and keys must be unique. Only the real
+ * promo code is kept: anyone can edit storage, and any other text would still earn the discount.
  */
 export function parseCartState(value: unknown): CartState | null {
   if (!isRecord(value) || !Array.isArray(value.items)) {
@@ -62,7 +65,42 @@ export function parseCartState(value: unknown): CartState | null {
     seen.add(item.productId);
     return true;
   });
-  return { items, promoCode: typeof value.promoCode === "string" ? value.promoCode : null };
+  return { items, promoCode: value.promoCode === PROMO_CODE ? PROMO_CODE : null };
+}
+
+/** The two themes. A union, so "dakr" doesn't compile. */
+export type Theme = "dark" | "light";
+
+/** Reads a saved theme. Anything else counts as nothing saved. */
+export function parseTheme(value: unknown): Theme | null {
+  return value === "dark" || value === "light" ? value : null;
+}
+
+/** Reads a saved login. Only the username exists, and a blank one isn't a login. */
+export function parseAuthUser(value: unknown): AuthUser | null {
+  return isRecord(value) && typeof value.username === "string" && value.username.trim() !== "" ? { username: value.username } : null;
+}
+
+/** Checks that something is a usable profile. */
+function isProfile(value: unknown): value is Profile {
+  return (
+    isRecord(value) &&
+    typeof value.firstName === "string" &&
+    typeof value.lastName === "string" &&
+    typeof value.email === "string" &&
+    typeof value.phone === "string"
+  );
+}
+
+/**
+ * Reads saved profiles, keeping only the good ones. `Object.fromEntries` matters here: writing
+ * `profiles["__proto__"] = ...` in a loop would change the object's prototype instead of adding a username.
+ */
+export function parseStoredProfiles(value: unknown): StoredProfiles | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, Profile] => isProfile(entry[1])));
 }
 
 /** Checks that every shipping field is present as text. */

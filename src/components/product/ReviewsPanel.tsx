@@ -14,7 +14,8 @@ import { inputStyles } from "../ui/FormField";
 
 interface ReviewsPanelProps {
   reviews: Review[];
-  onAdd: (review: Review) => void;
+  /** Returns whether the review was saved. */
+  onAdd: (review: Review) => boolean;
 }
 
 /** Five stars, filled up to the rating, with the number spelled out for screen readers. */
@@ -23,7 +24,7 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPanel({ reviews, onAdd }: ReviewsPanelProps) {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
   const { showToast } = useToast();
 
   /** The chosen rating as text, because that is what a <select> holds. Empty means nothing chosen yet. */
@@ -32,7 +33,10 @@ export default function ReviewsPanel({ reviews, onAdd }: ReviewsPanelProps) {
   const [ratingError, setRatingError] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
 
-  /** Validates with the PRD's exact messages. Only a valid review is added, and then the form empties. */
+  /**
+   * Validates with the PRD's exact messages. Only a valid review is added, and the form empties only once it is
+   * saved. If storage is full, the message says so and what was typed stays in the form.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextRatingError = rating === "" ? "Please select a rating" : null;
@@ -43,15 +47,19 @@ export default function ReviewsPanel({ reviews, onAdd }: ReviewsPanelProps) {
       return;
     }
 
-    onAdd({
+    const saved = onAdd({
       rating: Number(rating),
       comment: comment.trim(),
       date: new Date().toISOString(),
-      reviewerName: user?.username ?? "Guest",
+      reviewerName: displayName ?? "Guest",
     });
-    setRating("");
-    setComment("");
-    showToast("Review added ✓");
+    if (saved) {
+      setRating("");
+      setComment("");
+      showToast("Review added ✓");
+    } else {
+      showToast("Your review could not be saved. Browser storage is full or blocked.");
+    }
   }
 
   return (

@@ -24,7 +24,8 @@ export default function Stepper({ value, min = 1, max, onChange, label = "Quanti
       <button type="button" aria-label="One less" disabled={value <= min} onClick={() => onChange(value - 1)} className={stepButton}>
         −
       </button>
-      <output className="led-text min-w-10 text-center text-[22px]">{value}</output>
+      {/* A small dark panel of its own: amber on the light theme's white field would be unreadable. */}
+      <output className="led-text min-w-10 rounded bg-led-panel px-1 text-center text-[22px]">{value}</output>
       <button type="button" aria-label="One more" disabled={value >= max} onClick={() => onChange(value + 1)} className={stepButton}>
         +
       </button>

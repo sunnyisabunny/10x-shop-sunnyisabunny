@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import { formatItemCount } from "../../utils/format";
 
 /**
@@ -44,8 +45,9 @@ export default function Header() {
   /** Whether the phone menu is open. Above 480px the links always show, so this has no effect there. */
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { user, isLoggedIn, logout } = useAuth();
+  const { displayName, isLoggedIn, logout } = useAuth();
   const { itemCount } = useCart();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   /** Closes the phone menu after a tap. Without this it would stay open over the new page. */
@@ -107,7 +109,13 @@ export default function Header() {
             <NavLink to="/orders" onClick={closeMenu} className={navLinkClass}>
               Orders
             </NavLink>
-            <span className="inline-flex min-h-11 items-center px-3 text-ink-soft">{user?.username}</span>
+            <NavLink to="/profile" onClick={closeMenu} className={navLinkClass}>
+              Profile
+            </NavLink>
+            {/* A full name can be long, so it is cut with "…" rather than pushing the links onto a new row. */}
+            <span title={displayName ?? undefined} className="inline-block max-w-44 truncate px-3 leading-11 text-ink-soft">
+              {displayName}
+            </span>
             <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
               Log out
             </button>
@@ -117,6 +125,24 @@ export default function Header() {
             Log in
           </NavLink>
         )}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          className="inline-flex size-11 items-center justify-center rounded-md text-ink-soft transition-colors duration-150 hover:bg-steel-raised hover:text-ink"
+        >
+          {/* A sun in the dark theme, a moon in the light one: the icon shows what pressing it gives you. */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            {theme === "dark" ? (
+              <>
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
+              </>
+            ) : (
+              <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" />
+            )}
+          </svg>
+        </button>
       </nav>
     </header>
   );

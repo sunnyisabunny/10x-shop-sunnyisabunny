@@ -111,3 +111,81 @@ list only grows when a real bug turns up.
 **Fix:** [`eef169a`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/eef169a): the test caught this before the first commit of this code, so the fix is part of that commit. An `isTyping` ref means only real keystrokes can start a search. The second route was fixed in the commit after the review, where choosing a category also drops any text still being typed.
 
 **What it taught:** when one value lives in two places, here the box and the URL, an effect that syncs them needs to know which one changed first. "They differ" isn't enough information.
+
+---
+
+## 7. Place order and Save changes ignored the first click after fixing a field
+
+**Symptom:** with an error showing under a field, I corrected the field and clicked the button straight away. Nothing happened. A second click worked.
+
+**Reproduce:**
+1. On Checkout, type `1` in Postal code and move to another field, so the error appears.
+2. Correct it to `0100`, leaving the cursor in the field.
+3. Click Place order once.
+
+**Tool:** my browser test for the Profile form failed on `saving says so`. A normal save worked in a separate one-off script, so the difference had to be the error that was showing. I then wrote the same steps as a test for Checkout, and it failed there too.
+
+**Root cause:** the browser fires `blur` on mouse down, and a click only counts if mouse down and mouse up land on the same element. Blur validation removed the error line, the form got shorter, and the button moved up about 23px between those two events. The mouse up landed below the button, so no click happened.
+
+**Fix:** [`e09faa1`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/e09faa1): every field keeps a reserved line for its error, whether it is showing or not, so validation never moves anything.
+
+**What it taught:** validating on blur changes the page at the exact moment someone is clicking. Anything that changes layout has to be checked against what the user is doing at that moment.
+
+---
+
+## 8. Retrying a failed order saved it twice
+
+**Symptom:** when storage was full, Place order correctly said the order could not be placed. After freeing space and trying again, there were two saved orders from one purchase, and the numbering had skipped.
+
+**Reproduce:**
+1. Make `localStorage.setItem` throw for `shop_orders`, which is what a full browser storage does.
+2. Click Place order and see the failure message.
+3. Let storage work again and click Place order.
+4. Read `shop_orders`: it holds two orders.
+
+**Tool:** a code review flagged it from reading the code. I then wrote the steps above as a browser test, which failed with `2 saved`.
+
+**Root cause:** `useLocalStorage` called `setValue` first and wrote to storage second. So the failed order stayed in React state, and the retry saved the old list plus a new order.
+
+**Fix:** [`08e6a23`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/08e6a23): it saves first and updates state only if saving worked. Profile and reviews now also report the real result instead of always saying success.
+
+**What it taught:** an error message isn't enough if the failed attempt leaves something behind. The retry is part of the failure path, so it needs testing too.
+
+---
+
+## 9. A username of `constructor` showed "undefined undefined" and could never save a profile
+
+**Symptom:** logging in as `constructor` or `__proto__` put "undefined undefined" in the Header, and the Profile page threw errors. The login page says any username works.
+
+**Reproduce:**
+1. Log in with the username `constructor` and any valid password.
+2. Look at the Header.
+3. Open Profile and press Save changes.
+
+**Tool:** a code review pointed at the lookup, and a browser test confirmed it, with `Cannot read properties of undefined (reading 'trim')` in the page errors.
+
+**Root cause:** profiles are kept in a plain object, keyed by username. Every plain object inherits `constructor`, so `profiles["constructor"]` found a function and the code treated it as a saved profile. `__proto__` had a second problem: assigning to that key changes the object's prototype instead of adding a key, so it disappeared on reload.
+
+**Fix:** [`2fe60f9`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/2fe60f9): `Object.hasOwn` for the lookup, and `Object.fromEntries` when reading saved profiles.
+
+**What it taught:** when users choose the keys, a plain object isn't a neutral lookup table, because it already has keys of its own.
+
+---
+
+## 10. A review written in one tab wiped out a review written in another
+
+**Symptom:** with two product pages open in two tabs, I added a review in each. Only the second one survived in storage.
+
+**Reproduce:**
+1. Open `/products/1` in one tab and `/products/2` in another.
+2. Add a review in the second tab.
+3. Add a review in the first tab.
+4. Read `shop_reviews`: only product 1 is there.
+
+**Tool:** a browser test with two tabs in one browser profile, which failed with `["1"]`.
+
+**Root cause:** each tab read the saved reviews once, when its page opened. The first tab never learned about the second tab's review, so its save wrote its own old copy over the whole key.
+
+**Fix:** [`08e6a23`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/08e6a23): `useLocalStorage` listens for the browser's `storage` event, which fires in the other tabs after a change, and updates its copy. The effect's cleanup removes the listener.
+
+**What it taught:** localStorage is shared between tabs, but React state isn't. Any state copied from it can go out of date without anything in that tab having changed.
