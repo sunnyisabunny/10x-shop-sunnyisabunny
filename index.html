@@ -8,6 +8,13 @@
     <meta name="description" content="10X Shop: an online store built as a vending machine. Open all night." />
     <meta name="theme-color" content="#0e121b" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- NOTE: opens the connections to the API and the image server early, which saves the handshake on slow
+         networks. The two fonts are the ones visible straight away: the wordmark and the reading text. Without the
+         preload, the browser only finds them once the CSS has loaded. -->
+    <link rel="preconnect" href="https://dummyjson.com" />
+    <link rel="preconnect" href="https://cdn.dummyjson.com" />
+    <link rel="preload" href="/fonts/tilt-neon.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin />
     <title>10X Shop</title>
     <!-- NOTE: applies the saved theme before anything is drawn. React loads later, so without this a light theme
          visitor would see a flash of the dark theme on every page load. Blocked storage just means dark. -->
