@@ -154,7 +154,46 @@
   box-shadow: inset 0 -8px 0 #8d9cad, inset 0 -9px 0 #5d6a7b;
 }
 
+/* The same wall when a product is sold out: the light is off, which reads as "empty" at a glance. */
+@utility dim-glass {
+  background: linear-gradient(180deg, #8d97a5, #6c7686);
+  box-shadow: inset 0 -8px 0 #5d6a7b;
+}
+
 @layer components {
+  /* The machine's glass window around the product slots: a strip light along the top, and one diagonal
+     reflection across the glass. `pointer-events: none` lets clicks pass straight through the reflection. */
+  .machine-window {
+    position: relative;
+    padding: 14px 8px 8px;
+    border-radius: 10px;
+    background: var(--interior);
+    box-shadow: inset 0 0 0 1px #000, inset 0 0 0 3px var(--edge), inset 0 36px 70px rgb(150 190 255 / 0.1);
+  }
+  .machine-window::before {
+    content: "";
+    position: absolute;
+    inset: 7px 10px auto;
+    height: 3px;
+    border-radius: 3px;
+    background: #f4f9ff;
+    box-shadow: 0 0 16px 3px rgb(200 225 255 / 0.8);
+  }
+  .machine-window::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    z-index: 3;
+    border-radius: 8px;
+    pointer-events: none;
+    background: linear-gradient(112deg, rgb(255 255 255 / 0.07) 0 11%, transparent 11% 27%, rgb(255 255 255 / 0.045) 27% 31%, transparent 31%);
+  }
+  @media (min-width: 30.0625rem) {
+    .machine-window {
+      padding: 16px 14px 14px;
+    }
+  }
+
   /* The night street behind the machine. It is fixed to the window, so it stays put while the machine
      scrolls, and it sits under everything so it can never catch a click. */
   .street {
