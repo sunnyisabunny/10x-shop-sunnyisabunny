@@ -4,7 +4,8 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 
 ## How this was tested
 
-- **Chromium, Firefox and WebKit:** driven by automated browser tests through Playwright, on the production build. Each engine ran the same checks: the core flow, the catalog flow, the FULL features, and the quality checks such as the keyboard path and the phone width.
+- **Chromium, Firefox and WebKit:** driven by automated browser tests through Playwright, on the production build. Each engine ran the same checks: the core flow, the catalog flow, the FULL features, and the quality checks such as the keyboard path and the phone width. The one difference is in the keyboard path on WebKit, explained below.
+- **The test scripts aren't in this repo.** They are my own tools, kept in a separate folder so that the graded code stays only the shop. So the ✓ marks here are results I am reporting, and CI only runs typecheck, lint and build. I can run the scripts at the defence.
 - **WebKit is close to Safari, but it isn't Safari.** It is the engine Safari uses, in Playwright's own build on Windows. I don't have a Mac or an iPhone here to confirm it in real Safari.
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
 - **Edge and a real phone** are checked by hand, and those rows are filled in after that pass.

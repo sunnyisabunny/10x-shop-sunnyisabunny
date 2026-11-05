@@ -254,9 +254,10 @@ list only grows when a real bug turns up.
 **Symptom:** after adding lazy routes, Lighthouse's layout shift on the catalog went from 0.001 to 0.114, over the PRD's limit of 0.1. Its report named the `<footer>` as the element that moved.
 
 **Reproduce:**
-1. Check out the commit before the fix, build it and serve it.
-2. Run Lighthouse with the mobile preset on `/`.
-3. Read Cumulative Layout Shift and the "layout shifts" list.
+1. Check out the fix's commit and delete the `main:has(.page-spinner) + footer` rule from `index.css`, because lazy routes and the fix went in together.
+2. Build it and serve it.
+3. Run Lighthouse with the mobile preset on `/`.
+4. Read Cumulative Layout Shift and the "layout shifts" list.
 
 **Tool:** Lighthouse's layout shifts audit for the cause, and the same audit again to catch the first fix failing.
 

@@ -1,6 +1,6 @@
 # Report
 
-**Status:** at the FULL stage. It is updated as each stage ships. Its numbers come from scripts that read the real repo and the real build, not from memory.
+**Status:** at the FULL stage. It is updated as each stage ships. Its numbers come from scripts that read the real repo and the real build, not from memory. Those scripts are my own tools and live outside this repo, so the graded code stays only the shop.
 
 ## Planned and delivered
 
