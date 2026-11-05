@@ -13,6 +13,7 @@ const badgeStyles: Record<OrderStatus, string> = {
   Delivered: "bg-discount text-on-discount",
 };
 
+/** A small coloured label with the status name. The name is written out, so colour is never the only signal. */
 export function OrderStatusBadge({ status }: { status: OrderStatus }) {
   return <span className={`inline-block rounded-[3px] px-2 py-0.5 text-[13px] font-bold ${badgeStyles[status]}`}>{status}</span>;
 }

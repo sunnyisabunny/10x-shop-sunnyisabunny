@@ -41,6 +41,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 /** Only the username is ever saved. There is no password to save, because login never keeps one. */
 const userStorage = new StorageService<AuthUser>(STORAGE_KEYS.user, parseAuthUser);
 
+/** Owns who is logged in and the saved profiles. Every page reads them through `useAuth`, with no props passed down. */
 export function AuthProvider({ children }: { children: ReactNode }) {
   /** Who is logged in. Restored from storage, so a reload on /orders doesn't send you back to Login. */
   const [user, setUser] = useState<AuthUser | null>(() => userStorage.get());

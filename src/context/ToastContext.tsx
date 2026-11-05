@@ -19,6 +19,7 @@ interface Toast {
   message: string;
 }
 
+/** Holds the current message and draws it. It wraps the app, so any page can show a toast without passing props down. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   /** The message on screen, or null. One at a time, because a stack of them only adds noise. */
   const [toast, setToast] = useState<Toast | null>(null);

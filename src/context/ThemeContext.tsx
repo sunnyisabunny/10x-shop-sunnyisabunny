@@ -18,6 +18,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const themeStorage = new StorageService<Theme>(STORAGE_KEYS.theme, parseTheme);
 
+/** Owns the current theme. Header and Profile both read from here, so they can't show different themes. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   /** Starts dark, because the night street is the shop's natural look. A saved choice wins. */
   const [theme, setTheme] = useState<Theme>(() => themeStorage.get() ?? "dark");

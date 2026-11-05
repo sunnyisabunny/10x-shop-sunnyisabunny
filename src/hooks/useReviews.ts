@@ -17,6 +17,7 @@ export interface UseReviewsResult {
   addReview: (review: Review) => boolean;
 }
 
+/** Combines this product's local and API reviews, and works out the average over both. */
 export function useReviews(product: Product): UseReviewsResult {
   const [stored, setStored] = useLocalStorage<StoredReviews>(STORAGE_KEYS.reviews, {}, parseStoredReviews);
 

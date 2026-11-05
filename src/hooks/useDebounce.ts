@@ -7,6 +7,7 @@
  */
 import { useEffect, useState } from "react";
 
+/** Returns `value`, but only after it has stopped changing for `delayMs`. Each new value restarts the wait. */
 export function useDebounce<T>(value: T, delayMs: number): T {
   /** The calmed-down copy of the value. */
   const [debounced, setDebounced] = useState(value);
