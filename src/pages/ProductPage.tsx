@@ -39,7 +39,9 @@ function ProductDetails({ product }: { product: Product }) {
           <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">{product.title}</h1>
           <p className="mt-1.5 text-ink-soft">
             {product.brand ? `${product.brand} · ` : ""}
-            {formatCategory(product.category)}
+            <Link to={`/?category=${product.category}`} className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-ink">
+              {formatCategory(product.category)}
+            </Link>
           </p>
         </div>
 
