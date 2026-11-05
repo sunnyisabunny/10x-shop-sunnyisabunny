@@ -4,6 +4,7 @@
  * each value should have exactly one home. A value copied into two places eventually disagrees with itself.
  * Connects to: validators, the catalog request, stock badges and the checkout.
  */
+import type { OrderStatus } from "../types/order";
 
 /** Login: the shortest password accepted. It also drives the error text, so they can't disagree. */
 export const MIN_PASSWORD_LENGTH = 6;
@@ -66,7 +67,24 @@ export const TOAST_MS = 3000;
 export const STORAGE_KEYS = {
   cart: "shop_cart",
   reviews: "shop_reviews",
+  orders: "shop_orders",
 } as const;
+
+/**
+ * Orders: how long each status lasts, counted from when the order was placed (PRD P6.2). `satisfies` checks
+ * each status against the real type while keeping the table exact. Infinity means "from then on".
+ */
+export const ORDER_STATUS_STEPS = [
+  { status: "Processing", untilMs: 60_000 },
+  { status: "Shipped", untilMs: 180_000 },
+  { status: "Delivered", untilMs: Infinity },
+] as const satisfies readonly { status: OrderStatus; untilMs: number }[];
+
+/** Orders: how often an open page recalculates statuses. */
+export const ORDER_REFRESH_MS = 30_000;
+
+/** Checkout: the countries offered, with Georgia first as the default. */
+export const COUNTRIES = ["Georgia", "Armenia", "Azerbaijan", "Germany", "Turkey", "United States"] as const;
 
 /** Reviews: shortest accepted comment, after trimming spaces. */
 export const MIN_COMMENT_LENGTH = 10;

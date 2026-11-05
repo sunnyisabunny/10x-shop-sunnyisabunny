@@ -8,6 +8,7 @@
  */
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
+import type { OrderRecord, ShippingInfo } from "../types/order";
 import type { Review, StoredReviews } from "../types/product";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
@@ -62,6 +63,43 @@ export function parseCartState(value: unknown): CartState | null {
     return true;
   });
   return { items, promoCode: typeof value.promoCode === "string" ? value.promoCode : null };
+}
+
+/** Checks that every shipping field is present as text. */
+function isShippingInfo(value: unknown): value is ShippingInfo {
+  return (
+    isRecord(value) &&
+    typeof value.fullName === "string" &&
+    typeof value.email === "string" &&
+    typeof value.phone === "string" &&
+    typeof value.address === "string" &&
+    typeof value.city === "string" &&
+    typeof value.postalCode === "string" &&
+    typeof value.country === "string"
+  );
+}
+
+/** Checks that something is a usable saved order. */
+export function isOrderRecord(value: unknown): value is OrderRecord {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.id) &&
+    typeof value.number === "string" &&
+    Array.isArray(value.items) &&
+    value.items.every(isCartItem) &&
+    isShippingInfo(value.shipping) &&
+    typeof value.subtotal === "number" &&
+    typeof value.discount === "number" &&
+    typeof value.shippingCost === "number" &&
+    typeof value.total === "number" &&
+    typeof value.placedAt === "string" &&
+    !Number.isNaN(Date.parse(value.placedAt))
+  );
+}
+
+/** Turns saved orders into a usable list, dropping any that are broken. */
+export function parseOrders(value: unknown): OrderRecord[] | null {
+  return Array.isArray(value) ? value.filter(isOrderRecord) : null;
 }
 
 /** Checks that something is a usable review. */

@@ -38,6 +38,11 @@ export class Cart implements ICart {
     return code.trim().toUpperCase() === PROMO_CODE;
   }
 
+  /** The cart lines. A getter, so they can be read but the field itself stays private. */
+  get lines(): CartItem[] {
+    return this.items;
+  }
+
   /** Total units. Two of one product counts as 2. */
   get itemCount(): number {
     return this.items.reduce((count, item) => count + item.quantity, 0);
