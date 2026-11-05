@@ -1,4 +1,258 @@
-/* NOTE: the only global stylesheet. This one import brings in all of Tailwind v4, which then scans
-   the source files and generates just the utility classes they actually use.
-   Connects to: the `tailwindcss()` plugin in `vite.config.ts` and the import in `main.tsx`. */
+/* NOTE: the one global stylesheet: Tailwind, the fonts, the Night Vending design tokens, and the few
+   effects that utility classes can't express (neon glow, lit glass, rain).
+   Why it exists: PRD TW1 asks for `@import "tailwindcss"`, and TW5 asks for our own tokens in `@theme`.
+   Connects to: every component. A token here, such as `--color-steel`, becomes classes like `bg-steel`.
+
+   The palette rule: amber only ever means price, pink only ever means act. */
 @import "tailwindcss";
+
+/* Fonts are served from our own site, not Google's. That means no extra connection to another server
+   on first load, which helps Lighthouse. `swap` shows text in a fallback font straight away rather
+   than hiding it while the font downloads. */
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("/fonts/instrument-sans.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doto";
+  src: url("/fonts/doto.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Tilt Neon";
+  src: url("/fonts/tilt-neon.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "DotGothic16";
+  src: url("/fonts/dotgothic16-subset.woff2") format("woff2");
+  font-display: swap;
+}
+
+/* Colours that change with the theme are plain CSS variables. The light theme will override them,
+   and every component updates by itself, because its classes point at these variables. */
+:root {
+  --night-sky: #101829;
+  --night: #05070c;
+  --steel: #171c28;
+  --steel-raised: #202736;
+  --edge: #2f384a;
+  --edge-bright: #46526a;
+  --well: #0c1019;
+  --shelf: #1c2230;
+  --interior: #0a0e16;
+  --marquee: #0e121b;
+  --ink: #eef2f8;
+  --ink-soft: #a9b4c6;
+  --neon-core: #ffe3ea;
+  --neon-glow: 0 0 3px #ff2e63, 0 0 10px #ff2e63, 0 0 26px rgb(255 46 99 / 0.75), 0 0 60px rgb(255 46 99 / 0.35);
+  --machine-glow: rgb(170 205 255 / 0.12);
+  --sign-a: #ff5c86;
+  --sign-b: #ffb627;
+  color-scheme: dark;
+}
+
+/* `inline` makes each class use the variable itself, e.g. `.bg-steel { background: var(--steel) }`.
+   Without `inline` the class would freeze the value and the theme switch would not reach it. */
+@theme inline {
+  --color-night: var(--night);
+  --color-steel: var(--steel);
+  --color-steel-raised: var(--steel-raised);
+  --color-edge: var(--edge);
+  --color-edge-bright: var(--edge-bright);
+  --color-well: var(--well);
+  --color-shelf: var(--shelf);
+  --color-interior: var(--interior);
+  --color-marquee: var(--marquee);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+}
+
+@theme {
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-led: "Doto", ui-monospace, monospace;
+  --font-neon: "Tilt Neon", "Instrument Sans", sans-serif;
+  --font-dot: "DotGothic16", ui-monospace, monospace;
+
+  /* These stay the same in both themes. */
+  --color-pink: #ff2e63;
+  --color-pink-deep: #a5153c;
+  --color-on-pink: #12040a;
+  --color-led: #ffb627;
+  --color-led-soft: #dcaa45;
+  --color-led-panel: #0b0705;
+  --color-discount: #16c172;
+  --color-on-discount: #04190d;
+  --color-low-stock: #ff8a1f;
+  --color-on-low-stock: #1d0e00;
+  --color-sold-out: #d4152a;
+  --color-focus: #7fd4ff;
+
+  /* The spec says mobile is 480px and below, tablet 481-1024, desktop above 1024. Tailwind's `md` and
+     `lg` start at other widths, so these two match the spec exactly. They use 481px and 1025px because
+     a breakpoint applies "from this width up". `wide` is where the side panel fits. */
+  --breakpoint-tablet: 30.0625rem;
+  --breakpoint-desktop: 64.0625rem;
+  --breakpoint-wide: 75rem;
+
+  --animate-flicker: flicker 11s steps(1) infinite;
+
+  @keyframes flicker {
+    0%, 90%, 100% { opacity: 1; }
+    91% { opacity: 0.3; }
+    92% { opacity: 1; }
+    94% { opacity: 0.45; }
+    95% { opacity: 1; }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--night);
+  }
+  body {
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.45;
+    /* A very long word can't push the page sideways on a phone. */
+    overflow-wrap: anywhere;
+  }
+  /* A clear keyboard focus ring everywhere, in a colour that means nothing else. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* The wordmark. Colour and glow are variables, so the light theme can turn the glow off. */
+@utility neon {
+  font-family: var(--font-neon);
+  color: var(--neon-core);
+  text-shadow: var(--neon-glow);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Dot-matrix text for prices and counters. */
+@utility led-text {
+  font-family: var(--font-led);
+  font-weight: 900;
+  color: var(--color-led);
+}
+
+/* A slot's back wall: bright glass lit from above, ending in a metal shelf lip. Dark products stay
+   visible on it, and it is what the eye lands on first. */
+@utility lit-glass {
+  background: linear-gradient(180deg, #fbfdff 0%, #e8f0f7 58%, #bccbdb 100%);
+  box-shadow: inset 0 -8px 0 #8d9cad, inset 0 -9px 0 #5d6a7b;
+}
+
+@layer components {
+  /* The night street behind the machine. It is fixed to the window, so it stays put while the machine
+     scrolls, and it sits under everything so it can never catch a click. */
+  .street {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+      radial-gradient(70% 420px at 50% 100%, rgb(255 46 99 / 0.2), transparent 72%),
+      radial-gradient(80% 700px at 50% 0%, var(--night-sky), transparent 75%),
+      var(--night);
+  }
+
+  /* Distant signs. Only shown where there is empty space beside the machine. */
+  .sign {
+    position: absolute;
+    display: none;
+    writing-mode: vertical-rl;
+    font-family: var(--font-dot);
+    font-size: 46px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    opacity: 0.62;
+    filter: blur(0.6px);
+    text-shadow: 0 0 18px currentColor;
+  }
+  @media (min-width: 88rem) {
+    .sign {
+      display: block;
+    }
+  }
+
+  /* Rain: two layers of hairline streaks.
+     Why only `transform`: the browser can move a finished layer on the GPU without repainting it. The
+     CRM project once animated `background-position`, which repainted the whole screen 60 times a second.
+     Why each layer holds two identical copies: moving by exactly one copy's height loops with no jump. */
+  .rain {
+    position: absolute;
+    inset: -12% -6%;
+    transform: rotate(7deg);
+  }
+  .rain i {
+    position: absolute;
+    inset: -100% 0 auto;
+    height: 200%;
+    display: block;
+    will-change: transform;
+    animation: rain-fall 1.5s linear infinite;
+  }
+  .rain i.far {
+    opacity: 0.55;
+    animation-duration: 2.4s;
+  }
+  .rain i::before,
+  .rain i::after {
+    --s: linear-gradient(180deg, transparent, rgb(190 215 255 / 0.46));
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background-repeat: no-repeat;
+    background-image: var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s), var(--s);
+    background-size: 1px 90px, 1px 60px, 1px 120px, 1px 70px, 1px 100px, 1px 80px, 1px 60px, 1px 110px, 1px 70px, 1px 90px, 1px 120px, 1px 60px, 1px 80px, 1px 100px, 1px 70px, 1px 90px, 1px 60px, 1px 110px, 1px 80px, 1px 70px;
+    background-position: 3% 12%, 8% 58%, 13% 31%, 19% 83%, 24% 6%, 29% 47%, 35% 71%, 40% 22%, 46% 92%, 51% 38%, 57% 3%, 62% 66%, 67% 18%, 73% 79%, 78% 44%, 83% 9%, 88% 61%, 92% 27%, 96% 88%, 99% 50%;
+  }
+  .rain i::before {
+    top: 0;
+  }
+  .rain i::after {
+    top: 50%;
+  }
+  .rain i.far::before,
+  .rain i.far::after {
+    background-position: 6% 72%, 11% 19%, 16% 90%, 22% 41%, 27% 64%, 33% 11%, 38% 53%, 44% 28%, 49% 76%, 55% 15%, 60% 86%, 65% 36%, 70% 58%, 76% 4%, 81% 69%, 86% 33%, 90% 95%, 94% 48%, 97% 21%, 1% 40%;
+  }
+  /* The spec's mobile range: no rain on phones. */
+  @media (max-width: 30rem) {
+    .rain {
+      display: none;
+    }
+  }
+}
+
+@keyframes rain-fall {
+  to {
+    transform: translateY(50%);
+  }
+}
+
+/* Anyone who asks their system for less motion gets none. `display: none` also frees the rain's layers. */
+@media (prefers-reduced-motion: reduce) {
+  .rain {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
