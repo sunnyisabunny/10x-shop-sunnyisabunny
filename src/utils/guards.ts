@@ -11,6 +11,7 @@ import type { CartItem, CartState } from "../types/cart";
 import type { OrderRecord, ShippingInfo } from "../types/order";
 import type { Review, StoredReviews } from "../types/product";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
+import { PROMO_CODE } from "./constants";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -49,7 +50,8 @@ export function isCartItem(value: unknown): value is CartItem {
 
 /**
  * Turns saved data into a usable cart, keeping the good lines and dropping the rest. Repeated products are
- * dropped too, because the Cart page uses `productId` as its React key, and keys must be unique.
+ * dropped too, because the Cart page uses `productId` as its React key, and keys must be unique. Only the real
+ * promo code is kept: anyone can edit storage, and any other text would still earn the discount.
  */
 export function parseCartState(value: unknown): CartState | null {
   if (!isRecord(value) || !Array.isArray(value.items)) {
@@ -63,7 +65,7 @@ export function parseCartState(value: unknown): CartState | null {
     seen.add(item.productId);
     return true;
   });
-  return { items, promoCode: typeof value.promoCode === "string" ? value.promoCode : null };
+  return { items, promoCode: value.promoCode === PROMO_CODE ? PROMO_CODE : null };
 }
 
 /** The two themes. A union, so "dakr" doesn't compile. */
