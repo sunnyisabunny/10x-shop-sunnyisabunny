@@ -77,7 +77,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Runs after every cart change: remembers the newest items and saves them, so the cart survives a reload.
   useEffect(() => {
     latestItems.current = items;
-    localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(items));
+    // Saving can fail when storage is full or the visitor blocks site data. Without this catch, the error
+    // would crash the whole shop on load. The cart still works for this visit and is just not saved.
+    try {
+      localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(items));
+    } catch {
+      return;
+    }
   }, [items]);
 
   const addItem = useCallback((product: CartProductInput, quantity = 1): boolean => {
