@@ -47,6 +47,7 @@
   --marquee: #0e121b;
   --ink: #eef2f8;
   --ink-soft: #a9b4c6;
+  --error: #ff8b9e;
   --neon-core: #ffe3ea;
   --neon-glow: 0 0 3px #ff2e63, 0 0 10px #ff2e63, 0 0 26px rgb(255 46 99 / 0.75), 0 0 60px rgb(255 46 99 / 0.35);
   --machine-glow: rgb(170 205 255 / 0.12);
@@ -69,6 +70,7 @@
   --color-marquee: var(--marquee);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
+  --color-error: var(--error);
 }
 
 @theme {

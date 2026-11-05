@@ -4,7 +4,8 @@
  * Connects to: `Layout.tsx`, and React Router's NavLink for the "you are here" highlight.
  */
 import { useState } from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 /**
  * NavLink calls this with `isActive`, so the current page can be highlighted (PRD P0.1).
@@ -19,8 +20,18 @@ export default function Header() {
   /** Whether the phone menu is open. Above 480px the links always show, so this has no effect there. */
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const { user, isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
+
   /** Closes the phone menu after a tap. Without this it would stay open over the new page. */
   const closeMenu = () => setMenuOpen(false);
+
+  /** PRD P0.3: logging out returns to the catalog, and the cart is deliberately left alone. */
+  function handleLogout() {
+    closeMenu();
+    logout();
+    navigate("/");
+  }
 
   return (
     <header className="flex flex-wrap items-center gap-x-7 gap-y-2 bg-marquee px-3.5 py-2.5 shadow-[inset_0_1px_0_var(--edge-bright)] tablet:rounded-t-[18px] tablet:px-6 tablet:py-4">
@@ -56,9 +67,18 @@ export default function Header() {
         <NavLink to="/cart" onClick={closeMenu} className={navLinkClass}>
           Cart
         </NavLink>
-        <NavLink to="/login" onClick={closeMenu} className={navLinkClass}>
-          Log in
-        </NavLink>
+        {isLoggedIn ? (
+          <>
+            <span className="inline-flex min-h-11 items-center px-3 text-ink-soft">{user?.username}</span>
+            <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
+              Log out
+            </button>
+          </>
+        ) : (
+          <NavLink to="/login" onClick={closeMenu} className={navLinkClass}>
+            Log in
+          </NavLink>
+        )}
       </nav>
     </header>
   );

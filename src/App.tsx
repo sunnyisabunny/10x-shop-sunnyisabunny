@@ -5,15 +5,18 @@
  */
 import { BrowserRouter } from "react-router";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
+import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
   return (
     // This outer boundary catches a crash in the Header or Layout itself. Layout has its own for pages.
     <ErrorBoundary>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
