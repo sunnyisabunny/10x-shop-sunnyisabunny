@@ -7,6 +7,18 @@
  * could be extended uses `interface`. A union, an intersection or an alias uses `type`.
  */
 
+/** One review, from the API or written in this browser. */
+export interface Review {
+  rating: number;
+  comment: string;
+  /** An ISO date string, such as the one `new Date().toISOString()` gives. */
+  date: string;
+  reviewerName: string;
+}
+
+/** Reviews written in this browser, by product id. `Record` describes an object used as a lookup table. */
+export type StoredReviews = Record<string, Review[]>;
+
 /** One product, exactly as `GET /products/{id}` returns the fields this app uses. */
 export interface Product {
   id: number;
@@ -21,6 +33,7 @@ export interface Product {
   stock: number;
   thumbnail: string;
   images: string[];
+  reviews: Review[];
 }
 
 /** One entry from `GET /products/categories`. `slug` goes in URLs, `name` is what people read. */

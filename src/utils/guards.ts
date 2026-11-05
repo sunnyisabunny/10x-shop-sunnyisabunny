@@ -8,6 +8,7 @@
  */
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
+import type { Review, StoredReviews } from "../types/product";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -61,6 +62,33 @@ export function parseCartState(value: unknown): CartState | null {
     return true;
   });
   return { items, promoCode: typeof value.promoCode === "string" ? value.promoCode : null };
+}
+
+/** Checks that something is a usable review. */
+export function isReview(value: unknown): value is Review {
+  return (
+    isRecord(value) &&
+    typeof value.rating === "number" &&
+    value.rating >= 1 &&
+    value.rating <= 5 &&
+    typeof value.comment === "string" &&
+    typeof value.date === "string" &&
+    typeof value.reviewerName === "string"
+  );
+}
+
+/** Turns saved reviews into a map of product id to reviews, keeping only the good ones. */
+export function parseStoredReviews(value: unknown): StoredReviews | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const reviews: StoredReviews = {};
+  for (const [productId, list] of Object.entries(value)) {
+    if (Array.isArray(list)) {
+      reviews[productId] = list.filter(isReview);
+    }
+  }
+  return reviews;
 }
 
 /**

@@ -8,11 +8,14 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { productPath } from "../api/products.api";
 import Gallery from "../components/product/Gallery";
 import { PriceBlock, StockBadge } from "../components/product/PriceBlock";
+import RelatedProducts from "../components/product/RelatedProducts";
+import ReviewsPanel from "../components/product/ReviewsPanel";
 import Button from "../components/ui/Button";
 import StateMessage from "../components/ui/StateMessage";
 import Stepper from "../components/ui/Stepper";
 import { useAddToCart } from "../hooks/useAddToCart";
 import { useFetch } from "../hooks/useFetch";
+import { useReviews } from "../hooks/useReviews";
 import type { Product } from "../types/product";
 import { formatCategory } from "../utils/format";
 import NotFoundPage from "./NotFoundPage";
@@ -22,47 +25,76 @@ function cameFromCatalog(state: unknown): boolean {
   return typeof state === "object" && state !== null && "fromCatalog" in state && state.fromCatalog === true;
 }
 
-/** The product's details and controls. Split out so its quantity starts fresh for each product. */
+/** Which tab is showing. A union, so a typo like "review" doesn't compile. */
+type ProductTab = "description" | "reviews";
+
+/** The product's details and controls. Split out so its quantity and tab start fresh for each product. */
 function ProductDetails({ product }: { product: Product }) {
   const addToCart = useAddToCart();
   const isOut = product.stock === 0;
+  const { reviews, average, addReview } = useReviews(product);
 
   /** How many to add. The Stepper keeps it between 1 and the stock. */
   const [quantity, setQuantity] = useState(1);
 
+  const [tab, setTab] = useState<ProductTab>("description");
+
+  const tabStyles = (name: ProductTab) =>
+    `min-h-11 px-3.5 font-semibold ${tab === name ? "text-ink shadow-[inset_0_-2px_0_var(--color-pink)]" : "text-ink-soft hover:text-ink"}`;
+
   return (
-    <div className="grid gap-5 desktop:grid-cols-2 desktop:gap-7">
-      <Gallery title={product.title} images={product.images} discountPercentage={product.discountPercentage} />
+    <>
+      <div className="grid gap-5 desktop:grid-cols-2 desktop:gap-7">
+        <Gallery title={product.title} images={product.images} discountPercentage={product.discountPercentage} />
 
-      <div className="flex min-w-0 flex-col gap-3.5">
-        <div>
-          <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">{product.title}</h1>
-          <p className="mt-1.5 text-ink-soft">
-            {product.brand ? `${product.brand} · ` : ""}
-            <Link to={`/?category=${product.category}`} className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-ink">
-              {formatCategory(product.category)}
-            </Link>
-          </p>
-        </div>
+        <div className="flex min-w-0 flex-col gap-3.5">
+          <div>
+            <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">{product.title}</h1>
+            <p className="mt-1.5 text-ink-soft">
+              {product.brand ? `${product.brand} · ` : ""}
+              <Link to={`/?category=${product.category}`} className="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-ink">
+                {formatCategory(product.category)}
+              </Link>
+            </p>
+          </div>
 
-        <PriceBlock large price={product.price} discountPercentage={product.discountPercentage} />
+          <PriceBlock large price={product.price} discountPercentage={product.discountPercentage} />
 
-        <div className="flex flex-wrap items-center gap-3.5">
-          <span className="font-semibold">★ {product.rating.toFixed(1)}</span>
-          <StockBadge stock={product.stock} />
-        </div>
+          <div className="flex flex-wrap items-center gap-3.5">
+            <span className="font-semibold">
+              ★ {average.toFixed(1)} · {reviews.length === 1 ? "1 review" : `${reviews.length} reviews`}
+            </span>
+            <StockBadge stock={product.stock} />
+          </div>
 
-        <p className="max-w-[60ch]">{product.description}</p>
+          <p className="max-w-[60ch]">{product.description}</p>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Math.max keeps a valid range when stock is 0. The whole control is disabled then anyway. */}
-          <Stepper value={quantity} max={Math.max(product.stock, 1)} onChange={setQuantity} />
-          <Button disabled={isOut} onClick={() => addToCart(product, quantity)} className="flex-[1_1_200px]">
-            {isOut ? "Out of stock" : "Add to cart"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Math.max keeps a valid range when stock is 0. The whole control is disabled then anyway. */}
+            <Stepper value={quantity} max={Math.max(product.stock, 1)} onChange={setQuantity} />
+            <Button disabled={isOut} onClick={() => addToCart(product, quantity)} className="flex-[1_1_200px]">
+              {isOut ? "Out of stock" : "Add to cart"}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="mt-6">
+        <div role="tablist" aria-label="Product information" className="flex gap-1 border-b border-edge">
+          <button type="button" role="tab" aria-selected={tab === "description"} onClick={() => setTab("description")} className={tabStyles("description")}>
+            Description
+          </button>
+          <button type="button" role="tab" aria-selected={tab === "reviews"} onClick={() => setTab("reviews")} className={tabStyles("reviews")}>
+            Reviews ({reviews.length})
+          </button>
+        </div>
+        <div role="tabpanel">
+          {tab === "description" ? <p className="mt-3.5 max-w-[72ch]">{product.description}</p> : <ReviewsPanel reviews={reviews} onAdd={addReview} />}
+        </div>
+      </div>
+
+      <RelatedProducts category={product.category} productId={product.id} />
+    </>
   );
 }
 

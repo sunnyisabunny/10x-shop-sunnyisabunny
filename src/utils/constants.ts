@@ -65,4 +65,14 @@ export const TOAST_MS = 3000;
 /** The localStorage keys. `as const` makes each value its exact text, so a typo is a type error. */
 export const STORAGE_KEYS = {
   cart: "shop_cart",
+  reviews: "shop_reviews",
 } as const;
+
+/** Reviews: shortest accepted comment, after trimming spaces. */
+export const MIN_COMMENT_LENGTH = 10;
+
+/** Related products: how many to ask for. One extra, because the current product may be among them. */
+export const RELATED_FETCH_LIMIT = 5;
+
+/** Related products: how many to show. */
+export const RELATED_SHOW_LIMIT = 4;
