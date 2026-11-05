@@ -65,8 +65,7 @@ export default function ProfilePage() {
         phone: values.phone.trim(),
       };
       setValues(trimmed);
-      updateProfile(trimmed);
-      showToast("Changes saved ✓");
+      showToast(updateProfile(trimmed) ? "Changes saved ✓" : "Your changes could not be saved. Browser storage is full or blocked.");
     }
   }
 

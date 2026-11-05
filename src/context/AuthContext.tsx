@@ -9,6 +9,7 @@
  * this state with developer tools.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { StorageService } from "../models/StorageService";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
 import { STORAGE_KEYS } from "../utils/constants";
@@ -25,7 +26,8 @@ interface AuthContextValue {
   displayName: string | null;
   login: (username: string) => void;
   logout: () => void;
-  updateProfile: (profile: Profile) => void;
+  /** Saves the profile. Returns false if storage refused, so the page can say so. */
+  updateProfile: (profile: Profile) => boolean;
 }
 
 /** Starts as null so `useAuth` can notice when a component is used outside the provider. */
@@ -33,14 +35,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 /** Only the username is ever saved. There is no password to save, because login never keeps one. */
 const userStorage = new StorageService<AuthUser>(STORAGE_KEYS.user, parseAuthUser);
-const profileStorage = new StorageService<StoredProfiles>(STORAGE_KEYS.profiles, parseStoredProfiles);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   /** Who is logged in. Restored from storage, so a reload on /orders doesn't send you back to Login. */
   const [user, setUser] = useState<AuthUser | null>(() => userStorage.get());
 
   /** Everyone's saved profiles, by username, so logging out and back in keeps your details. */
-  const [profiles, setProfiles] = useState<StoredProfiles>(() => profileStorage.get() ?? {});
+  const [profiles, saveProfiles] = useLocalStorage<StoredProfiles>(STORAGE_KEYS.profiles, {}, parseStoredProfiles);
 
   // Saves the login whenever it changes. Logging out removes it.
   useEffect(() => {
@@ -58,17 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const username = user?.username ?? null;
 
   const updateProfile = useCallback(
-    (profile: Profile) => {
-      if (username === null) {
-        return;
-      }
-      setProfiles((current) => {
-        const next = { ...current, [username]: profile };
-        profileStorage.set(next);
-        return next;
-      });
-    },
-    [username],
+    (profile: Profile) => username !== null && saveProfiles({ ...profiles, [username]: profile }),
+    [username, profiles, saveProfiles],
   );
 
   /**
