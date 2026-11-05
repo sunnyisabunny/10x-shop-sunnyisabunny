@@ -31,11 +31,22 @@ Login is simulated, so there is no real account to find. Any username works with
 - Responsive layout at 375px, tablet and desktop, with no sideways scroll
 - 404 page and an Error Boundary
 
+### FULL
+- Search, category filter, five sort options and pagination, all kept in the URL, so refresh, Back and shared links work
+- Skeletons while loading, Retry on failure, and toast messages
+- Cart on `useReducer`, with the promo code `10X10`, free shipping from $100 and stock limits
+- Product tabs, reviews saved in the browser, and related products
+- Orders with a status that moves on by itself, order details and Reorder
+- Login on Formik and Yup, with simulated Sign Up and password reset
+- Profile page, a dark and light theme, and Clear local data
+- Every page loads on demand, and `memo` is used only where a measurement justified it
+
 ## Tech Stack
 
 - **React 19** with **TypeScript** in strict mode
 - **Tailwind CSS v4** through its Vite plugin
 - **React Router**
+- **Formik** and **Yup** for the login forms
 - **Vite**
 - **DummyJSON** for product data
 - **Vercel** for hosting
@@ -44,20 +55,23 @@ Login is simulated, so there is no real account to find. Any username works with
 
 ```
 src/
-  api/         requests to DummyJSON
+  api/         ApiClient and ApiError, plus the product requests
   types/       the shape of every kind of data
-  context/     shared state: login and cart
+  models/      classes: Cart, Order, StorageService
+  context/     shared state: login, cart, theme, toasts
+  hooks/       useFetch, useDebounce, useLocalStorage, useOrders and more
   routes/      the URL map and the login guard
-  pages/       one component per page
+  pages/       one component per page, each loaded on demand
   components/
-    ui/        buttons, form fields, messages, error boundary
+    ui/        buttons, form fields, spinner, messages, error boundary
     layout/    the shared frame and header
-    product/   cards, grid, prices, gallery
+    product/   cards, grid, prices, gallery, toolbar, reviews
     cart/      cart lines, totals, checkout form
-  utils/       constants, formatting, validation
+    order/     status badge and timeline
+  utils/       constants, formatting, validation, URL rules, type guards
 ```
 
-**How data flows:** a user action calls an event handler, which updates state with `useState` or a Context function. State updates are immutable, so React sees a new value and redraws. Product data comes from `useEffect`, and the loading, error and empty states are chosen by conditional rendering.
+**How data flows:** a user action calls an event handler, which updates state. The cart goes through a reducer, so every change follows one set of rules, and an effect then saves the result. Filters, sorting and the page number live in the URL rather than in state, so the URL is the single source of truth, and `useFetch` loads whatever it describes. A newer request cancels an older one with `AbortController`, so a slow answer can't overwrite a newer one.
 
 Every file and block has a written note beside it explaining what it does, why it is done that way, and what breaks without it.
 
@@ -85,8 +99,10 @@ npm run dev
 - [`PLAN.md`](PLAN.md): the plan, written before any feature code
 - [`REPORT.md`](REPORT.md): planned against delivered
 - [`DEBUG-LOG.md`](DEBUG-LOG.md): real bugs and how they were found and fixed
+- [`COMPATIBILITY.md`](COMPATIBILITY.md): results per page, browser and device
 - [`ai-log.md`](ai-log.md): how AI was used
 - [`docs/CONFIG-NOTES.md`](docs/CONFIG-NOTES.md): what each config file does and why
+- [Projects board](https://github.com/users/sunnyisabunny/projects/1): the task list, with every Issue
 
 ## Credits
 

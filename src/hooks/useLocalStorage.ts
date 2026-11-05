@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { StorageService } from "../models/StorageService";
 
+/** Returns `[value, save, remove]`. `parse` checks what comes out of storage, since anyone can edit it. */
 export function useLocalStorage<T>(key: string, initial: T, parse: (value: unknown) => T | null): [T, (value: T) => boolean, () => void] {
   /**
    * A useState initialiser runs only on the first render, so the service is created once and kept. The second

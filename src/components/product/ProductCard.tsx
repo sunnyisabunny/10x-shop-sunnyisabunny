@@ -6,6 +6,7 @@
  *
  * On a phone the card is a sideways shelf row (grid areas). From tablet width up it stacks vertically.
  */
+import { memo } from "react";
 import { Link, useLocation } from "react-router";
 import type { Product } from "../../types/product";
 import { formatCategory } from "../../utils/format";
@@ -21,7 +22,14 @@ export interface ProductCardProps {
   onAdd: (product: Product) => void;
 }
 
-export default function ProductCard({ product, code, onAdd }: ProductCardProps) {
+/**
+ * Wrapped in `memo` further down, because it was measured first: without it, one Add to cart redrew all 12 cards,
+ * even though only the Header's counter had changed. See DEBUG-LOG.md. `memo` skips a redraw when the props are the
+ * same. That only works because `onAdd` keeps its identity (`useCallback` in `useAddToCart`) and `product` comes
+ * from a list that doesn't change. Typing in Search and switching theme didn't redraw the cards at all, so nothing
+ * else here needs `memo`.
+ */
+function ProductCard({ product, code, onAdd }: ProductCardProps) {
   const isOut = product.stock === 0;
 
   /** Where this card is. The product page uses it to know whether "Back to catalog" can just go back. */
@@ -103,3 +111,5 @@ export default function ProductCard({ product, code, onAdd }: ProductCardProps) 
     </article>
   );
 }
+
+export default memo(ProductCard);

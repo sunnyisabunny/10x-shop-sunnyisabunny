@@ -15,6 +15,7 @@ export interface UseCatalogParamsResult {
   change: (change: CatalogChange) => void;
 }
 
+/** Reads the filters from the URL and changes them through one function, so the URL stays the only source of truth. */
 export function useCatalogParams(): UseCatalogParamsResult {
   const [searchParams, setSearchParams] = useSearchParams();
 

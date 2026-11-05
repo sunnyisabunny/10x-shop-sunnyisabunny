@@ -4,8 +4,10 @@
  * Connects to: `routes/AppRoutes.tsx` makes this the parent route, and `<Outlet />` is where the
  * current page appears.
  */
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router";
 import ErrorBoundary from "../ui/ErrorBoundary";
+import Spinner from "../ui/Spinner";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
 
@@ -59,7 +61,11 @@ export default function Layout() {
               message would stay on screen on every page you visit next. */}
           <main className="min-h-[50vh]">
             <ErrorBoundary key={pathname}>
-              <Outlet />
+              {/* The one Suspense the PRD asks for: pages load on demand, and this is what shows meanwhile. It sits
+                  inside the boundary, so a page whose code fails to download shows the error fallback. */}
+              <Suspense fallback={<Spinner />}>
+                <Outlet />
+              </Suspense>
             </ErrorBoundary>
           </main>
           <Footer />

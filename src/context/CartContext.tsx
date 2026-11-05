@@ -45,6 +45,7 @@ function loadCart(): CartState {
   return cartStorage.get() ?? { items: [], promoCode: null };
 }
 
+/** Owns the cart: runs the reducer, saves after every change, and gives everyone the same totals and functions. */
 export function CartProvider({ children }: { children: ReactNode }) {
   /** The third argument is the lazy init: the reducer starts from whatever is saved. */
   const [state, dispatch] = useReducer(cartReducer, undefined, loadCart);

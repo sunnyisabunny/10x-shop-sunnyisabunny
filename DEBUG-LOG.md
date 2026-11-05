@@ -189,3 +189,80 @@ list only grows when a real bug turns up.
 **Fix:** [`08e6a23`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/08e6a23): `useLocalStorage` listens for the browser's `storage` event, which fires in the other tabs after a change, and updates its copy. The effect's cleanup removes the listener.
 
 **What it taught:** localStorage is shared between tabs, but React state isn't. Any state copied from it can go out of date without anything in that tab having changed.
+
+---
+
+## 11. One Add to cart redrew all 12 product cards
+
+**Symptom:** nothing looked wrong on screen. The problem only shows when you count renders: pressing Add to cart on one card redrew all 12, even though only the Header's counter had changed.
+
+**Reproduce:**
+1. Open the catalog on the dev build, with React DevTools' Profiler recording.
+2. Press Add to cart on one card.
+3. Stop recording and look at which components rendered.
+
+**Tool:** a render counter that reads the same `PerformedWork` flag as the React DevTools Profiler. It reported `ProductCard 12, PriceBlock 12, StockBadge 12`. The same run showed that typing in Search and switching theme didn't redraw any card, so I didn't add `memo` for those.
+
+**Root cause:** `ProductGrid` uses the cart context through `useAddToCart`, so it redraws whenever the cart changes. A plain component redraws whenever its parent does, even if its props are identical.
+
+**Fix:** [`3198996`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/3198996): `memo(ProductCard)`. It works because `useAddToCart` already returns a stable function. After the fix, the same counter reports `ProductCard 0`.
+
+**What it taught:** measure first. The counter showed one component worth wrapping, which is far less work and far less risk than wrapping everything.
+
+---
+
+## 12. The SPA rewrite answered `/robots.txt` with the app's HTML
+
+**Symptom:** Lighthouse's SEO score was stuck at 92, with `robots.txt is not valid: 28 errors found`. The project had no such file, yet the request came back with status 200.
+
+**Reproduce:**
+1. Build and serve the app.
+2. Open `/robots.txt`.
+3. See the app's `index.html` instead of a robots file.
+
+**Tool:** the Lighthouse report, then the Network tab. Its response was HTML, and each of the 28 "errors" was one line of that HTML.
+
+**Root cause:** the rewrite that makes `/products/5` survive a reload sends every unknown path to `index.html`. That is right for pages, but a crawler asking for `robots.txt` gets a web page instead of a 404, and treats it as a broken robots file.
+
+**Fix:** [`be13277`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/be13277): a real `public/robots.txt`. Vercel and Vite both serve a file that exists before applying the rewrite.
+
+**What it taught:** a catch-all rewrite also catches things that aren't pages.
+
+---
+
+## 13. TypeScript caught a success message that would always have failed
+
+**Symptom:** none in the browser, because the code never ran. `tsc` stopped the build with `error TS1345: An expression of type 'void' cannot be tested for truthiness` in `ProfilePage.tsx`.
+
+**Reproduce:**
+1. Let `updateProfile` in `AuthContext` return nothing.
+2. In `ProfilePage`, write `showToast(updateProfile(trimmed) ? "Changes saved ✓" : "...could not be saved...")`.
+3. Run `npm run typecheck`.
+
+**Tool:** the TypeScript compiler, the first debugger the PRD names.
+
+**Root cause:** I changed the page to read the result of saving before `updateProfile` actually returned one. My edit to `AuthContext` had failed to apply, and I hadn't noticed. In plain JavaScript this would have run with no error, and `undefined` is falsy, so every save would have said it failed, even when it worked.
+
+**Fix:** [`08e6a23`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/08e6a23): `updateProfile` returns the boolean from saving, and its type says so.
+
+**What it taught:** giving a function an honest return type turns "the wrong message at runtime" into "this doesn't compile".
+
+---
+
+## 14. Lazy loading made the footer jump, and my first fix did nothing
+
+**Symptom:** after adding lazy routes, Lighthouse's layout shift on the catalog went from 0.001 to 0.114, over the PRD's limit of 0.1. Its report named the `<footer>` as the element that moved.
+
+**Reproduce:**
+1. Check out the fix's commit and delete the `main:has(.page-spinner) + footer` rule from `index.css`, because lazy routes and the fix went in together.
+2. Build it and serve it.
+3. Run Lighthouse with the mobile preset on `/`.
+4. Read Cumulative Layout Shift and the "layout shifts" list.
+
+**Tool:** Lighthouse's layout shifts audit for the cause, and the same audit again to catch the first fix failing.
+
+**Root cause:** while a page's code downloads, the spinner is short, so the footer sits in the middle of the screen. When the page arrives, the footer is pushed far down, and that move is what gets measured. My first fix was `main:has(.page-spinner) + footer { display: none }` inside `@layer components`, and the score didn't change at all. The footer also has Tailwind's `flex` class, and in CSS layers the utilities layer beats the components layer whatever the selector's weight, so my rule lost every time.
+
+**Fix:** [`4dc4027`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/4dc4027): the same rule, outside any layer. Layout shift on the catalog is now 0.
+
+**What it taught:** an improvement can make another number worse, so measure again afterwards. Also, in Tailwind v4 a rule's layer matters more than how specific its selector is.

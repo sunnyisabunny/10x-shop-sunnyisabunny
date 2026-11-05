@@ -25,6 +25,8 @@ export default function Gallery({ title, images, discountPercentage }: GalleryPr
           alt={title}
           width={1000}
           height={1000}
+          /* The largest thing on this page, so it is what Lighthouse times as LCP. This asks the browser to fetch it first. */
+          fetchPriority="high"
           className="aspect-square h-auto w-[86%] max-w-full object-contain"
         />
       </div>

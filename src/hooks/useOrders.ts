@@ -21,6 +21,7 @@ export interface UseOrdersResult {
   clearOrders: () => void;
 }
 
+/** Reads the saved orders and adds new ones. `records` stays as plain data, and `orders` wraps it in the `Order` class. */
 export function useOrders(): UseOrdersResult {
   const [records, setRecords, clearOrders] = useLocalStorage<OrderRecord[]>(STORAGE_KEYS.orders, [], parseOrders);
 
