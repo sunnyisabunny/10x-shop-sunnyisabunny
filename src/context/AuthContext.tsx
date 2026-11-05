@@ -15,6 +15,9 @@ import type { AuthUser, Profile, StoredProfiles } from "../types/user";
 import { STORAGE_KEYS } from "../utils/constants";
 import { parseAuthUser, parseStoredProfiles } from "../utils/guards";
 
+/** What Sign Up did. A union of exact words, so the page has to deal with each outcome by name. */
+export type SignUpResult = "created" | "taken" | "email-not-saved";
+
 /** Everything components get from `useAuth()`. */
 interface AuthContextValue {
   /** The logged-in user, or null for a guest. */
@@ -26,7 +29,7 @@ interface AuthContextValue {
   displayName: string | null;
   login: (username: string) => void;
   /** Logs in and remembers the email. No password goes in, so there is none that could be saved. */
-  signUp: (username: string, email: string) => void;
+  signUp: (username: string, email: string) => SignUpResult;
   logout: () => void;
   /** Saves the profile. Returns false if storage refused, so the page can say so. */
   updateProfile: (profile: Profile) => boolean;
@@ -54,19 +57,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
+  // Follows a login or logout in another tab, so two tabs can't disagree about who is using the shop. Saving the
+  // same value again fires no event, so the effect above can't start an endless loop between tabs.
+  useEffect(() => {
+    function handleStorage(event: StorageEvent) {
+      if (event.key === STORAGE_KEYS.user || event.key === null) {
+        setUser(userStorage.get());
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   /** `useCallback` keeps the same function between renders, so memoised children don't redraw needlessly. */
   const login = useCallback((username: string) => setUser({ username }), []);
   const logout = useCallback(() => setUser(null), []);
 
   /**
-   * Keeps an existing profile's other details, and starts the rest empty. If saving the email fails, the login
-   * still works, because it lives in React state. The email can be typed again on Profile.
+   * Refuses a username that already has a profile here, so signing up can't overwrite someone's details. If saving
+   * the email fails, the login still works, because it lives in React state, and the page says what was lost.
    */
   const signUp = useCallback(
-    (username: string, email: string) => {
-      const existing = Object.hasOwn(profiles, username) ? profiles[username] : { firstName: "", lastName: "", phone: "" };
-      saveProfiles({ ...profiles, [username]: { ...existing, email } });
+    (username: string, email: string): SignUpResult => {
+      if (Object.hasOwn(profiles, username)) {
+        return "taken";
+      }
+      const saved = saveProfiles({ ...profiles, [username]: { firstName: "", lastName: "", email, phone: "" } });
       setUser({ username });
+      return saved ? "created" : "email-not-saved";
     },
     [profiles, saveProfiles],
   );

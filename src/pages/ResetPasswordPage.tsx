@@ -6,7 +6,7 @@
  */
 import { useFormik } from "formik";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import AuthCard, { authLinkStyles } from "../components/ui/AuthCard";
 import { buttonStyles } from "../components/ui/Button";
 import FormField from "../components/ui/FormField";
@@ -14,6 +14,8 @@ import type { ResetPasswordValues } from "../types/user";
 import { resetPasswordSchema } from "../utils/authSchemas";
 
 export default function ResetPasswordPage() {
+  const location = useLocation();
+
   /** Whether the form was submitted with a valid email, which swaps in the fixed line. */
   const [submitted, setSubmitted] = useState(false);
 
@@ -40,7 +42,8 @@ export default function ResetPasswordPage() {
           </button>
         </form>
       )}
-      <Link to="/login" className={authLinkStyles}>
+      {/* `state` hands back the `from` that LoginPage passed here, so the detour doesn't lose the way to Checkout. */}
+      <Link to="/login" state={location.state} className={authLinkStyles}>
         ← Back to login
       </Link>
     </AuthCard>

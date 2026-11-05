@@ -5,7 +5,7 @@
  * Connects to: `AuthContext` (login), `authSchemas.ts` (rules), `ProtectedRoute` (sends `from`).
  */
 import { useFormik } from "formik";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 import AuthCard, { authLinkStyles } from "../components/ui/AuthCard";
 import { buttonStyles } from "../components/ui/Button";
 import FormField from "../components/ui/FormField";
@@ -17,9 +17,8 @@ import { MIN_PASSWORD_LENGTH } from "../utils/constants";
 import { readFromPath } from "../utils/guards";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, isLoggedIn } = useAuth();
   const { showToast } = useToast();
-  const navigate = useNavigate();
   const location = useLocation();
 
   /**
@@ -35,12 +34,18 @@ export default function LoginPage() {
       const name = username.trim();
       login(name);
       showToast(`Logged in as ${name}.`);
-      navigate(readFromPath(location.state), { replace: true });
     },
   });
 
   /** A field's error, shown only after it has been visited, so an untouched form isn't already red. */
   const errorFor = (name: keyof LoginFormValues) => (formik.touched[name] ? formik.errors[name] : undefined);
+
+  // Once logged in, this page has nothing to offer, so it sends you on. This one line covers both cases: the
+  // moment after submitting, and someone already logged in pressing Back or opening /login directly.
+  // `replace` swaps this URL in history, so Back doesn't land here again.
+  if (isLoggedIn) {
+    return <Navigate to={readFromPath(location.state)} replace />;
+  }
 
   return (
     <AuthCard title="Log in">
@@ -56,11 +61,11 @@ export default function LoginPage() {
       </form>
       <p className="text-[13px] text-ink-soft">This login is simulated. Any username works, with a password of at least {MIN_PASSWORD_LENGTH} characters.</p>
       <div className="flex flex-wrap justify-between gap-x-4">
-        {/* `state` passes `from` along, so someone who signs up still gets back to Checkout. */}
+        {/* `state` passes `from` along, so either detour still ends back at Checkout. */}
         <Link to="/signup" state={location.state} className={authLinkStyles}>
           Create an account
         </Link>
-        <Link to="/reset-password" className={authLinkStyles}>
+        <Link to="/reset-password" state={location.state} className={authLinkStyles}>
           Forgot your password?
         </Link>
       </div>

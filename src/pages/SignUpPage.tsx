@@ -8,7 +8,7 @@
  * works on Login, as the page there says.
  */
 import { useFormik } from "formik";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 import AuthCard, { authLinkStyles } from "../components/ui/AuthCard";
 import { buttonStyles } from "../components/ui/Button";
 import FormField from "../components/ui/FormField";
@@ -19,24 +19,34 @@ import { signUpSchema } from "../utils/authSchemas";
 import { readFromPath } from "../utils/guards";
 
 export default function SignUpPage() {
-  const { signUp } = useAuth();
+  const { signUp, isLoggedIn } = useAuth();
   const { showToast } = useToast();
-  const navigate = useNavigate();
   const location = useLocation();
 
-  /** The same pattern as `LoginPage`. `async` lets Formik end `isSubmitting` by itself. */
+  /**
+   * The same pattern as `LoginPage`. `async` lets Formik end `isSubmitting` by itself. A taken username is shown
+   * under its field with `setFieldError`, because the schema can't know which usernames exist here.
+   */
   const formik = useFormik<SignUpFormValues>({
     initialValues: { username: "", email: "", password: "", confirmPassword: "" },
     validationSchema: signUpSchema,
-    onSubmit: async ({ username, email }) => {
-      signUp(username.trim(), email.trim());
-      showToast("Account created ✓");
-      navigate(readFromPath(location.state), { replace: true });
+    onSubmit: async ({ username, email }, helpers) => {
+      const result = signUp(username.trim(), email.trim());
+      if (result === "taken") {
+        helpers.setFieldError("username", "That username is already taken in this browser. Log in instead.");
+      } else {
+        showToast(result === "created" ? "Account created ✓" : "Account created, but your email could not be saved. Browser storage is full or blocked.");
+      }
     },
   });
 
   /** A field's error, shown only after it has been visited. */
   const errorFor = (name: keyof SignUpFormValues) => (formik.touched[name] ? formik.errors[name] : undefined);
+
+  // The same one-line rule as `LoginPage`: once logged in, move on.
+  if (isLoggedIn) {
+    return <Navigate to={readFromPath(location.state)} replace />;
+  }
 
   return (
     <AuthCard title="Create an account">
