@@ -10,7 +10,7 @@ import type { ShippingInfo } from "../../types/order";
 import { COUNTRIES } from "../../utils/constants";
 import { hasNoErrors, validateCheckout, type FieldErrors } from "../../utils/validation";
 import { buttonStyles } from "../ui/Button";
-import FormField, { inputStyles } from "../ui/FormField";
+import FormField, { FieldError, inputStyles } from "../ui/FormField";
 
 interface CheckoutFormProps {
   /** Called only with values that passed validation. */
@@ -72,14 +72,14 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="grid gap-3.5 self-start rounded-[10px] bg-steel-raised p-4 shadow-[inset_0_0_0_1px_var(--edge)]">
+    <form onSubmit={handleSubmit} noValidate className="grid gap-2 self-start rounded-[10px] bg-steel-raised p-4 shadow-[inset_0_0_0_1px_var(--edge)]">
       <FormField id="fullName" name="fullName" label="Full name" autoComplete="name" value={values.fullName} onChange={handleChange} onBlur={handleBlur} error={errors.fullName} />
-      <div className="grid gap-3.5 tablet:grid-cols-2">
+      <div className="grid gap-x-3.5 gap-y-2 md:grid-cols-2">
         <FormField id="email" name="email" label="Email" type="email" autoComplete="email" value={values.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} />
         <FormField id="phone" name="phone" label="Phone" type="tel" autoComplete="tel" value={values.phone} onChange={handleChange} onBlur={handleBlur} error={errors.phone} />
       </div>
       <FormField id="address" name="address" label="Address" autoComplete="street-address" value={values.address} onChange={handleChange} onBlur={handleBlur} error={errors.address} />
-      <div className="grid gap-3.5 tablet:grid-cols-2">
+      <div className="grid gap-x-3.5 gap-y-2 md:grid-cols-2">
         <FormField id="city" name="city" label="City" autoComplete="address-level2" value={values.city} onChange={handleChange} onBlur={handleBlur} error={errors.city} />
         <FormField id="postalCode" name="postalCode" label="Postal code" autoComplete="postal-code" value={values.postalCode} onChange={handleChange} onBlur={handleBlur} error={errors.postalCode} />
       </div>
@@ -105,11 +105,7 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
             </option>
           ))}
         </select>
-        {errors.country !== undefined && (
-          <p id="country-error" className="text-[13px] font-semibold text-error">
-            {errors.country}
-          </p>
-        )}
+        <FieldError id="country-error" message={errors.country} />
       </div>
       {failure !== null && (
         <p role="alert" className="font-semibold text-error">

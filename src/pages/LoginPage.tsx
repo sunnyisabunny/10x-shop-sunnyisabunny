@@ -63,7 +63,7 @@ export default function LoginPage() {
       <div className="grid w-full max-w-[420px] gap-4 rounded-[10px] bg-steel-raised p-5 shadow-[inset_0_0_0_1px_var(--edge)]">
         <h1 className="text-3xl leading-tight font-bold">Log in</h1>
         {/* noValidate turns off the browser's own popups, so our exact error texts are the ones shown. */}
-        <form onSubmit={handleSubmit} noValidate className="grid gap-3.5">
+        <form onSubmit={handleSubmit} noValidate className="grid gap-2">
           <FormField
             id="username"
             name="username"

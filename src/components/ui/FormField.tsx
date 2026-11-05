@@ -9,7 +9,21 @@ import type { InputHTMLAttributes } from "react";
 
 /** The inset field look. Exported so selects and text areas can share it. */
 export const inputStyles =
-  "h-11 w-full rounded-md border-0 bg-well px-3 text-[15px] text-ink shadow-[inset_0_2px_5px_rgb(0_0_0/0.35),inset_0_0_0_1px_var(--edge)] placeholder:text-ink-soft focus:shadow-[inset_0_0_0_2px_var(--color-focus)] aria-invalid:shadow-[inset_0_0_0_2px_var(--color-sold-out)]";
+  "h-11 w-full rounded-md border-0 bg-well px-3 text-[15px] text-ink shadow-[inset_0_2px_5px_rgb(0_0_0/0.14),inset_0_0_0_1px_var(--edge-bright)] placeholder:text-ink-soft focus:shadow-[inset_0_0_0_2px_var(--color-focus)] aria-invalid:shadow-[inset_0_0_0_2px_var(--color-sold-out)]";
+
+/**
+ * A field's error line. It is always on the page and keeps its height when empty. Without that, an error
+ * appearing or disappearing moves everything below it. Leaving a field is what triggers the check, so this
+ * happens in the middle of a click: the button slides away between mouse down and mouse up, and the click
+ * is lost. See DEBUG-LOG.md. `grid-cols-2` in the forms starts at `md`, where every message fits on one line.
+ */
+export function FieldError({ id, message }: { id: string; message?: string }) {
+  return (
+    <p id={id} className="min-h-[18px] text-[13px] leading-[18px] font-semibold text-error">
+      {message}
+    </p>
+  );
+}
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Connects the label to the input. Clicking the label focuses the field, and screen readers read it. */
@@ -35,11 +49,7 @@ export default function FormField({ id, label, error, ...inputProps }: FormField
         aria-describedby={error !== undefined ? errorId : undefined}
         {...inputProps}
       />
-      {error !== undefined && (
-        <p id={errorId} className="text-[13px] font-semibold text-error">
-          {error}
-        </p>
-      )}
+      <FieldError id={errorId} message={error} />
     </div>
   );
 }
