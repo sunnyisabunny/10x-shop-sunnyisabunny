@@ -22,3 +22,24 @@ export function discountedPrice(price: number, discountPercentage: number): numb
 export function formatPrice(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 }
+
+/** Turns the API's "mobile-accessories" into "Mobile accessories" for display. */
+export function formatCategory(slug: string): string {
+  const words = slug.replaceAll("-", " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/**
+ * The machine's slot label for a position in the grid: A1, A2, A3, A4, B1 and so on, four to a row.
+ * Past row Z it continues with AA, like spreadsheet columns, because Endless mode can show all 194.
+ */
+export function slotCode(index: number): string {
+  const SLOTS_PER_ROW = 4;
+  let row = Math.floor(index / SLOTS_PER_ROW);
+  let letters = "";
+  do {
+    letters = String.fromCharCode(65 + (row % 26)) + letters;
+    row = Math.floor(row / 26) - 1;
+  } while (row >= 0);
+  return `${letters}${(index % SLOTS_PER_ROW) + 1}`;
+}
