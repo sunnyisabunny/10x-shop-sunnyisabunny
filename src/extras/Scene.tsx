@@ -28,8 +28,8 @@ function NightParts() {
   return (
     <div className="scene-night">
       <Part sprite="train" className="scene-train" />
-      <i className="scene-part scene-car scene-car-away" />
-      <i className="scene-part scene-car scene-car-toward" />
+      <Part sprite="car-small" className="scene-car-far" />
+      <Part sprite="car-taxi" className="scene-car-near" />
       <i className="scene-part scene-beacon scene-beacon-a" />
       <i className="scene-part scene-beacon scene-beacon-b" />
       <i className="scene-part scene-dying-sign" />

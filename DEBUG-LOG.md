@@ -329,3 +329,22 @@ So the new products went into the list, then React replayed the waiting presses 
 
 **What it taught:** a failure in one browser can be two things at once. Those tests can't run on this build, but the reason they couldn't showed a real gap. And Error Boundaries only cover rendering, so a click handler has to look after itself.
 
+---
+
+## 18. The street's cars were invisible
+
+**Symptom:** at night the road looked empty. I spotted it myself on the live site: each car was only two small lights sliding along, with nothing around them.
+
+**Reproduce:**
+1. Check out `f46de75`, build it and serve it.
+2. Open `/orders` in the dark theme on a wide screen, so the road shows below the machine.
+3. Wait for the lights to cross the bottom of the window. There is no car around them.
+
+**Tool:** my own eyes. All the browser checks passed, because they only asked whether the street's parts moved cheaply. Then a screenshot with each car's animation paused in the middle of the road, which made it obvious.
+
+**Root cause:** the CSS gave each car two radial gradients and nothing else. Its note said "Headlights and taillights are just gradients, so they need no image". That saved a file and never drew a car. On a dark road, two dots read as nothing.
+
+**Fix:** [`9536c63`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/9536c63): each car is now a drawing with a body, lit windows and a headlight beam, and it still moves with `transform` only. The lanes also run the way they do in Japan, with the near lane going left.
+
+**What it taught:** a check that something moves correctly says nothing about whether anyone can see it. Over 150 checks passed on the extras, and a person looking at the page found this in seconds.
+

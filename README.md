@@ -59,7 +59,7 @@ Fun features nobody asked for. Each one lives in `src/extras`, nothing required 
 - A street behind the machine: a Tokyo street at night, and a small Japanese port town by day, with koi, gulls and boats. It is drawn as SVG, and phones don't download it
 - Background sound for each theme, generated in the browser. It stays off until you press the speaker
 - An LED ticker under the header, whose free-shipping line reads the real cart
-- A night-shift cat on top of the machine, which wakes when something is added to the cart
+- A night-shift cat on top of the machine, which wakes when something is added to the cart, and jumps if you click it or shake the machine
 - A product falls from its slot into a pickup tray at the bottom of the machine
 - A receipt prints after an order. It charges nothing, and says so
 - A small truck crosses a strip under an order's timeline, in step with its status

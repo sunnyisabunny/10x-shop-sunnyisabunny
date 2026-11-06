@@ -20,7 +20,7 @@ Checks passed on the final production build, with 0 failures. The counts differ 
 | FULL features | 206 | 206 | 206 |
 | Quality | 61 | 59 | 59 |
 | BONUS features | 195 | 195 | 195 |
-| Extras | 168 | 163 | 147 |
+| Extras | 195 | 190 | 174 |
 
 The Chromium column also passed on the live site.
 
