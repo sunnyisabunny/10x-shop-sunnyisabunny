@@ -5,7 +5,7 @@
  */
 import { Link } from "react-router";
 import type { AsyncState } from "../../types/api";
-import type { ProductsResponse } from "../../types/product";
+import type { ProductSummary, ProductsResponse } from "../../types/product";
 import { PAGE_SIZE } from "../../utils/constants";
 import type { CatalogView } from "../../utils/url";
 import Button, { buttonStyles } from "../ui/Button";
@@ -14,7 +14,7 @@ import Pagination from "./Pagination";
 import ProductGrid, { ProductGridSkeleton } from "./ProductGrid";
 
 interface CatalogResultsProps {
-  state: AsyncState<ProductsResponse>;
+  state: AsyncState<ProductsResponse<ProductSummary>>;
   page: number;
   view: CatalogView;
   onRetry: () => void;
@@ -42,7 +42,7 @@ export default function CatalogResults({ state, page, view, onRetry, onPageChang
   // Products exist but not on this page, as with an old link to ?page=99. "No products found" would be false.
   if (products.length === 0 && total > 0) {
     return (
-      <StateMessage title={`This page is past the end of the list. There are ${totalPages} pages.`}>
+      <StateMessage title={`This page is past the end of the list. ${totalPages === 1 ? "There is 1 page." : `There are ${totalPages} pages.`}`}>
         <Button variant="quiet" onClick={() => onPageChange(totalPages)}>
           Go to the last page
         </Button>

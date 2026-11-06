@@ -1,7 +1,7 @@
 /**
  * NOTE: the Catalog page: search, filter, sort and browse products (PRD P2).
  * Why it exists: this is the shop's front page, and the first thing a visitor sees.
- * Connects to: `useCatalogParams` (the URL), `useFetch` (data), `CatalogToolbar` and `CatalogResults` (drawing).
+ * Connects to: `useCatalogParams` (the URL), `useCatalogProducts` (data), `CatalogToolbar` and `CatalogResults` (drawing).
  *
  * The URL is the single source of truth. A change goes: control -> URL -> `params` -> API path -> new data.
  * That is why refresh, Back/Forward and shared links all restore the same view with no extra code.
@@ -10,17 +10,16 @@ import { useRef } from "react";
 import CatalogResults from "../components/product/CatalogResults";
 import CatalogToolbar from "../components/product/CatalogToolbar";
 import { useCatalogParams } from "../hooks/useCatalogParams";
-import { useFetch } from "../hooks/useFetch";
-import type { ProductsResponse } from "../types/product";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 import { formatItemCount } from "../utils/format";
-import { buildProductsUrl } from "../utils/url";
+import { hasPriceRange } from "../utils/url";
 
 export default function CatalogPage() {
   const { params, change } = useCatalogParams();
 
-  // The path comes from the URL, so a new filter means a new path, and useFetch cancels the old
+  // What to load comes from the URL, so a new filter means a new path, and useFetch cancels the old
   // request and starts the new one by itself.
-  const { state, retry } = useFetch<ProductsResponse>(buildProductsUrl(params));
+  const { state, retry } = useCatalogProducts(params);
 
   /** The page heading, so keyboard focus has somewhere sensible to go after changing page. */
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -53,6 +52,7 @@ export default function CatalogPage() {
       <div className="px-1 tablet:px-0">
         <CatalogToolbar params={params} onChange={change} />
         {isPriceSort && <p className="mt-2 text-[13px] text-ink-soft">Sorted by list price, before discount.</p>}
+        {hasPriceRange(params) && <p className="mt-2 text-[13px] text-ink-soft">Filtered on the price shown, after discount.</p>}
       </div>
 
       <CatalogResults state={state} page={params.page} view={params.view} onRetry={retry} onPageChange={handlePageChange} />
