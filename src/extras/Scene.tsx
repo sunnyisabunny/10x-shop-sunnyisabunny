@@ -74,7 +74,7 @@ export default function Scene() {
           </>,
           street,
         )}
-      {machine && createPortal(<i aria-hidden="true" className="scene-bonsai sprite-bonsai" />, machine)}
+      {machine && createPortal(<i data-screen-only aria-hidden="true" className="scene-bonsai sprite-bonsai" />, machine)}
     </>
   );
 }

@@ -5,13 +5,14 @@
  */
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
+import Invoice from "../components/order/Invoice";
 import { OrderStatusBadge, OrderTimeline } from "../components/order/OrderStatus";
 import Button from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import { useNow, useOrders } from "../hooks/useOrders";
 import type { CartItem } from "../types/cart";
-import { discountedPrice, formatDate, formatPrice } from "../utils/format";
+import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "../utils/format";
 import NotFoundPage from "./NotFoundPage";
 
 /** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */
@@ -66,82 +67,100 @@ export default function OrderDetailPage() {
     navigate("/cart");
   }
 
+  /**
+   * Opens the browser's own print dialog, which can also save a PDF. The page title is what that PDF gets named, so it
+   * says which order this is for a moment. Without that, every saved invoice would be called "10X Shop".
+   */
+  function handlePrint(orderNumber: string) {
+    const previousTitle = document.title;
+    document.title = `Invoice ${orderNumber}`;
+    window.print();
+    document.title = previousTitle;
+  }
+
   const { shipping } = order;
 
   return (
-    <section className="grid gap-5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
-      {justPlaced && (
-        <div role="status" className="rounded-[10px] bg-discount p-4 text-on-discount">
-          <h1 className="text-[26px] leading-[1.15] font-bold">Thank you! Your order has been placed.</h1>
-          <p className="mt-1 font-semibold">Total {formatPrice(order.total)}. No payment was taken.</p>
-        </div>
-      )}
+    <>
+      <Invoice order={order} />
+      {/* `data-screen-only` takes the whole screen version off paper, leaving only the invoice above. See index.css. */}
+      <section data-screen-only className="grid gap-5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
+        {justPlaced && (
+          <div role="status" className="rounded-[10px] bg-discount p-4 text-on-discount">
+            <h1 className="text-[26px] leading-[1.15] font-bold">Thank you! Your order has been placed.</h1>
+            <p className="mt-1 font-semibold">Total {formatPrice(order.total)}. No payment was taken.</p>
+          </div>
+        )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          {/* The page's main heading, unless the banner above already holds it. */}
-          {justPlaced ? (
-            <h2 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h2>
-          ) : (
-            <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h1>
-          )}
-          <p className="text-ink-soft">{formatDate(order.placedAt)}</p>
-        </div>
-        <OrderStatusBadge status={order.getStatus(now)} />
-      </div>
-
-      <OrderTimeline status={order.getStatus(now)} />
-
-      <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
-        <ul className="grid content-start gap-2.5">
-          {order.items.map((item) => (
-            <li key={item.productId} className="grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-shelf p-2.5 shadow-[inset_0_0_0_1px_var(--edge)]">
-              <div className="lit-glass flex size-16 items-center justify-center overflow-hidden rounded-md">
-                <img src={item.thumbnail} alt="" width={56} height={56} loading="lazy" className="size-[84%] object-contain" />
-              </div>
-              <div className="min-w-0">
-                <Link to={`/products/${item.productId}`} className="flex min-h-11 items-center font-semibold underline-offset-2 hover:underline">
-                  {item.title}
-                </Link>
-                <div className="text-[13px] text-ink-soft">
-                  {item.quantity} × {formatPrice(discountedPrice(item.price, item.discountPercentage))}
-                </div>
-              </div>
-              <div className="font-semibold">{formatPrice(discountedPrice(item.price, item.discountPercentage) * item.quantity)}</div>
-            </li>
-          ))}
-        </ul>
-
-        <aside className="grid content-start gap-2.5 rounded-[10px] bg-steel-raised p-4 shadow-[inset_0_0_0_1px_var(--edge)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-bold">Delivery address</h2>
-            <p className="text-ink-soft">
-              {shipping.fullName}
-              <br />
-              {shipping.address}
-              <br />
-              {shipping.city} {shipping.postalCode}, {shipping.country}
-            </p>
+            {/* The page's main heading, unless the banner above already holds it. */}
+            {justPlaced ? (
+              <h2 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h2>
+            ) : (
+              <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Order #{order.number}</h1>
+            )}
+            <p className="text-ink-soft">{formatDate(order.placedAt)}</p>
           </div>
-          <div className="flex justify-between gap-3 border-t border-edge pt-2.5">
-            <span>Subtotal</span>
-            <span>{formatPrice(order.subtotal)}</span>
-          </div>
-          <div className="flex justify-between gap-3">
-            <span>Discount</span>
-            <span>{order.discount > 0 ? `−${formatPrice(order.discount)}` : formatPrice(0)}</span>
-          </div>
-          <div className="flex justify-between gap-3">
-            <span>Shipping</span>
-            <span>{order.shippingCost === 0 ? "Free" : formatPrice(order.shippingCost)}</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-x-3 rounded-md bg-led-panel px-3 py-2 text-led">
-            <span>Total</span>
-            <b className="led-text text-[30px]">{formatPrice(order.total)}</b>
-          </div>
-          <Button onClick={() => handleReorder(order.items)}>Reorder</Button>
-        </aside>
-      </div>
-    </section>
+          <OrderStatusBadge status={order.getStatus(now)} />
+        </div>
+
+        <OrderTimeline status={order.getStatus(now)} />
+
+        <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
+          <ul className="grid content-start gap-2.5">
+            {order.items.map((item) => (
+              <li key={item.productId} className="grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-shelf p-2.5 shadow-[inset_0_0_0_1px_var(--edge)]">
+                <div className="lit-glass flex size-16 items-center justify-center overflow-hidden rounded-md">
+                  <img src={item.thumbnail} alt="" width={56} height={56} loading="lazy" className="size-[84%] object-contain" />
+                </div>
+                <div className="min-w-0">
+                  <Link to={`/products/${item.productId}`} className="flex min-h-11 items-center font-semibold underline-offset-2 hover:underline">
+                    {item.title}
+                  </Link>
+                  <div className="text-[13px] text-ink-soft">
+                    {item.quantity} × {formatPrice(discountedPrice(item.price, item.discountPercentage))}
+                  </div>
+                </div>
+                <div className="font-semibold">{formatPrice(lineTotal(item))}</div>
+              </li>
+            ))}
+          </ul>
+
+          <aside className="grid content-start gap-2.5 rounded-[10px] bg-steel-raised p-4 shadow-[inset_0_0_0_1px_var(--edge)]">
+            <div>
+              <h2 className="font-bold">Delivery address</h2>
+              <p className="text-ink-soft">
+                {shipping.fullName}
+                <br />
+                {shipping.address}
+                <br />
+                {shipping.city} {shipping.postalCode}, {shipping.country}
+              </p>
+            </div>
+            <div className="flex justify-between gap-3 border-t border-edge pt-2.5">
+              <span>Subtotal</span>
+              <span>{formatPrice(order.subtotal)}</span>
+            </div>
+            <div className="flex justify-between gap-3">
+              <span>Discount</span>
+              <span>{formatDiscount(order.discount)}</span>
+            </div>
+            <div className="flex justify-between gap-3">
+              <span>Shipping</span>
+              <span>{formatShipping(order.shippingCost)}</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-x-3 rounded-md bg-led-panel px-3 py-2 text-led">
+              <span>Total</span>
+              <b className="led-text text-[30px]">{formatPrice(order.total)}</b>
+            </div>
+            <Button onClick={() => handleReorder(order.items)}>Reorder</Button>
+            <Button variant="quiet" onClick={() => handlePrint(order.number)}>
+              Print invoice
+            </Button>
+          </aside>
+        </div>
+      </section>
+    </>
   );
 }

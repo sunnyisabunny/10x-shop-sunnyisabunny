@@ -9,15 +9,21 @@ import { useFetch } from "../../hooks/useFetch";
 import type { Category } from "../../types/product";
 import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "../../utils/constants";
 import { formatCategory } from "../../utils/format";
-import { isSortValue, type CatalogChange, type CatalogParams, type CatalogView } from "../../utils/url";
-import { inputStyles } from "../ui/FormField";
+import { hasPriceRange, isSortValue, type CatalogChange, type CatalogMode, type CatalogParams, type CatalogView } from "../../utils/url";
+import { inputStyles, labelStyles } from "../ui/FormField";
+import PriceFilter from "./PriceFilter";
 
 interface CatalogToolbarProps {
   params: CatalogParams;
   onChange: (change: CatalogChange) => void;
 }
 
-const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
+/**
+ * One look for both switches. `aria-pressed` tells screen readers which one is on, and the same attribute drives the
+ * highlight. `hocus:` is this project's own variant from `index.css`: the hover style also appears on keyboard focus.
+ */
+const switchStyles =
+  "inline-flex min-h-11 items-center justify-center rounded-md bg-well text-ink-soft shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hocus:text-ink aria-pressed:bg-led-panel aria-pressed:text-led";
 
 /** The icon inside each view button. Decoration, because the button's `aria-label` already names it. */
 function ViewIcon({ view }: { view: CatalogView }) {
@@ -28,11 +34,7 @@ function ViewIcon({ view }: { view: CatalogView }) {
   );
 }
 
-/**
- * The grid and list switch (BONUS). It is hidden on a phone, where both views are the same sideways rows.
- * `aria-pressed` tells screen readers which one is on, and the same attribute drives the highlight.
- * `hocus:` is this project's own variant from `index.css`: the hover style also appears on keyboard focus.
- */
+/** The grid and list switch (BONUS). It is hidden on a phone, where both views are the same sideways rows. */
 function ViewToggle({ view, onChange }: { view: CatalogView; onChange: (view: CatalogView) => void }) {
   return (
     <div role="group" aria-label="View" className="hidden gap-1 tablet:flex">
@@ -42,10 +44,42 @@ function ViewToggle({ view, onChange }: { view: CatalogView; onChange: (view: Ca
           type="button"
           aria-label={option === "grid" ? "Grid view" : "List view"}
           aria-pressed={view === option}
-          onClick={() => onChange(option)}
-          className="inline-flex size-11 items-center justify-center rounded-md bg-well text-ink-soft shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hocus:text-ink aria-pressed:bg-led-panel aria-pressed:text-led"
+          onClick={() => {
+            if (option !== view) {
+              onChange(option);
+            }
+          }}
+          className={`${switchStyles} size-11`}
         >
           <ViewIcon view={option} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The Pages and Endless switch (BONUS). Endless is disabled during a price range, because the two can't combine, and the
+ * page says so in words. Pages stays the default, because the PRD asks for pagination.
+ */
+function ModeSwitch({ mode, isEndlessOff, onChange }: { mode: CatalogMode; isEndlessOff: boolean; onChange: (mode: CatalogMode) => void }) {
+  return (
+    <div role="group" aria-label="Browsing" className="flex gap-1">
+      {(["pages", "endless"] as const).map((option) => (
+        <button
+          key={option}
+          type="button"
+          aria-pressed={mode === option}
+          disabled={option === "endless" && isEndlessOff}
+          onClick={() => {
+            // Pressing the one already on does nothing. Otherwise it would lose the page and add a pointless Back step.
+            if (option !== mode) {
+              onChange(option);
+            }
+          }}
+          className={`${switchStyles} px-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50`}
+        >
+          {option === "pages" ? "Pages" : "Endless"}
         </button>
       ))}
     </div>
@@ -153,7 +187,13 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
         </select>
       </label>
 
-      <ViewToggle view={params.view} onChange={(view) => onChange({ type: "view", view })} />
+      <PriceFilter min={params.min} max={params.max} onChange={(min, max) => onChange({ type: "price", min, max })} />
+
+      {/* Together, because both choose how to browse rather than what to show, so they wrap as one group. */}
+      <div className="flex gap-2.5">
+        <ViewToggle view={params.view} onChange={(view) => onChange({ type: "view", view })} />
+        <ModeSwitch mode={params.mode} isEndlessOff={hasPriceRange(params)} onChange={(mode) => onChange({ type: "mode", mode })} />
+      </div>
     </div>
   );
 }

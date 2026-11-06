@@ -332,6 +332,25 @@
   }
 }
 
+/* Printing an order gives a plain white invoice and nothing else. `:has` limits these rules to a page that really has
+   an invoice, so any other page prints as it looks, with its own colours. They are outside any @layer so that they beat
+   the Tailwind classes on these elements. */
+@media print {
+  html:has(.invoice),
+  body:has(.invoice) {
+    background: #fff;
+  }
+  body:has(.invoice) [data-screen-only] {
+    display: none;
+  }
+  body:has(.invoice) [data-paper] {
+    max-width: none;
+    padding: 0;
+    background: #fff;
+    box-shadow: none;
+  }
+}
+
 /* While a page's code downloads, the footer waits. Otherwise it sits mid-screen and jumps down when the page arrives,
    which Lighthouse measured as a layout shift of 0.114, over the PRD's limit of 0.1. See DEBUG-LOG.md.
    This is deliberately outside any @layer. The footer has the `flex` utility, and the utilities layer beats the

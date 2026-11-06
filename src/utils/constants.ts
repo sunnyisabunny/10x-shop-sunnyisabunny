@@ -60,6 +60,9 @@ export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
 /** Requests slower than this give up and show an error, so a hung server can't show a skeleton forever. */
 export const API_TIMEOUT_MS = 10000;
 
+/** What a failed request says when the failure isn't one `ApiClient` recognised. */
+export const UNEXPECTED_ERROR = "Something unexpected went wrong.";
+
 /** How long a toast message stays on screen, in milliseconds. */
 export const TOAST_MS = 3000;
 
@@ -71,6 +74,8 @@ export const STORAGE_KEYS = {
   user: "shop_user",
   profiles: "shop_profile",
   theme: "shop_theme",
+  wishlist: "shop_wishlist",
+  addresses: "shop_addresses",
 } as const;
 
 /**

@@ -9,7 +9,7 @@
  */
 import type { CartItem } from "../types/cart";
 import { FREE_SHIPPING_FROM, PROMO_CODE, PROMO_PERCENT, SHIPPING_COST } from "../utils/constants";
-import { discountedPrice } from "../utils/format";
+import { lineTotal } from "../utils/format";
 
 /** What any cart must be able to answer. */
 export interface ICart {
@@ -50,7 +50,7 @@ export class Cart implements ICart {
 
   /** The sum of each line's price after its product discount. */
   subtotal(): number {
-    return toCents(this.items.reduce((sum, item) => sum + discountedPrice(item.price, item.discountPercentage) * item.quantity, 0));
+    return toCents(this.items.reduce((sum, item) => sum + lineTotal(item), 0));
   }
 
   /** How much the promo code takes off the subtotal. */

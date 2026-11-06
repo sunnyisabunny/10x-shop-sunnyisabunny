@@ -23,6 +23,21 @@ export function formatPrice(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 }
 
+/** What one cart line costs. The cart's total, Checkout and the invoice all need the same answer. */
+export function lineTotal(item: { price: number; discountPercentage: number; quantity: number }): number {
+  return discountedPrice(item.price, item.discountPercentage) * item.quantity;
+}
+
+/** The discount line in a summary, with a real minus sign when there is one. */
+export function formatDiscount(amount: number): string {
+  return amount > 0 ? `−${formatPrice(amount)}` : formatPrice(0);
+}
+
+/** The shipping line in a summary. */
+export function formatShipping(amount: number): string {
+  return amount === 0 ? "Free" : formatPrice(amount);
+}
+
 /** A date as text, in the visitor's own format. The date's meaning doesn't depend on the locale, unlike money. */
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString();

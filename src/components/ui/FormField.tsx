@@ -11,6 +11,9 @@ import type { InputHTMLAttributes } from "react";
 export const inputStyles =
   "h-11 w-full rounded-md border-0 bg-well px-3 text-[15px] text-ink shadow-[inset_0_2px_5px_rgb(0_0_0/0.14),inset_0_0_0_1px_var(--edge-bright)] placeholder:text-ink-soft focus:shadow-[inset_0_0_0_2px_var(--color-focus)] aria-invalid:shadow-[inset_0_0_0_2px_var(--color-sold-out)]";
 
+/** The small label above a field. Exported for the catalog's controls, which aren't built with FormField. */
+export const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
+
 /**
  * A field's error line. It is always on the page and keeps its height when empty. Without that, an error
  * appearing or disappearing moves everything below it. Leaving a field is what triggers the check, so this

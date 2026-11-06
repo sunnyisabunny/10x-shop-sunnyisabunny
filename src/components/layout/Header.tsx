@@ -8,6 +8,7 @@ import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useWishlist } from "../../context/WishlistContext";
 import { formatItemCount } from "../../utils/format";
 
 /**
@@ -48,6 +49,7 @@ export default function Header() {
   const { displayName, isLoggedIn, logout } = useAuth();
   const { itemCount } = useCart();
   const { theme, toggleTheme } = useTheme();
+  const { items: wishlist } = useWishlist();
   const navigate = useNavigate();
 
   /** Closes the phone menu after a tap. Without this it would stay open over the new page. */
@@ -61,12 +63,12 @@ export default function Header() {
   }
 
   return (
-    <header className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-marquee px-3.5 py-2.5 shadow-[inset_0_1px_0_var(--edge-bright)] tablet:rounded-t-[18px] tablet:gap-x-7 tablet:px-6 tablet:py-4">
+    <header data-screen-only className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-marquee px-3.5 py-2.5 shadow-[inset_0_1px_0_var(--edge-bright)] tablet:rounded-t-[18px] tablet:gap-x-7 tablet:px-6 tablet:py-4">
       <Link to="/" onClick={closeMenu} className="flex min-h-11 items-center gap-3.5 no-underline">
         <span className="neon text-[32px] tablet:text-[46px]">
           10<span className="inline-block animate-flicker">X</span> Shop
         </span>
-        <span className="hidden whitespace-nowrap text-ink-soft desktop:inline">Open all night.</span>
+        <span className="hidden whitespace-nowrap text-ink-soft wide:inline">Open all night.</span>
       </Link>
 
       {/* On a phone the links are folded away, so the counter stays visible beside the burger. An empty
@@ -103,6 +105,10 @@ export default function Header() {
         <NavLink to="/cart" onClick={closeMenu} className={navLinkClass}>
           Cart
           <CoinCounter count={itemCount} className="max-tablet:hidden" />
+        </NavLink>
+        <NavLink to="/wishlist" onClick={closeMenu} className={navLinkClass}>
+          Wishlist
+          <CoinCounter count={wishlist.length} />
         </NavLink>
         {isLoggedIn ? (
           <>

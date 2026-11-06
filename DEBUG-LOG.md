@@ -266,3 +266,25 @@ list only grows when a real bug turns up.
 **Fix:** [`4dc4027`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/4dc4027): the same rule, outside any layer. Layout shift on the catalog is now 0.
 
 **What it taught:** an improvement can make another number worse, so measure again afterwards. Also, in Tailwind v4 a rule's layer matters more than how specific its selector is.
+
+## 15. Pressing Load more twice asked for the same products again
+
+**Symptom:** in Endless, pressing Load more several times while a chunk was loading sent the request for that chunk twice: `skip=12`, then `skip=12` again straight after the first answer. One press was fine. The page looked correct either way, so only a test that counted requests caught it.
+
+**Reproduce:** I caught this before committing the broken version, so no commit holds it. To see it again:
+1. In `useEndlessProducts`, go back to `useFetch` for the request, and add each answer to the list with `setStored` during the render, instead of inside the effect.
+2. Build it and serve it, then open `/?mode=endless` with the Network tab of DevTools on Fetch/XHR.
+3. Press Load more three times quickly.
+4. Two requests for `skip=12` appear.
+
+**Tool:** Playwright, counting requests in `flow-bonus.mjs`. Then a throwaway script that logged each request with its time, comparing one press with three and with and without a delay. Then React's own source, `react-dom-client.development.js`.
+
+**Root cause:** this is my reading of React's source, and it matches what the experiment showed. I was setting state during a render, the pattern `PriceFilter` uses to follow a new prop. Two facts combine badly here:
+- When a `setState` changes nothing, React skips the redraw but still leaves the update waiting in the queue (`dispatchSetStateInternal`). Presses two and three were exactly that, because `loadMore` returned the state unchanged while a chunk was on its way.
+- A state set during a render only becomes permanent if nothing is waiting in that queue: `null === hook.baseQueue && (hook.baseState = newState)` in `rerenderReducer`.
+
+So the new products went into the list, then React replayed the waiting presses from the older state. That threw the new products away and made the hook want the same chunk again.
+
+**Fix:** [`96cf6b0`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/96cf6b0): the hook has its own effect, and each answer joins the list in one normal update, as a function of the latest state, so React's queue can't lose it. The test now presses three times and expects one request.
+
+**What it taught:** setting state during a render is for making a value follow a prop, not for collecting data. Also, a page that looks right can still be wrong: nothing on the screen showed this, and only counting the requests did.

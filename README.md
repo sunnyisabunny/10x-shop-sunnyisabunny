@@ -41,6 +41,15 @@ Login is simulated, so there is no real account to find. Any username works with
 - Profile page, a dark and light theme, and Clear local data
 - Every page loads on demand, and `memo` is used only where a measurement justified it
 
+### BONUS
+- Grid and list view, kept in the URL
+- A wishlist, saved in the browser
+- A printable invoice for each order
+- A price range filter, on the price shown after discount
+- Checkout in three steps: Contact, Delivery and Review
+- An address book: save an address at Checkout, pick it next time, manage them on Profile
+- A Pages/Endless switch: Endless loads 12 more as you scroll, with a Load more button as well. A refresh or Back keeps your filters but starts again from the top, and a price range turns Endless off
+
 ## Tech Stack
 
 - **React 19** with **TypeScript** in strict mode

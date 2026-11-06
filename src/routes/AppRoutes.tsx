@@ -25,6 +25,7 @@ const ProductPage = lazy(() => import("../pages/ProductPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage"));
 const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
 const SignUpPage = lazy(() => import("../pages/SignUpPage"));
+const WishlistPage = lazy(() => import("../pages/WishlistPage"));
 
 export default function AppRoutes() {
   return (
@@ -36,6 +37,7 @@ export default function AppRoutes() {
         <Route path="reset-password" element={<ResetPasswordPage />} />
         <Route path="products/:id" element={<ProductPage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="wishlist" element={<WishlistPage />} />
         {/* Everything nested here needs a login. ProtectedRoute decides whether to show it. */}
         <Route element={<ProtectedRoute />}>
           <Route path="checkout" element={<CheckoutPage />} />

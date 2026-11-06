@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/ApiClient";
 import type { AsyncState } from "../types/api";
+import { UNEXPECTED_ERROR } from "../utils/constants";
 import { isApiError } from "../utils/guards";
 
 /** A hook's return value is its public API, so it gets a named shape like a component's props. */
@@ -19,8 +20,11 @@ export interface UseFetchResult<T> {
 
 /** `path` can be null to mean "nothing to load", which keeps the state at "idle". */
 export function useFetch<T>(path: string | null): UseFetchResult<T> {
-  /** The current stage of the request. A union, so loading and error can never both be true. */
-  const [state, setState] = useState<AsyncState<T>>(path === null ? { status: "idle" } : { status: "loading" });
+  /**
+   * The current stage of the request, and which path it belongs to. The stage is a union, so loading and error can
+   * never both be true. The path is what stops an old answer being shown for a new question, as explained below.
+   */
+  const [result, setResult] = useState<{ path: string | null; state: AsyncState<T> }>({ path, state: path === null ? { status: "idle" } : { status: "loading" } });
 
   /** Counts retries. Bumping it changes the effect's dependencies, and that is what repeats the request. */
   const [attempt, setAttempt] = useState(0);
@@ -28,7 +32,8 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
   // Loads whenever the path changes or Retry is pressed.
   useEffect(() => {
     if (path === null) {
-      setState({ status: "idle" });
+      // The check lets React skip the redraw when this is already idle. In Endless the catalog's `useFetch` sits here.
+      setResult((current) => (current.path === null ? current : { path, state: { status: "idle" } }));
       return;
     }
 
@@ -36,13 +41,13 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
     // to product 3. If product 2's slower answer arrives last, it overwrites product 3, and the page shows
     // the wrong product. Aborting the old request in the cleanup makes that impossible.
     const controller = new AbortController();
-    setState({ status: "loading" });
+    setResult({ path, state: { status: "loading" } });
 
     api
       .get<T>(path, controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) {
-          setState({ status: "success", data });
+          setResult({ path, state: { status: "success", data } });
         }
       })
       .catch((error: unknown) => {
@@ -50,10 +55,13 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
         if (controller.signal.aborted) {
           return;
         }
-        setState({
-          status: "error",
-          message: isApiError(error) ? error.message : "Something unexpected went wrong.",
-          httpStatus: isApiError(error) ? error.status : undefined,
+        setResult({
+          path,
+          state: {
+            status: "error",
+            message: isApiError(error) ? error.message : UNEXPECTED_ERROR,
+            httpStatus: isApiError(error) ? error.status : undefined,
+          },
         });
       });
 
@@ -62,6 +70,12 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
 
   /** `useCallback` keeps one stable function, so a child given `retry` doesn't redraw for no reason. */
   const retry = useCallback(() => setAttempt((current) => current + 1), []);
+
+  // An effect only runs after a render. So on the render where the path changes, `result` still holds the old path's
+  // answer, and drawing it would show the wrong data for a moment. Comparing the two paths means "loading" straight away,
+  // or "idle" if there is now nothing to load, since no request is about to start.
+  const nextState: AsyncState<T> = path === null ? { status: "idle" } : { status: "loading" };
+  const state = result.path === path ? result.state : nextState;
 
   return { state, retry };
 }

@@ -8,10 +8,10 @@
  */
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
-import type { OrderRecord, ShippingInfo } from "../types/order";
-import type { Review, StoredReviews } from "../types/product";
+import type { OrderRecord, SavedAddress, ShippingInfo } from "../types/order";
+import type { ProductSummary, Review, StoredReviews } from "../types/product";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
-import { PROMO_CODE } from "./constants";
+import { COUNTRIES, PROMO_CODE } from "./constants";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -49,22 +49,30 @@ export function isCartItem(value: unknown): value is CartItem {
 }
 
 /**
- * Turns saved data into a usable cart, keeping the good lines and dropping the rest. Repeated products are
- * dropped too, because the Cart page uses `productId` as its React key, and keys must be unique. Only the real
+ * Keeps the first of any items that share an id. Lists use the id as their React key, and keys must be unique. The two
+ * generics let the cart, the wishlist and the address book share this, with different items and different kinds of id.
+ */
+function uniqueBy<T, Id>(items: T[], getId: (item: T) => Id): T[] {
+  const seen = new Set<Id>();
+  return items.filter((item) => {
+    const id = getId(item);
+    if (seen.has(id)) {
+      return false;
+    }
+    seen.add(id);
+    return true;
+  });
+}
+
+/**
+ * Turns saved data into a usable cart, keeping the good lines and dropping the rest, and any repeats. Only the real
  * promo code is kept: anyone can edit storage, and any other text would still earn the discount.
  */
 export function parseCartState(value: unknown): CartState | null {
   if (!isRecord(value) || !Array.isArray(value.items)) {
     return null;
   }
-  const seen = new Set<number>();
-  const items = value.items.filter(isCartItem).filter((item) => {
-    if (seen.has(item.productId)) {
-      return false;
-    }
-    seen.add(item.productId);
-    return true;
-  });
+  const items = uniqueBy(value.items.filter(isCartItem), (item) => item.productId);
   return { items, promoCode: value.promoCode === PROMO_CODE ? PROMO_CODE : null };
 }
 
@@ -146,6 +154,62 @@ export function isOrderRecord(value: unknown): value is OrderRecord {
 /** Turns saved orders into a usable list, dropping any that are broken. */
 export function parseOrders(value: unknown): OrderRecord[] | null {
   return Array.isArray(value) ? value.filter(isOrderRecord) : null;
+}
+
+/**
+ * Checks that something has every field a product card needs, with values that make sense. These feed the card's price
+ * and the cart, so a typeof check isn't enough: a discount of 150 would make a negative total.
+ */
+function isProductSummary(value: unknown): value is ProductSummary {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.id) &&
+    typeof value.title === "string" &&
+    typeof value.price === "number" &&
+    value.price >= 0 &&
+    typeof value.discountPercentage === "number" &&
+    value.discountPercentage >= 0 &&
+    value.discountPercentage <= 100 &&
+    typeof value.rating === "number" &&
+    value.rating >= 0 &&
+    value.rating <= 5 &&
+    typeof value.stock === "number" &&
+    Number.isInteger(value.stock) &&
+    value.stock >= 0 &&
+    typeof value.thumbnail === "string" &&
+    typeof value.category === "string" &&
+    (value.brand === undefined || typeof value.brand === "string")
+  );
+}
+
+/** Reads the saved wishlist, keeping the good entries and dropping any repeats. */
+export function parseWishlist(value: unknown): ProductSummary[] | null {
+  return Array.isArray(value) ? uniqueBy(value.filter(isProductSummary), (item) => item.id) : null;
+}
+
+/**
+ * What makes two addresses the same one. JSON keeps the fields apart, so "5 Main, Apt 2" in one field and "5 Main" with
+ * "Apt 2" in another can't be mistaken for each other, as they could if the text were simply joined.
+ */
+export function addressKey({ address, city, postalCode, country }: SavedAddress): string {
+  return JSON.stringify([address, city, postalCode, country]);
+}
+
+/**
+ * Reads the saved addresses, keeping only complete ones, in a country the shop offers. The form's dropdown has no way
+ * to show any other country, so it would display one thing while the order saved another.
+ */
+export function parseAddresses(value: unknown): SavedAddress[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  const valid = value.filter(
+    (item): item is SavedAddress =>
+      isRecord(item) &&
+      [item.address, item.city, item.postalCode, item.country].every((field) => typeof field === "string" && field.trim() !== "") &&
+      COUNTRIES.some((country) => country === item.country),
+  );
+  return uniqueBy(valid, addressKey);
 }
 
 /** Checks that something is a usable review. */

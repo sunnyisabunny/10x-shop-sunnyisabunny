@@ -11,8 +11,11 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import { useToast } from "../context/ToastContext";
+import { useWishlist } from "../context/WishlistContext";
+import { addressKey, formatAddress, useAddresses } from "../hooks/useAddresses";
 import { useOrders } from "../hooks/useOrders";
 import { useClearReviews } from "../hooks/useReviews";
+import type { SavedAddress } from "../types/order";
 import type { Profile } from "../types/user";
 import { hasNoErrors, validateProfile, type FieldErrors } from "../utils/validation";
 
@@ -31,6 +34,8 @@ export default function ProfilePage() {
   const { showToast } = useToast();
   const { orders, clearOrders } = useOrders();
   const clearReviews = useClearReviews();
+  const { clear: clearWishlist } = useWishlist();
+  const { addresses, removeAddress, clearAddresses } = useAddresses();
   const navigate = useNavigate();
 
   /** The form's values, starting from the saved profile if there is one. */
@@ -70,16 +75,25 @@ export default function ProfilePage() {
   }
 
   /**
-   * PRD P7: empties the cart, orders and reviews, but keeps the login and the theme. Each goes through the code
+   * PRD P7: empties the cart, orders and reviews, plus the wishlist and saved addresses, but keeps the login and the theme. Each goes through the code
    * that owns it. Removing the cart's storage key alone would do nothing: CartContext still holds the items,
    * and its effect would write them straight back on the next change.
    */
   function handleClearLocalData() {
-    if (window.confirm("Clear your cart, orders and reviews from this browser? This cannot be undone.")) {
+    if (window.confirm("Clear your cart, orders, reviews, wishlist and saved addresses from this browser? This cannot be undone.")) {
       clear();
       clearOrders();
       clearReviews();
+      clearWishlist();
+      clearAddresses();
       showToast("Local data cleared");
+    }
+  }
+
+  /** Removes a saved address. If the browser refuses to save the shorter list, the address stays, and this says why. */
+  function handleRemoveAddress(address: SavedAddress) {
+    if (!removeAddress(address)) {
+      showToast("The address could not be removed. Browser storage is blocked.");
     }
   }
 
@@ -110,6 +124,20 @@ export default function ProfilePage() {
         </form>
 
         <aside className="grid gap-2.5 self-start rounded-[10px] bg-steel-raised p-4 shadow-[inset_0_0_0_1px_var(--edge)]">
+          <h2 className="font-bold">Saved addresses</h2>
+          {addresses.length === 0 && <p className="text-ink-soft">None yet. You can save one at Checkout.</p>}
+          {addresses.length > 0 && (
+            <ul className="grid gap-1.5">
+              {addresses.map((address) => (
+                <li key={addressKey(address)} className="flex items-center justify-between gap-2 border-b border-edge pb-1.5">
+                  <span className="min-w-0 text-ink-soft">{formatAddress(address)}</span>
+                  <Button variant="quiet" onClick={() => handleRemoveAddress(address)} aria-label={`Remove ${formatAddress(address)}`} className="shrink-0">
+                    Remove
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
           <Button variant="quiet" onClick={toggleTheme}>
             {theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           </Button>
