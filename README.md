@@ -12,6 +12,8 @@ It is the graduation project for the 10X Front-end program. Login and checkout a
 
 [10x-shop-sunnyisabunny.vercel.app](https://10x-shop-sunnyisabunny.vercel.app)
 
+**Demo video:** [watch the 3-minute walkthrough](https://10x-shop-sunnyisabunny.vercel.app/demo/10x-shop-demo.mp4). It shows the full flow on the live site in a real browser. A script drives the recording and adds the captions, and there is no voice-over. The two shots where a request is blocked or its data is broken say so on screen.
+
 ## Test Account
 
 Login is simulated, so there is no real account to find. Any username works with a password of at least 6 characters, for example:
