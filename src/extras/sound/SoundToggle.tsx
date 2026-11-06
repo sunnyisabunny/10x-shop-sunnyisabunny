@@ -17,6 +17,9 @@ const soundStorage = new StorageService<boolean>("shop_sound", (value) => (typeo
 let sharedEngine: SoundEngine | null = null;
 let isSoundOn = false;
 
+/** Some browsers have no Web Audio at all. Then there is nothing to switch on, so no button is drawn: one would do nothing. */
+const hasWebAudio = typeof AudioContext !== "undefined";
+
 /** Plays a short sound if sound is on, and does nothing otherwise, so a caller never has to check. */
 export function playSound(...args: Parameters<SoundEngine["play"]>): void {
   // Not while the tab is hidden. Its audio clock is stopped then, so the sound would wait and play on return.
@@ -79,7 +82,7 @@ export default function SoundToggle() {
   // Someone who turned sound on during an earlier visit gets it back on their first click anywhere. The browser
   // won't allow it any sooner. The cleanup removes the listener, however the click turns out.
   useEffect(() => {
-    if (!isOn || contextRef.current !== null) {
+    if (!hasWebAudio || !isOn || contextRef.current !== null) {
       return;
     }
     function startOnFirstClick() {
@@ -135,7 +138,7 @@ export default function SoundToggle() {
   }
 
   const nav = document.getElementById("main-nav");
-  if (nav === null) {
+  if (nav === null || !hasWebAudio) {
     return null;
   }
 
