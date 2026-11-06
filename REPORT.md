@@ -10,11 +10,11 @@
 | TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | Done: `@/` path alias |
 | Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens | Done: dark mode, custom variants and utilities |
 | Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 18 real bugs in the log | |
-| Practical project | Done: README, PLAN, REPORT, Git history, deploy | 64 Issues, a Projects board, milestones and PRs linked to Issues, and a demo video. Not fully met: see below | |
+| Practical project | Done: README, PLAN, REPORT, Git history, deploy | 67 Issues, a Projects board, milestones and PRs linked to Issues, and a demo video. Not fully met: see below | |
 
 ## Beyond the spec
 
-These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. I also deleted `src/extras` and the tagged lines on a throwaway branch: 2,522 lines went, and typecheck, lint, build and the core and catalog browser checks all still passed. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. I also deleted `src/extras` and the tagged lines on a throwaway branch: 2,646 lines went, and typecheck, lint, build and the core and catalog browser checks all still passed. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
 - **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
@@ -58,19 +58,19 @@ Mobile preset, median of 3 runs per page. The before and after columns compare p
 | CLS | 0.001 | 0 | 0.026 | 0.026 | Lazy loading first pushed `/` to 0.114, and that was then fixed (entry 14) |
 | Total weight | 256 kB | 235 kB | 262 kB | 245 kB | Formik and Yup left the first load |
 
-**On the live site**, at commit `47ce1a0`, with the extras in:
+**On the live site**, at commit `9a61580`, with the extras in:
 
 | Metric | `/` | `/products/1` |
 |---|---|---|
-| Performance | 100 | 92 |
+| Performance | 100 | 93 |
 | Accessibility | 100 | 100 |
 | Best Practices | 100 | 100 |
 | SEO | 100 | 100 |
-| LCP | 1.1 s | 3.0 s |
+| LCP | 1.4 s | 3.0 s |
 | CLS | 0 | 0 |
-| Total weight | 261 kB | 267 kB |
+| Total weight | 261 kB | 268 kB |
 
-The extras added 20 kB to each page, which is their own code and a small font, loaded after the page. Lighthouse tests at phone width, and phones don't download the street's art.
+The extras added about 20 kB to each page, which is their own code and a small font, loaded after the page. Lighthouse tests at phone width, and phones don't download the street's art.
 
 ### Bundle
 
@@ -103,13 +103,13 @@ Read from `git` and GitHub by a script on 6 November, including the commit that 
 
 | | |
 |---|---|
-| Commits, not counting merges | 101 |
+| Commits, not counting merges | 106 |
 | Days with commits | 2 (5 and 6 November) |
-| Merged PRs | 28, of which 27 are linked to Issues. The scenes PR, #86, has none, because it was a request made later |
-| Issues, closed | 63 of 64. The last one is handing in |
+| Merged PRs | 30, of which 29 are linked to Issues. The scenes PR, #86, has none, because it was a request made later |
+| Issues, closed | 66 of 67. The last one is handing in |
 | Bugs in `DEBUG-LOG.md` | 18 |
 | Source files | 94 |
-| Lines of source, of which notes | 8,790, of which 1,707 are notes |
+| Lines of source, of which notes | 8,914, of which 1,724 are notes |
 
 ### Hours
 
@@ -120,9 +120,9 @@ Time from the first commit to the end of each stage, read from commit times and 
 | Setup and CORE | 5 Nov 21:58 | 1.4 |
 | FULL | 6 Nov 01:30 | 3.5 |
 | BONUS, with the scenes and sound built alongside | 6 Nov 06:48 | 5.3 |
-| Extras, the path alias, the video and the final checks | 6 Nov 16:10 | 2.1 |
+| Extras, the path alias, the video and the final checks | 6 Nov 20:00 | 4.0 |
 
-Work stopped from 06:48 to 14:07 on 6 November, so those seven hours aren't counted.
+Work stopped from 06:48 to 14:07, and again from 17:13 to 19:07, on 6 November, so those hours aren't counted.
 
 **Hours per epic can't be measured honestly.** I often committed in batches at the end of a stretch of work, so commit times put hours on the wrong feature. One PR, the wishlist, shows two hours that were really spent on the scenes. So here are the plan's estimates by epic instead. They are estimates, not measurements.
 
