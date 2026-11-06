@@ -9,6 +9,7 @@ import { Navigate, useNavigate } from "react-router";
 import CartSummary from "../components/cart/CartSummary";
 import CheckoutForm from "../components/cart/CheckoutForm";
 import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";
 import { useAddresses } from "../hooks/useAddresses";
 import { useOrders } from "../hooks/useOrders";
 import { Cart } from "../models/Cart";
@@ -21,6 +22,7 @@ export default function CheckoutPage() {
   const { items, promoCode, clear } = useCart();
   const { records, addOrder } = useOrders();
   const { addresses, addAddress } = useAddresses();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   /** True for the short moment between pressing the button and the confirmation. */
@@ -52,8 +54,8 @@ export default function CheckoutPage() {
         return;
       }
       // Saved only now, once the order is real. A full browser storage only loses the address, not the order.
-      if (saveAddress) {
-        addAddress({ address: shipping.address, city: shipping.city, postalCode: shipping.postalCode, country: shipping.country });
+      if (saveAddress && !addAddress({ address: shipping.address, city: shipping.city, postalCode: shipping.postalCode, country: shipping.country })) {
+        showToast("Your order is placed, but the address could not be saved.");
       }
       navigate(`/orders/${order.id}`, { state: { justPlaced: true } });
       clear();

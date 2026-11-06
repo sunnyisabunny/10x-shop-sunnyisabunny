@@ -12,9 +12,10 @@ import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import { useToast } from "../context/ToastContext";
 import { useWishlist } from "../context/WishlistContext";
-import { formatAddress, useAddresses } from "../hooks/useAddresses";
+import { addressKey, formatAddress, useAddresses } from "../hooks/useAddresses";
 import { useOrders } from "../hooks/useOrders";
 import { useClearReviews } from "../hooks/useReviews";
+import type { SavedAddress } from "../types/order";
 import type { Profile } from "../types/user";
 import { hasNoErrors, validateProfile, type FieldErrors } from "../utils/validation";
 
@@ -89,6 +90,13 @@ export default function ProfilePage() {
     }
   }
 
+  /** Removes a saved address. If the browser refuses to save the shorter list, the address stays, and this says why. */
+  function handleRemoveAddress(address: SavedAddress) {
+    if (!removeAddress(address)) {
+      showToast("The address could not be removed. Browser storage is blocked.");
+    }
+  }
+
   /** The same as the Header's Log out (PRD P0.3): back to the catalog, with the cart left alone. */
   function handleLogout() {
     logout();
@@ -121,9 +129,9 @@ export default function ProfilePage() {
           {addresses.length > 0 && (
             <ul className="grid gap-1.5">
               {addresses.map((address) => (
-                <li key={formatAddress(address)} className="flex items-center justify-between gap-2 border-b border-edge pb-1.5">
+                <li key={addressKey(address)} className="flex items-center justify-between gap-2 border-b border-edge pb-1.5">
                   <span className="min-w-0 text-ink-soft">{formatAddress(address)}</span>
-                  <Button variant="quiet" onClick={() => removeAddress(address)} aria-label={`Remove ${formatAddress(address)}`} className="shrink-0">
+                  <Button variant="quiet" onClick={() => handleRemoveAddress(address)} aria-label={`Remove ${formatAddress(address)}`} className="shrink-0">
                     Remove
                   </Button>
                 </li>

@@ -6,10 +6,12 @@
 import { useCallback } from "react";
 import type { SavedAddress } from "../types/order";
 import { STORAGE_KEYS } from "../utils/constants";
-import { parseAddresses } from "../utils/guards";
+import { addressKey, parseAddresses } from "../utils/guards";
 import { useLocalStorage } from "./useLocalStorage";
 
-/** How an address reads on one line. It also identifies it: two addresses that read the same are the same address. */
+export { addressKey };
+
+/** How an address reads on one line. */
 export function formatAddress({ address, city, postalCode, country }: SavedAddress): string {
   return `${address}, ${city} ${postalCode}, ${country}`;
 }
@@ -19,6 +21,7 @@ export interface UseAddressesResult {
   addresses: SavedAddress[];
   /** Saves an address, newest first. An address already saved just moves to the top. Returns whether saving worked. */
   addAddress: (address: SavedAddress) => boolean;
+  /** Returns whether saving the shorter list worked. */
   removeAddress: (address: SavedAddress) => boolean;
   clearAddresses: () => void;
 }
@@ -28,12 +31,12 @@ export function useAddresses(): UseAddressesResult {
   const [addresses, save, clearAddresses] = useLocalStorage<SavedAddress[]>(STORAGE_KEYS.addresses, [], parseAddresses);
 
   const removeAddress = useCallback(
-    (address: SavedAddress) => save(addresses.filter((saved) => formatAddress(saved) !== formatAddress(address))),
+    (address: SavedAddress) => save(addresses.filter((saved) => addressKey(saved) !== addressKey(address))),
     [addresses, save],
   );
 
   const addAddress = useCallback(
-    (address: SavedAddress) => save([address, ...addresses.filter((saved) => formatAddress(saved) !== formatAddress(address))]),
+    (address: SavedAddress) => save([address, ...addresses.filter((saved) => addressKey(saved) !== addressKey(address))]),
     [addresses, save],
   );
 
