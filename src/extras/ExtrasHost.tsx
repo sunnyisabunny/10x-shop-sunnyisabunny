@@ -10,7 +10,6 @@ import LedTicker from "./LedTicker";
 import NightCat from "./NightCat";
 import PickupTray from "./PickupTray";
 import Scene from "./Scene";
-import SoundTestPanel from "./sound/SoundTestPanel";
 import SoundToggle from "./sound/SoundToggle";
 
 export default function ExtrasHost() {
@@ -22,7 +21,6 @@ export default function ExtrasHost() {
       <PickupTray />
       <ItemDrop />
       <SoundToggle />
-      <SoundTestPanel />
     </>
   );
 }

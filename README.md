@@ -50,6 +50,13 @@ Login is simulated, so there is no real account to find. Any username works with
 - An address book: save an address at Checkout, pick it next time, manage them on Profile
 - A Pages/Endless switch: Endless loads 12 more as you scroll, with a Load more button as well. A refresh or Back keeps your filters but starts again from the top, and a price range turns Endless off
 
+### Beyond the spec
+
+Fun features nobody asked for. Each one lives in `src/extras`, nothing required depends on it, and deleting that folder and the lines tagged `EXTRA:` leaves a complete shop.
+
+- A street behind the machine: a Tokyo street at night, and a small Japanese port town by day, with koi, gulls and boats. It is drawn as SVG, and phones don't download it
+- Background sound for each theme, generated in the browser. It stays off until you press the speaker
+
 ## Tech Stack
 
 - **React 19** with **TypeScript** in strict mode
@@ -118,4 +125,4 @@ npm run dev
 - Built by [sunnyisabunny](https://github.com/sunnyisabunny) as the graduation project for the 10X Front-end program.
 - Developed with Claude Code as a pair-programming assistant. See [`ai-log.md`](ai-log.md).
 - Product data from [DummyJSON](https://dummyjson.com).
-- Fonts under the SIL Open Font License: [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [Doto](https://fonts.google.com/specimen/Doto), [Tilt Neon](https://fonts.google.com/specimen/Tilt+Neon), [DotGothic16](https://fonts.google.com/specimen/DotGothic16).
+- Fonts under the SIL Open Font License: [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [Doto](https://fonts.google.com/specimen/Doto), [Tilt Neon](https://fonts.google.com/specimen/Tilt+Neon), [DotGothic16](https://fonts.google.com/specimen/DotGothic16). The lettering on the street's signs also uses [Dela Gothic One](https://fonts.google.com/specimen/Dela+Gothic+One) and [Yuji Boku](https://fonts.google.com/specimen/Yuji+Boku).
