@@ -61,6 +61,8 @@ export default function Layout() {
         {/* `dark:` is the custom variant from index.css: a shadow this heavy only looks right at night. */}
         <div id="machine" data-paper className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
           <Header />
+          {/* EXTRA: room for the LED ticker, set aside here so the page doesn't jump when the extras arrive. */}
+          <div id="ticker-slot" data-screen-only className="h-9 overflow-hidden bg-led-panel shadow-[inset_0_1px_0_#000,inset_0_-1px_0_#000]" />
           {/* `key` gives each path a fresh boundary. Without it, after one crash the error
               message would stay on screen on every page you visit next. */}
           <main className="min-h-[50vh]">

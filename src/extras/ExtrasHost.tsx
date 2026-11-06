@@ -5,6 +5,8 @@
  * Connects to: `Layout`, which wraps this in an ErrorBoundary, so a broken extra can't take the shop down.
  */
 import "./extras.css";
+import LedTicker from "./LedTicker";
+import NightCat from "./NightCat";
 import Scene from "./Scene";
 import SoundToggle from "./sound/SoundToggle";
 
@@ -12,6 +14,8 @@ export default function ExtrasHost() {
   return (
     <>
       <Scene />
+      <LedTicker />
+      <NightCat />
       <SoundToggle />
     </>
   );
