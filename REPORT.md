@@ -9,7 +9,7 @@
 | React | Done | Done: `useReducer`, custom hooks, Formik and Yup, Orders, Profile, reviews, related products, promo code | Done: wishlist, grid and list view, printable invoice, Checkout in three steps, price range filter, address book, Endless |
 | TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | Done: `@/` path alias |
 | Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens | Done: dark mode, custom variants and utilities |
-| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 17 real bugs in the log | |
+| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 18 real bugs in the log | |
 | Practical project | Done: README, PLAN, REPORT, Git history, deploy | 64 Issues, a Projects board, milestones and PRs linked to Issues, and a demo video. Not fully met: see below | |
 
 ## Beyond the spec
@@ -18,7 +18,7 @@ These weren't asked for, and nothing above counts them. Each one lives in `src/e
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
 - **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
-- **LED ticker and night-shift cat:** the ticker's free-shipping line reads the real cart, so it can't disagree with what the cart charges.
+- **LED ticker and night-shift cat:** the ticker's free-shipping line reads the real cart, so it can't disagree with what the cart charges. The cat wakes when something is added, and jumps if it is clicked or the machine shakes. It listens for the shake animation itself, so the panel doesn't know it exists.
 - **Item drop and pickup tray:** the tray stays off Checkout. Each step shortens the form, which slid the tray under the pointer, so the second click of a double click opened the cart and lost what had been typed.
 - **Receipt:** real order data. It says no payment was taken.
 - **Delivery tracker:** timed from the same steps as the order's status, with no timer running.
@@ -107,7 +107,7 @@ Read from `git` and GitHub by a script on 6 November, including the commit that 
 | Days with commits | 2 (5 and 6 November) |
 | Merged PRs | 28, of which 27 are linked to Issues. The scenes PR, #86, has none, because it was a request made later |
 | Issues, closed | 63 of 64. The last one is handing in |
-| Bugs in `DEBUG-LOG.md` | 17 |
+| Bugs in `DEBUG-LOG.md` | 18 |
 | Source files | 94 |
 | Lines of source, of which notes | 8,790, of which 1,707 are notes |
 
