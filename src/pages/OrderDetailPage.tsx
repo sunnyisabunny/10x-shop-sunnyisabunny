@@ -3,17 +3,22 @@
  * Why it exists: this is also where a new order lands, with the Thank-you banner on top.
  * Connects to: `useOrders` and `useNow`. `useCart` is what Reorder adds to.
  */
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import Invoice from "../components/order/Invoice";
 import { OrderStatusBadge, OrderTimeline } from "../components/order/OrderStatus";
 import Button from "../components/ui/Button";
+import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import { useNow, useOrders } from "../hooks/useOrders";
 import type { CartItem } from "../types/cart";
 import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "../utils/format";
 import NotFoundPage from "./NotFoundPage";
+
+// EXTRA: the printed receipt and the truck. Deleting these two lines and their uses below leaves a complete page.
+const Receipt = lazy(() => import("../extras/Receipt"));
+const TruckTracker = lazy(() => import("../extras/TruckTracker"));
 
 /** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */
 function isJustPlaced(state: unknown): boolean {
@@ -92,6 +97,15 @@ export default function OrderDetailPage() {
           </div>
         )}
 
+        {/* EXTRA: no fallback, so a broken or slow receipt can't affect the order. */}
+        {justPlaced && (
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <Receipt order={order} />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             {/* The page's main heading, unless the banner above already holds it. */}
@@ -106,6 +120,13 @@ export default function OrderDetailPage() {
         </div>
 
         <OrderTimeline status={order.getStatus(now)} />
+
+        {/* EXTRA: the same, for the truck. */}
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <TruckTracker placedAt={order.placedAt} status={order.getStatus(now)} />
+          </Suspense>
+        </ErrorBoundary>
 
         <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
           <ul className="grid content-start gap-2.5">
