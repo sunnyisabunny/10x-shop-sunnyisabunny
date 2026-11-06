@@ -9,6 +9,8 @@ import Button from "./Button";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  /** What to draw instead of the standard message. The extras pass `null`, so a broken extra simply disappears. */
+  fallback?: ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -30,6 +32,9 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   render(): ReactNode {
     if (this.state.hasError) {
+      if (this.props.fallback !== undefined) {
+        return this.props.fallback;
+      }
       return (
         <div role="alert" className="flex flex-col items-start gap-4 p-6">
           <h1 className="text-3xl font-bold">Something went wrong.</h1>

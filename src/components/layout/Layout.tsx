@@ -4,12 +4,15 @@
  * Connects to: `routes/AppRoutes.tsx` makes this the parent route, and `<Outlet />` is where the
  * current page appears.
  */
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Outlet, useLocation } from "react-router";
 import ErrorBoundary from "../ui/ErrorBoundary";
 import Spinner from "../ui/Spinner";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
+
+// EXTRA: the features beyond the spec. Deleting this line, its use below and `src/extras` leaves a complete shop.
+const ExtrasHost = lazy(() => import("../../extras/ExtrasHost"));
 
 /**
  * The night street behind the machine. All decoration, so `aria-hidden` keeps it away from screen readers.
@@ -53,9 +56,10 @@ export default function Layout() {
     <>
       <ScrollToTop />
       <Street />
-      <div data-paper className="tablet:px-6 tablet:pt-[72px] tablet:pb-[88px]">
+      {/* The taller gap on desktop is what lets the scene be seen above the machine when a page opens. */}
+      <div data-paper className="tablet:px-6 tablet:pt-[72px] tablet:pb-[88px] desktop:pt-[150px] desktop:pb-[120px]">
         {/* `dark:` is the custom variant from index.css: a shadow this heavy only looks right at night. */}
-        <div data-paper className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
+        <div id="machine" data-paper className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
           <Header />
           {/* `key` gives each path a fresh boundary. Without it, after one crash the error
               message would stay on screen on every page you visit next. */}
@@ -71,6 +75,12 @@ export default function Layout() {
           <Footer />
         </div>
       </div>
+      {/* EXTRA: loaded after the page, with no fallback at all, so a broken or slow extra can't affect the shop. */}
+      <ErrorBoundary fallback={null}>
+        <Suspense fallback={null}>
+          <ExtrasHost />
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
 }
