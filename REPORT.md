@@ -14,10 +14,17 @@
 
 ## Beyond the spec
 
-These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal.
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. The places they draw are set aside in advance, so the page doesn't jump when they arrive.
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
-- **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. I can't hear audio, so I measured its levels instead, and the sound itself is for a person to judge.
+- **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
+- **LED ticker and night-shift cat:** the ticker's free-shipping line reads the real cart, so it can't disagree with what the cart charges.
+- **Item drop and pickup tray:** the tray stays off Checkout. Each step shortens the form, which slid the tray under the pointer, so the second click of a double click opened the cart and lost what had been typed.
+- **Receipt:** real order data. It says no payment was taken.
+- **Delivery tracker:** timed from the same steps as the order's status, with no timer running.
+- **Keypad:** reads the slot codes the cards already write into the page. It reads the physical key, so it works with a Georgian keyboard layout.
+- **Shake the machine:** lights a random slot and says so. It puts nothing in the cart, because a shop that adds things you didn't ask for is the wrong joke.
+- **10X overload:** type `1`, `0`, `X`. Nothing flashes more than twice in its 1.8 seconds, which is under the safe limit of three flashes a second.
 
 ## What was not done, and why
 

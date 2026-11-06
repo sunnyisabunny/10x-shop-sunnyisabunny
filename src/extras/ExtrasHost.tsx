@@ -7,7 +7,9 @@
 import "./extras.css";
 import ItemDrop from "./ItemDrop";
 import LedTicker from "./LedTicker";
+import MachinePanel from "./MachinePanel";
 import NightCat from "./NightCat";
+import Overload from "./Overload";
 import PickupTray from "./PickupTray";
 import Scene from "./Scene";
 import SoundToggle from "./sound/SoundToggle";
@@ -20,6 +22,8 @@ export default function ExtrasHost() {
       <NightCat />
       <PickupTray />
       <ItemDrop />
+      <MachinePanel />
+      <Overload />
       <SoundToggle />
     </>
   );
