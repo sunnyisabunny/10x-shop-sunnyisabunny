@@ -12,7 +12,7 @@ It is the graduation project for the 10X Front-end program. Login and checkout a
 
 [10x-shop-sunnyisabunny.vercel.app](https://10x-shop-sunnyisabunny.vercel.app)
 
-**Demo video:** [watch the 3-minute walkthrough](https://10x-shop-sunnyisabunny.vercel.app/demo/10x-shop-demo.mp4). It shows the full flow on the live site in a real browser. A script drives the recording and adds the captions, and there is no voice-over. The two shots where a request is blocked or its data is broken say so on screen.
+**Demo video:** [watch the 3-minute walkthrough](https://10x-shop-sunnyisabunny.vercel.app/demo/10x-shop-demo.mp4). It shows the full flow on the live site in a real browser. A script drives the recording, and the titles, captions, zooms and sound were added in editing with [HyperFrames](https://github.com/heygen-com/hyperframes). There is no voice-over. The two shots where a request is blocked or its data is broken say so on screen.
 
 ## Test Account
 
@@ -138,4 +138,5 @@ npm run dev
 - Built by [sunnyisabunny](https://github.com/sunnyisabunny) as the graduation project for the 10X Front-end program.
 - Developed with Claude Code as a pair-programming assistant. See [`ai-log.md`](ai-log.md).
 - Product data from [DummyJSON](https://dummyjson.com).
+- In the demo video: music by Sascha Ende at [ende.app](https://ende.app/en) (Happy Beats / Business Moves Vol. 12, CC BY 4.0), and sound effects by [Kenney](https://kenney.nl) and unicae_games (CC0). The rain, waves and machine sounds are the shop's own.
 - Fonts under the SIL Open Font License: [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [Doto](https://fonts.google.com/specimen/Doto), [Tilt Neon](https://fonts.google.com/specimen/Tilt+Neon), [DotGothic16](https://fonts.google.com/specimen/DotGothic16). The lettering on the street's signs also uses [Dela Gothic One](https://fonts.google.com/specimen/Dela+Gothic+One) and [Yuji Boku](https://fonts.google.com/specimen/Yuji+Boku).

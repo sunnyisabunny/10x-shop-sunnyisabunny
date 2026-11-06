@@ -162,7 +162,7 @@ I didn't take findings from its code reviews on trust. Most had to fail in a rea
 
 It also made mistakes that testing caught, which is why I don't take its word for things. Its first fix for the footer's layout shift did nothing (entry 14), and its first version of Endless requested the same products twice (entry 15).
 
-The demo video was also made this way. A script drives the live site in a real browser and adds the captions, and I didn't record it by hand. Watching the first take found what no test had: a Profile save that failed on screen while its caption said it had worked, and captions covering the shop's own messages. Those were faults in the script rather than in the shop, and they were fixed before the take the README links to.
+The demo video was also made this way. A script drives the live site in a real browser, and I didn't record it by hand. The titles, captions, zooms and sound were added in editing, and the footage runs 3% fast to fit the annex's three minutes. Watching the takes found what no test had: a Profile save that failed on screen while its caption said it had worked, captions covering the shop's own messages, and a street shot where the machine hid the road. Those were faults in the script rather than in the shop, and they were fixed before the take the README links to.
 
 ## Code review
 
