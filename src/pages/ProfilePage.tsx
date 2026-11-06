@@ -11,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import { useToast } from "../context/ToastContext";
+import { useWishlist } from "../context/WishlistContext";
 import { useOrders } from "../hooks/useOrders";
 import { useClearReviews } from "../hooks/useReviews";
 import type { Profile } from "../types/user";
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const { showToast } = useToast();
   const { orders, clearOrders } = useOrders();
   const clearReviews = useClearReviews();
+  const { clear: clearWishlist } = useWishlist();
   const navigate = useNavigate();
 
   /** The form's values, starting from the saved profile if there is one. */
@@ -70,15 +72,16 @@ export default function ProfilePage() {
   }
 
   /**
-   * PRD P7: empties the cart, orders and reviews, but keeps the login and the theme. Each goes through the code
+   * PRD P7: empties the cart, orders and reviews, and the wishlist, but keeps the login and the theme. Each goes through the code
    * that owns it. Removing the cart's storage key alone would do nothing: CartContext still holds the items,
    * and its effect would write them straight back on the next change.
    */
   function handleClearLocalData() {
-    if (window.confirm("Clear your cart, orders and reviews from this browser? This cannot be undone.")) {
+    if (window.confirm("Clear your cart, orders, reviews and wishlist from this browser? This cannot be undone.")) {
       clear();
       clearOrders();
       clearReviews();
+      clearWishlist();
       showToast("Local data cleared");
     }
   }

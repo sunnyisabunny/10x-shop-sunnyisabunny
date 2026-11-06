@@ -5,7 +5,7 @@
  */
 import { useLocation } from "react-router";
 import { useAddToCart } from "../../hooks/useAddToCart";
-import type { Product } from "../../types/product";
+import type { ProductSummary } from "../../types/product";
 import { PAGE_SIZE } from "../../utils/constants";
 import { slotCode } from "../../utils/format";
 import type { CatalogView } from "../../utils/url";
@@ -21,7 +21,7 @@ const columns = {
 };
 
 interface ProductGridProps {
-  products: Product[];
+  products: ProductSummary[];
   /** Grid unless the catalog says otherwise. Related products always use the grid. */
   view?: CatalogView;
 }

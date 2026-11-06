@@ -10,6 +10,7 @@ import Gallery from "../components/product/Gallery";
 import { PriceBlock, StockBadge } from "../components/product/PriceBlock";
 import RelatedProducts from "../components/product/RelatedProducts";
 import ReviewsPanel from "../components/product/ReviewsPanel";
+import WishlistButton from "../components/product/WishlistButton";
 import Button from "../components/ui/Button";
 import StateMessage from "../components/ui/StateMessage";
 import Stepper from "../components/ui/Stepper";
@@ -75,6 +76,7 @@ function ProductDetails({ product }: { product: Product }) {
             <Button disabled={isOut} onClick={() => addToCart(product, quantity)} className="flex-[1_1_200px]">
               {isOut ? "Out of stock" : "Add to cart"}
             </Button>
+            <WishlistButton product={product} labelled />
           </div>
         </div>
       </div>

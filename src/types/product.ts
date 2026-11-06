@@ -36,6 +36,12 @@ export interface Product {
   reviews: Review[];
 }
 
+/**
+ * What a product card needs. `Pick` copies these fields from Product, so they can't fall out of sync, and a full Product
+ * still fits anywhere a summary is expected. The wishlist saves only this.
+ */
+export type ProductSummary = Pick<Product, "id" | "title" | "price" | "discountPercentage" | "rating" | "stock" | "thumbnail" | "category" | "brand">;
+
 /** One entry from `GET /products/categories`. `slug` goes in URLs, `name` is what people read. */
 export interface Category {
   slug: string;
