@@ -48,6 +48,7 @@ Login is simulated, so there is no real account to find. Any username works with
 - A price range filter, on the price shown after discount
 - Checkout in three steps: Contact, Delivery and Review
 - An address book: save an address at Checkout, pick it next time, manage them on Profile
+- A Pages/Endless switch: Endless loads 12 more as you scroll, with a Load more button as well. A refresh or Back keeps your filters but starts again from the top, and a price range turns Endless off
 
 ## Tech Stack
 

@@ -70,8 +70,10 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
   const retry = useCallback(() => setAttempt((current) => current + 1), []);
 
   // An effect only runs after a render. So on the render where the path changes, `result` still holds the old path's
-  // answer, and drawing it would show the wrong data for a moment. Comparing the two paths means "loading" straight away.
-  const state: AsyncState<T> = result.path === path ? result.state : { status: "loading" };
+  // answer, and drawing it would show the wrong data for a moment. Comparing the two paths means "loading" straight away,
+  // or "idle" if there is now nothing to load, since no request is about to start.
+  const nextState: AsyncState<T> = path === null ? { status: "idle" } : { status: "loading" };
+  const state = result.path === path ? result.state : nextState;
 
   return { state, retry };
 }

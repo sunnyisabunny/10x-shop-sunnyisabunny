@@ -19,7 +19,7 @@ export default function CatalogPage() {
 
   // What to load comes from the URL, so a new filter means a new path, and useFetch cancels the old
   // request and starts the new one by itself.
-  const { state, retry } = useCatalogProducts(params);
+  const { state, retry, endless } = useCatalogProducts(params);
 
   /** The page heading, so keyboard focus has somewhere sensible to go after changing page. */
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -52,10 +52,10 @@ export default function CatalogPage() {
       <div className="px-1 tablet:px-0">
         <CatalogToolbar params={params} onChange={change} />
         {isPriceSort && <p className="mt-2 text-[13px] text-ink-soft">Sorted by list price, before discount.</p>}
-        {hasPriceRange(params) && <p className="mt-2 text-[13px] text-ink-soft">Filtered on the price shown, after discount.</p>}
+        {hasPriceRange(params) && <p className="mt-2 text-[13px] text-ink-soft">Filtered on the price shown, after discount. Endless is off while a price range is set.</p>}
       </div>
 
-      <CatalogResults state={state} page={params.page} view={params.view} onRetry={retry} onPageChange={handlePageChange} />
+      <CatalogResults state={state} page={params.page} view={params.view} endless={endless} onRetry={retry} onPageChange={handlePageChange} />
     </section>
   );
 }

@@ -9,6 +9,9 @@ import { PAGE_SIZE, SORT_OPTIONS, type SortValue } from "./constants";
 /** How the products are drawn. The default is left out of the URL, so a clean catalog keeps a clean address. */
 export type CatalogView = "grid" | "list";
 
+/** How the list is browsed. Pages is the default, as the PRD asks. Endless keeps adding to one list (BONUS). */
+export type CatalogMode = "pages" | "endless";
+
 /** What the catalog is showing, read from the URL. */
 export interface CatalogParams {
   q: string;
@@ -16,6 +19,7 @@ export interface CatalogParams {
   sort: SortValue;
   page: number;
   view: CatalogView;
+  mode: CatalogMode;
   /** The price range, or null for no limit on that side. */
   min: number | null;
   max: number | null;
@@ -31,6 +35,7 @@ export type CatalogChange =
   | { type: "sort"; sort: SortValue }
   | { type: "page"; page: number }
   | { type: "view"; view: CatalogView }
+  | { type: "mode"; mode: CatalogMode }
   | { type: "price"; min: string; max: string };
 
 /** A type guard: is this text one of our sort values? The URL can hold anything, because anyone can edit it. */
@@ -67,15 +72,32 @@ export function parseCatalogParams(searchParams: URLSearchParams): CatalogParams
   const high = parsePrice(searchParams.get("max"));
   // A range written backwards still has a clear meaning, so it is read the right way round.
   const isReversed = low !== null && high !== null && low > high;
+  // A price range needs the whole list in the browser, and Endless exists to avoid that, so the two don't combine. A
+  // hand-written URL with both gets the range. Endless also ignores `page`, because it always starts from the top.
+  const isEndless = searchParams.get("mode") === "endless" && low === null && high === null;
   return {
     q,
     category: q === "" ? (searchParams.get("category") ?? "") : "",
     sort: isSortValue(sort) ? sort : "",
-    page: Number.isSafeInteger(page) ? page : 1,
+    page: !isEndless && Number.isSafeInteger(page) ? page : 1,
     view: searchParams.get("view") === "list" ? "list" : "grid",
+    mode: isEndless ? "endless" : "pages",
     min: isReversed ? high : low,
     max: isReversed ? low : high,
   };
+}
+
+/** The catalog with every filter gone. The view and the mode aren't filters, so they stay as chosen. */
+export function clearedFiltersPath({ view, mode }: Pick<CatalogParams, "view" | "mode">): string {
+  const query = new URLSearchParams();
+  if (view === "list") {
+    query.set("view", "list");
+  }
+  if (mode === "endless") {
+    query.set("mode", "endless");
+  }
+  const text = query.toString();
+  return text === "" ? "/" : `/?${text}`;
 }
 
 /** Sets a parameter, or removes it when empty, so a clean catalog has a clean URL. */
@@ -117,10 +139,19 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
       // Unlike a filter, this keeps the page: the same products are just drawn differently.
       setOrDelete(next, "view", change.view === "list" ? "list" : "");
       break;
+    case "mode":
+      // A page number means nothing in Endless, and coming back to Pages starts from the top, like any new view of the list.
+      setOrDelete(next, "mode", change.mode === "endless" ? "endless" : "");
+      next.delete("page");
+      break;
     case "price":
       setOrDelete(next, "min", change.min);
       setOrDelete(next, "max", change.max);
       next.delete("page");
+      // The two don't combine, as `parseCatalogParams` explains, so the page says Endless is off while a range is set.
+      if (change.min !== "" || change.max !== "") {
+        next.delete("mode");
+      }
       break;
   }
   return next;
@@ -131,7 +162,12 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
  * search for "50% & up" can't break the URL. Sorting works on all three endpoints, which was tested live.
  */
 export function buildProductsUrl(params: CatalogParams): string {
-  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String((params.page - 1) * PAGE_SIZE) }));
+  return buildChunkUrl(params, (params.page - 1) * PAGE_SIZE);
+}
+
+/** The same path from any starting point. Pages asks for whole pages, and Endless asks from wherever its list has reached. */
+export function buildChunkUrl(params: CatalogParams, skip: number): string {
+  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String(skip) }));
 }
 
 /**
