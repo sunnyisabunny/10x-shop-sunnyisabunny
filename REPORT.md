@@ -153,13 +153,13 @@ Time from the first commit to the end of each stage, read from commit times and 
 
 Claude Code wrote nearly all of the code, the tests and the notes beside the code, working from the PRD and from my decisions. I decided the scope, the design direction, the extras and what to cut, and I reviewed the result in a browser. `ai-log.md` quotes my prompts word for word.
 
-Findings from its code reviews had to fail in a real browser test before anything changed. Some did not survive: two tabs overwriting each other's orders turned out to be unreachable. I rejected others on purpose, such as giving orders an owner, because the annex's model has none, and migrating an old cart format, because the site had never been deployed.
+I didn't take findings from its code reviews on trust. Most had to fail in a real browser test before anything changed, and some did not survive: two tabs overwriting each other's orders turned out to be unreachable. I rejected others on purpose, such as giving orders an owner, because the annex's model has none, and migrating an old cart format, because the site had never been deployed.
 
 It also made mistakes that testing caught, which is why I don't take its word for things. Its first fix for the footer's layout shift did nothing (entry 14), and its first version of Endless requested the same products twice (entry 15).
 
 ## Code review
 
-`/code-review` ran on the work before merging, and its findings were reproduced with browser tests before being fixed.
+`/code-review` ran on the work before merging. Most of its findings were reproduced with browser tests before being fixed. The rest, such as stale comments and some of the extras' sound timing, were fixed from reading the code.
 
 `/security-review` couldn't run from this setup, because the session isn't started inside the repo. These were checked by hand instead:
 - No raw HTML (`innerHTML`, `dangerouslySetInnerHTML`) anywhere in `src`.

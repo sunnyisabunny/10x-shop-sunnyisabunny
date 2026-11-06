@@ -288,3 +288,44 @@ So the new products went into the list, then React replayed the waiting presses 
 **Fix:** [`96cf6b0`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/96cf6b0): the hook has its own effect, and each answer joins the list in one normal update, as a function of the latest state, so React's queue can't lose it. The test now presses three times and expects one request.
 
 **What it taught:** setting state during a render is for making a value follow a prop, not for collecting data. Also, a page that looks right can still be wrong: nothing on the screen showed this, and only counting the requests did.
+
+---
+
+## 16. Sounds due in a hidden tab all waited, then played at once
+
+**Symptom:** with sound on, leaving the tab for a while and coming back would play everything that had come due, all together. A code review found this. Nobody had heard it yet, so I measured it instead.
+
+**Reproduce:**
+1. Check out `6dffddd`, build it and serve it.
+2. Press the speaker button, then switch to another tab for a few minutes.
+3. Come back. Everything due while you were away plays at once.
+
+**Tool:** code review, then a throwaway Playwright script that counted every call to `AudioScheduledSourceNode.start` and recorded when each one was due, while Playwright's clock ran 5 minutes of the page's timers with the tab hidden.
+
+**Measured:** before the fix, 3,593 audio sources were queued, all due within 10.8 seconds of each other. After it, 0. Playwright runs the timers at full speed and a real browser slows them in a hidden tab, so the real count would be lower, but they would pile up the same way.
+
+**Root cause:** the page has two clocks. Suspending the audio stops the audio clock, so `currentTime` stands still, but the engine's `setTimeout` timers belong to the page and they kept firing. Each one scheduled its sound at `currentTime` plus a small delay. Against a stopped clock those are nearly the same moment, so they all came due together when the audio resumed.
+
+**Fix:** [`deb32e0`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/deb32e0): when the tab is hidden, `SoundToggle` stops the engine's timers as well as suspending the audio, and `playSound` does nothing until the tab is back.
+
+**What it taught:** pausing one clock doesn't pause the other. Also, a sound bug can be measured by something that can't hear: counting what was scheduled and when was enough.
+
+---
+
+## 17. The speaker button did nothing in a browser with no Web Audio
+
+**Symptom:** in WebKit, pressing the speaker button changed nothing and showed no message, and each press threw `Can't find variable: AudioContext`. With sound saved as on, the first click anywhere on the page threw the same error. The shop kept working.
+
+**Reproduce:**
+1. Check out `a879ecd`, build it and serve it.
+2. In any browser, run `delete window.AudioContext` in the console.
+3. Press the speaker button. It stays off, and the console shows the error.
+
+**Tool:** `flow-extras.mjs` in three browsers, where every sound check failed in WebKit only. Then a throwaway script asked WebKit for `typeof AudioContext`, and the answer was `undefined`. Playwright's WebKit on Windows has no Web Audio at all.
+
+**Root cause:** `handleClick` called `wakeAudio()`, and only then `setIsOn`. `new AudioContext()` threw, so the next line never ran. An Error Boundary doesn't catch errors thrown in event handlers, so nothing appeared on screen either. The button was drawn without checking that what it controls exists.
+
+**Fix:** [`7319fbf`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/commit/7319fbf): `SoundToggle` checks for Web Audio once. Without it, no button is drawn and the first-click listener isn't added.
+
+**What it taught:** a failure in one browser can be two things at once. Those tests can't run on this build, but the reason they couldn't showed a real gap. And Error Boundaries only cover rendering, so a click handler has to look after itself.
+
