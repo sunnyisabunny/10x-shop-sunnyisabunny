@@ -132,3 +132,18 @@ The AI ran a code review on its own work twice during the FULL stage. Each findi
 
 **Its slips in this stretch:** a command it hadn't checked put an error message into a merged PR's description, where an Issue number belonged. A repeat of the test that deletes the extras didn't run at all because of a wrong path, and looked like a pass. It noticed both from the output and corrected them.
 
+---
+
+## Entry 11: the cars, the cat and the film
+
+**Goal:** fix what I found on the live site, and make the video feel finished.
+
+**Prompt (verbatim, the start of a longer message whose rest wasn't about the project):**
+> continue, for the video use our brag skills and all the motion graphics/advertisement knowledge and skills we got in our settings, the only issue i found is that the cars in the background showed up as invisible, and could you add the clickable animation to the cat, that if the cat is clicked it jumps up frightened, or when the machine shakesthe sound is good and the whole website runs fine.
+
+**What the AI did:** it drew real cars in place of two glowing dots (`DEBUG-LOG.md` entry 18), and made the cat a real button that jumps when clicked or when the machine shakes. It then rebuilt the video with HyperFrames: a cold open, chapter wipes, zooms that land just before each click, and the shop's own sounds rendered from its sound engine.
+
+**What it pointed out:** `/brag` makes clips of 15 to 25 seconds, and the annex asks for a 2 to 3 minute screen recording of the full flow. So it kept the real recording as the spine and used `/brag`'s deadpan tone, hook and sound rules around it. It also checked the music's licence before using it.
+
+**What it couldn't do:** it can't hear, so it measured the mix's levels and left the judgement to me.
+
