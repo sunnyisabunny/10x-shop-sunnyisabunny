@@ -160,6 +160,13 @@
     /* A very long word can't push the page sideways on a phone. */
     overflow-wrap: anywhere;
   }
+  /* Paper is white, whichever theme is on, and printers skip backgrounds to save ink. */
+  @media print {
+    html,
+    body {
+      background: #fff;
+    }
+  }
   /* A clear keyboard focus ring everywhere, in a colour that means nothing else. */
   :focus-visible {
     outline: 2px solid var(--color-focus);
