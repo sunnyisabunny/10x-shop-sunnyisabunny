@@ -5,7 +5,7 @@
  */
 import { Link } from "react-router";
 import type { AsyncState } from "../../types/api";
-import type { ProductsResponse } from "../../types/product";
+import type { ProductSummary, ProductsResponse } from "../../types/product";
 import { PAGE_SIZE } from "../../utils/constants";
 import type { CatalogView } from "../../utils/url";
 import Button, { buttonStyles } from "../ui/Button";
@@ -14,7 +14,7 @@ import Pagination from "./Pagination";
 import ProductGrid, { ProductGridSkeleton } from "./ProductGrid";
 
 interface CatalogResultsProps {
-  state: AsyncState<ProductsResponse>;
+  state: AsyncState<ProductsResponse<ProductSummary>>;
   page: number;
   view: CatalogView;
   onRetry: () => void;

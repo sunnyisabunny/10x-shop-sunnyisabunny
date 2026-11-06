@@ -16,6 +16,9 @@ export interface CatalogParams {
   sort: SortValue;
   page: number;
   view: CatalogView;
+  /** The price range, or null for no limit on that side. */
+  min: number | null;
+  max: number | null;
 }
 
 /**
@@ -27,11 +30,22 @@ export type CatalogChange =
   | { type: "category"; category: string }
   | { type: "sort"; sort: SortValue }
   | { type: "page"; page: number }
-  | { type: "view"; view: CatalogView };
+  | { type: "view"; view: CatalogView }
+  | { type: "price"; min: string; max: string };
 
 /** A type guard: is this text one of our sort values? The URL can hold anything, because anyone can edit it. */
 export function isSortValue(value: string): value is SortValue {
   return SORT_OPTIONS.some((option) => option.value === value);
+}
+
+/** Reads a price from the URL. A regex, because Number("1e3") would count as 1000 and Number("") as 0. */
+function parsePrice(text: string | null): number | null {
+  return text !== null && /^\d+(\.\d{1,2})?$/.test(text) ? Number(text) : null;
+}
+
+/** True when the catalog has a price range. */
+export function hasPriceRange({ min, max }: CatalogParams): boolean {
+  return min !== null || max !== null;
 }
 
 /**
@@ -44,12 +58,18 @@ export function parseCatalogParams(searchParams: URLSearchParams): CatalogParams
   const sort = searchParams.get("sort") ?? "";
   const pageText = searchParams.get("page") ?? "";
   const page = /^[1-9]\d*$/.test(pageText) ? Number(pageText) : 1;
+  const low = parsePrice(searchParams.get("min"));
+  const high = parsePrice(searchParams.get("max"));
+  // Someone can write a range backwards by hand in the URL, and its meaning is still clear.
+  const isReversed = low !== null && high !== null && low > high;
   return {
     q,
     category: q === "" ? (searchParams.get("category") ?? "") : "",
     sort: isSortValue(sort) ? sort : "",
     page: Number.isSafeInteger(page) ? page : 1,
     view: searchParams.get("view") === "list" ? "list" : "grid",
+    min: isReversed ? high : low,
+    max: isReversed ? low : high,
   };
 }
 
@@ -92,6 +112,11 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
       // Unlike a filter, this keeps the page: the same products are just drawn differently.
       setOrDelete(next, "view", change.view === "list" ? "list" : "");
       break;
+    case "price":
+      setOrDelete(next, "min", change.min);
+      setOrDelete(next, "max", change.max);
+      next.delete("page");
+      break;
   }
   return next;
 }
@@ -101,8 +126,19 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
  * search for "50% & up" can't break the URL. Sorting works on all three endpoints, which was tested live.
  */
 export function buildProductsUrl(params: CatalogParams): string {
-  const query = new URLSearchParams({ limit: String(PAGE_SIZE), skip: String((params.page - 1) * PAGE_SIZE) });
+  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String((params.page - 1) * PAGE_SIZE) }));
+}
 
+/**
+ * The same path for the whole list, with only the fields a card needs: `limit=0` means "all" to this API, and `select`
+ * leaves out descriptions, reviews and photos. Search and category still apply, because those the API can do itself.
+ */
+export function buildFullListUrl(params: CatalogParams): string {
+  return productsPath(params, new URLSearchParams({ limit: "0", select: "title,price,discountPercentage,rating,stock,thumbnail,category,brand" }));
+}
+
+/** Adds the sort and chooses the right endpoint. The two functions above differ only in how much they ask for. */
+function productsPath(params: CatalogParams, query: URLSearchParams): string {
   const sortOption = SORT_OPTIONS.find((option) => option.value === params.sort);
   if (sortOption && "sortBy" in sortOption) {
     query.set("sortBy", sortOption.sortBy);

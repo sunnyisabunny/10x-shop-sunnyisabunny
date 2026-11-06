@@ -38,7 +38,7 @@ export interface Product {
 
 /**
  * What a product card needs. `Pick` copies these fields from Product, so they can't fall out of sync, and a full Product
- * still fits anywhere a summary is expected. The wishlist saves only this.
+ * still fits anywhere a summary is expected. The wishlist saves only this, and the price filter loads only this.
  */
 export type ProductSummary = Pick<Product, "id" | "title" | "price" | "discountPercentage" | "rating" | "stock" | "thumbnail" | "category" | "brand">;
 
@@ -49,9 +49,12 @@ export interface Category {
   url: string;
 }
 
-/** The API's list envelope. `total` is how many exist, not how many came back in `products`. */
-export interface ProductsResponse {
-  products: Product[];
+/**
+ * The API's list envelope. `total` is how many exist, not how many came back in `products`. It is generic because the
+ * price filter asks for fewer fields. `= Product` means anyone who doesn't say otherwise gets full products.
+ */
+export interface ProductsResponse<T = Product> {
+  products: T[];
   total: number;
   skip: number;
   limit: number;
