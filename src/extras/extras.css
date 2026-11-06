@@ -416,3 +416,71 @@
     opacity: 0;
   }
 }
+
+/* The LED ticker. Only `transform` moves, so it costs no paints. Pointing at it pauses it, for anyone trying to read it. */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  gap: 56px;
+  padding-right: 56px;
+  color: var(--color-led);
+  font-family: var(--font-led);
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 36px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: ticker-run 46s linear infinite;
+}
+
+#ticker-slot:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-run {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* The night-shift cat. Off duty by day, and phones have no room above the machine. */
+.night-cat {
+  display: none;
+  position: absolute;
+  top: -49px;
+  right: 96px;
+  width: 80px;
+  height: 50px;
+  pointer-events: none;
+}
+
+@media (min-width: 30.0625rem) {
+  [data-theme="dark"] .night-cat {
+    display: block;
+  }
+}
+
+.night-cat-zz {
+  position: absolute;
+  top: -6px;
+  left: -16px;
+  color: var(--color-ink-soft);
+  font-family: var(--font-led);
+  font-size: 18px;
+  font-weight: 900;
+  animation: cat-zz 3.6s steps(3) infinite;
+}
+
+@keyframes cat-zz {
+  from {
+    opacity: 0.2;
+    transform: translateY(6px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
