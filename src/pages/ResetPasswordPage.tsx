@@ -7,11 +7,11 @@
 import { useFormik } from "formik";
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import AuthCard, { authLinkStyles } from "../components/ui/AuthCard";
-import { buttonStyles } from "../components/ui/Button";
-import FormField from "../components/ui/FormField";
-import type { ResetPasswordValues } from "../types/user";
-import { resetPasswordSchema } from "../utils/authSchemas";
+import AuthCard, { authLinkStyles } from "@/components/ui/AuthCard";
+import { buttonStyles } from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
+import type { ResetPasswordValues } from "@/types/user";
+import { resetPasswordSchema } from "@/utils/authSchemas";
 
 export default function ResetPasswordPage() {
   const location = useLocation();

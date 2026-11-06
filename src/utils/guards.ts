@@ -6,11 +6,11 @@
  * Using a guard instead of an `as` cast matters: `as` only silences the compiler, a guard really checks.
  * Connects to: `useFetch`, `StorageService` users and the reducer's exhaustiveness check.
  */
-import { ApiError } from "../api/ApiError";
-import type { CartItem, CartState } from "../types/cart";
-import type { OrderRecord, SavedAddress, ShippingInfo } from "../types/order";
-import type { ProductSummary, Review, StoredReviews } from "../types/product";
-import type { AuthUser, Profile, StoredProfiles } from "../types/user";
+import { ApiError } from "@/api/ApiError";
+import type { CartItem, CartState } from "@/types/cart";
+import type { OrderRecord, SavedAddress, ShippingInfo } from "@/types/order";
+import type { ProductSummary, Review, StoredReviews } from "@/types/product";
+import type { AuthUser, Profile, StoredProfiles } from "@/types/user";
 import { COUNTRIES, PROMO_CODE } from "./constants";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */

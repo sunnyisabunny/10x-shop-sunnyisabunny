@@ -3,8 +3,8 @@
  * Why it exists: the catalog card and the product page must show these identically (PRD P2.3, P3.3).
  * Connects to: `ProductCard` and `ProductPage`. All rules come from `constants.ts`.
  */
-import { LOW_STOCK_LIMIT, MIN_DISCOUNT_BADGE_PERCENT } from "../../utils/constants";
-import { discountedPrice, formatPrice } from "../../utils/format";
+import { LOW_STOCK_LIMIT, MIN_DISCOUNT_BADGE_PERCENT } from "@/utils/constants";
+import { discountedPrice, formatPrice } from "@/utils/format";
 
 interface PriceBlockProps {
   price: number;

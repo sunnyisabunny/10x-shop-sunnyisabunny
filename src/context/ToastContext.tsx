@@ -5,7 +5,7 @@
  * Connects to: `App.tsx` wraps the app in `ToastProvider`.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { TOAST_MS } from "../utils/constants";
+import { TOAST_MS } from "@/utils/constants";
 
 interface ToastContextValue {
   showToast: (message: string) => void;

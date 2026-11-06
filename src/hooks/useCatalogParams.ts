@@ -8,7 +8,7 @@
  */
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
-import { nextSearchParams, parseCatalogParams, type CatalogChange, type CatalogParams } from "../utils/url";
+import { nextSearchParams, parseCatalogParams, type CatalogChange, type CatalogParams } from "@/utils/url";
 
 export interface UseCatalogParamsResult {
   params: CatalogParams;

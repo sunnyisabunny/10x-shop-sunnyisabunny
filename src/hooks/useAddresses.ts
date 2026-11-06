@@ -4,9 +4,9 @@
  * Connects to: `useLocalStorage` saves them under `shop_addresses`. "Clear local data" on Profile empties them.
  */
 import { useCallback } from "react";
-import type { SavedAddress } from "../types/order";
-import { STORAGE_KEYS } from "../utils/constants";
-import { addressKey, parseAddresses } from "../utils/guards";
+import type { SavedAddress } from "@/types/order";
+import { STORAGE_KEYS } from "@/utils/constants";
+import { addressKey, parseAddresses } from "@/utils/guards";
 import { useLocalStorage } from "./useLocalStorage";
 
 export { addressKey };

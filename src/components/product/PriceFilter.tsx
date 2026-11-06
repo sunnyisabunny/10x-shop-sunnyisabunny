@@ -5,9 +5,9 @@
  * Connects to: `CatalogToolbar` draws this and passes `onChange`. `useCatalogProducts` does the filtering.
  */
 import { useState, type FormEvent } from "react";
-import { hasPriceRange, isPriceText } from "../../utils/url";
-import Button from "../ui/Button";
-import { inputStyles, labelStyles } from "../ui/FormField";
+import { hasPriceRange, isPriceText } from "@/utils/url";
+import Button from "@/components/ui/Button";
+import { inputStyles, labelStyles } from "@/components/ui/FormField";
 
 interface PriceFilterProps {
   min: number | null;

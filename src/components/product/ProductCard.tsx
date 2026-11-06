@@ -8,10 +8,10 @@
  */
 import { memo } from "react";
 import { Link } from "react-router";
-import type { ProductSummary } from "../../types/product";
-import { formatCategory } from "../../utils/format";
-import type { CatalogView } from "../../utils/url";
-import Button from "../ui/Button";
+import type { ProductSummary } from "@/types/product";
+import { formatCategory } from "@/utils/format";
+import type { CatalogView } from "@/utils/url";
+import Button from "@/components/ui/Button";
 import { DiscountBadge, PriceBlock, StockBadge } from "./PriceBlock";
 import WishlistButton from "./WishlistButton";
 

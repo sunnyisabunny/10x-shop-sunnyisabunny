@@ -3,8 +3,8 @@
  * Why it exists: the list and the details page must show a status identically.
  * Connects to: `OrdersPage` uses the badge, and `OrderDetailPage` uses both.
  */
-import type { OrderStatus } from "../../types/order";
-import { ORDER_STATUS_STEPS } from "../../utils/constants";
+import type { OrderStatus } from "@/types/order";
+import { ORDER_STATUS_STEPS } from "@/utils/constants";
 
 /** The PRD's colours per status. `Record<OrderStatus, ...>` means forgetting one doesn't compile. */
 const badgeStyles: Record<OrderStatus, string> = {

@@ -5,9 +5,9 @@
  * Connects to: `useLocalStorage` saves the local ones under `shop_reviews`. `ProductPage` calls this hook.
  */
 import { useCallback, useMemo } from "react";
-import type { Product, Review, StoredReviews } from "../types/product";
-import { STORAGE_KEYS } from "../utils/constants";
-import { parseStoredReviews } from "../utils/guards";
+import type { Product, Review, StoredReviews } from "@/types/product";
+import { STORAGE_KEYS } from "@/utils/constants";
+import { parseStoredReviews } from "@/utils/guards";
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface UseReviewsResult {

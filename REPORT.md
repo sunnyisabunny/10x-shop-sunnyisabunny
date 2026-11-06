@@ -7,7 +7,7 @@
 | Module | CORE | FULL | BONUS |
 |---|---|---|---|
 | React | Done | Done: `useReducer`, custom hooks, Formik and Yup, Orders, Profile, reviews, related products, promo code | Done: wishlist, grid and list view, printable invoice, Checkout in three steps, price range filter, address book, Endless |
-| TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | |
+| TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | Done: `@/` path alias |
 | Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens | Done: dark mode, custom variants and utilities |
 | Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 15 real bugs in the log | |
 | Practical project | Done: README, PLAN, REPORT, Git history, deploy | 63 Issues, a Projects board, milestones and PRs linked to Issues. Not fully met: see below | |

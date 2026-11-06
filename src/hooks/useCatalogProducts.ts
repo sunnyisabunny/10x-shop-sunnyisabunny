@@ -11,10 +11,10 @@
  * what the list is. `REPORT.md` discloses this.
  */
 import { useMemo } from "react";
-import type { ProductSummary, ProductsResponse } from "../types/product";
-import { PAGE_SIZE } from "../utils/constants";
-import { discountedPrice } from "../utils/format";
-import { buildFullListUrl, buildProductsUrl, hasPriceRange, type CatalogParams } from "../utils/url";
+import type { ProductSummary, ProductsResponse } from "@/types/product";
+import { PAGE_SIZE } from "@/utils/constants";
+import { discountedPrice } from "@/utils/format";
+import { buildFullListUrl, buildProductsUrl, hasPriceRange, type CatalogParams } from "@/utils/url";
 import { useEndlessProducts, type EndlessControls } from "./useEndlessProducts";
 import { useFetch, type UseFetchResult } from "./useFetch";
 

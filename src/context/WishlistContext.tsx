@@ -7,10 +7,10 @@
  * It keeps each product's card fields, not just its id, so the page can draw the cards without asking the API again.
  */
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage";
-import type { ProductSummary } from "../types/product";
-import { STORAGE_KEYS } from "../utils/constants";
-import { parseWishlist } from "../utils/guards";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import type { ProductSummary } from "@/types/product";
+import { STORAGE_KEYS } from "@/utils/constants";
+import { parseWishlist } from "@/utils/guards";
 
 interface WishlistContextValue {
   items: ProductSummary[];

@@ -4,11 +4,11 @@
  * Connects to: `useOrders` (the data), `useNow` (the clock), `OrderStatusBadge`, and each order's details page.
  */
 import { Link } from "react-router";
-import { OrderStatusBadge } from "../components/order/OrderStatus";
-import { buttonStyles } from "../components/ui/Button";
-import StateMessage from "../components/ui/StateMessage";
-import { useNow, useOrders } from "../hooks/useOrders";
-import { formatDate, formatItemCount, formatPrice } from "../utils/format";
+import { OrderStatusBadge } from "@/components/order/OrderStatus";
+import { buttonStyles } from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import { useNow, useOrders } from "@/hooks/useOrders";
+import { formatDate, formatItemCount, formatPrice } from "@/utils/format";
 
 export default function OrdersPage() {
   const { orders } = useOrders();

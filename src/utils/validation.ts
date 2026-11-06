@@ -4,8 +4,8 @@
  * texts must match the PRD word for word, so they live in one place.
  * Connects to: the Checkout and Profile forms. Login, Sign Up and Reset use Yup instead, in `authSchemas.ts`.
  */
-import type { ShippingInfo } from "../types/order";
-import type { Profile } from "../types/user";
+import type { ShippingInfo } from "@/types/order";
+import type { Profile } from "@/types/user";
 import { MIN_ADDRESS_LENGTH, MIN_FULL_NAME_LENGTH, MIN_NAME_LENGTH } from "./constants";
 
 /**

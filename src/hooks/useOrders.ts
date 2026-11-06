@@ -4,10 +4,10 @@
  * Connects to: `useLocalStorage` saves under `shop_orders`. `models/Order.ts` holds the status rules.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Order } from "../models/Order";
-import type { OrderRecord } from "../types/order";
-import { ORDER_REFRESH_MS, STORAGE_KEYS } from "../utils/constants";
-import { parseOrders } from "../utils/guards";
+import { Order } from "@/models/Order";
+import type { OrderRecord } from "@/types/order";
+import { ORDER_REFRESH_MS, STORAGE_KEYS } from "@/utils/constants";
+import { parseOrders } from "@/utils/guards";
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface UseOrdersResult {

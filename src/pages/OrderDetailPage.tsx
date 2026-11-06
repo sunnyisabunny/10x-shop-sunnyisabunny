@@ -5,20 +5,20 @@
  */
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
-import Invoice from "../components/order/Invoice";
-import { OrderStatusBadge, OrderTimeline } from "../components/order/OrderStatus";
-import Button from "../components/ui/Button";
-import ErrorBoundary from "../components/ui/ErrorBoundary";
-import { useCart } from "../context/CartContext";
-import { useToast } from "../context/ToastContext";
-import { useNow, useOrders } from "../hooks/useOrders";
-import type { CartItem } from "../types/cart";
-import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "../utils/format";
+import Invoice from "@/components/order/Invoice";
+import { OrderStatusBadge, OrderTimeline } from "@/components/order/OrderStatus";
+import Button from "@/components/ui/Button";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
+import { useNow, useOrders } from "@/hooks/useOrders";
+import type { CartItem } from "@/types/cart";
+import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "@/utils/format";
 import NotFoundPage from "./NotFoundPage";
 
 // EXTRA: the printed receipt and the truck. Deleting these two lines and their uses below leaves a complete page.
-const Receipt = lazy(() => import("../extras/Receipt"));
-const TruckTracker = lazy(() => import("../extras/TruckTracker"));
+const Receipt = lazy(() => import("@/extras/Receipt"));
+const TruckTracker = lazy(() => import("@/extras/TruckTracker"));
 
 /** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */
 function isJustPlaced(state: unknown): boolean {

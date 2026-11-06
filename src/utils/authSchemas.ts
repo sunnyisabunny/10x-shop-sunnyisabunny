@@ -11,7 +11,7 @@
  * undefined. So an empty password shows "Password is required" and not the length message.
  */
 import { object, ref, string, type ObjectSchema } from "yup";
-import type { LoginFormValues, ResetPasswordValues, SignUpFormValues } from "../types/user";
+import type { LoginFormValues, ResetPasswordValues, SignUpFormValues } from "@/types/user";
 import { MIN_PASSWORD_LENGTH } from "./constants";
 import { EMAIL_PATTERN } from "./validation";
 

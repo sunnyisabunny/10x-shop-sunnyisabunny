@@ -4,9 +4,9 @@
  * which is the PRD's main evidence of composition.
  * Connects to: `ProductPage`. It loads its own data, so a failure here can't take down the product itself.
  */
-import { useFetch } from "../../hooks/useFetch";
-import type { ProductsResponse } from "../../types/product";
-import { RELATED_FETCH_LIMIT, RELATED_SHOW_LIMIT } from "../../utils/constants";
+import { useFetch } from "@/hooks/useFetch";
+import type { ProductsResponse } from "@/types/product";
+import { RELATED_FETCH_LIMIT, RELATED_SHOW_LIMIT } from "@/utils/constants";
 import ProductGrid from "./ProductGrid";
 
 interface RelatedProductsProps {

@@ -4,9 +4,9 @@
  * Connects to: `CartPage` passes the item and the two callbacks, so this component doesn't need the context.
  */
 import { Link } from "react-router";
-import type { CartItem } from "../../types/cart";
-import { discountedPrice, formatPrice } from "../../utils/format";
-import Stepper from "../ui/Stepper";
+import type { CartItem } from "@/types/cart";
+import { discountedPrice, formatPrice } from "@/utils/format";
+import Stepper from "@/components/ui/Stepper";
 
 interface CartLineProps {
   item: CartItem;

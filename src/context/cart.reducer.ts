@@ -5,8 +5,8 @@
  * the same output, and it can be tested without React.
  * Connects to: `CartContext` calls `useReducer(cartReducer, ...)`. Saving to storage happens there, not here.
  */
-import type { CartItem, CartProductInput, CartState } from "../types/cart";
-import { assertNever } from "../utils/guards";
+import type { CartItem, CartProductInput, CartState } from "@/types/cart";
+import { assertNever } from "@/utils/guards";
 
 /**
  * A discriminated union: `type` says which action it is, and TypeScript knows the other fields for each one.

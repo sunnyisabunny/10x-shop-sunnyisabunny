@@ -7,9 +7,9 @@
  * OOP shown here: `implements ICart` (a promise the class must keep), `private readonly` fields, a getter
  * (`itemCount` reads like a property), and `static` values that belong to the class, not to one cart.
  */
-import type { CartItem } from "../types/cart";
-import { FREE_SHIPPING_FROM, PROMO_CODE, PROMO_PERCENT, SHIPPING_COST } from "../utils/constants";
-import { lineTotal } from "../utils/format";
+import type { CartItem } from "@/types/cart";
+import { FREE_SHIPPING_FROM, PROMO_CODE, PROMO_PERCENT, SHIPPING_COST } from "@/utils/constants";
+import { lineTotal } from "@/utils/format";
 
 /** What any cart must be able to answer. */
 export interface ICart {

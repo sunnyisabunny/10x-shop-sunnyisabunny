@@ -6,7 +6,7 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useSlot } from "./useSlot";
 
 /** How many pictures fit in the tray on a wide screen. Narrower screens show fewer, and the newest come first, so they stay in sight. */

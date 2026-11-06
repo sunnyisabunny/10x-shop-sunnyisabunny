@@ -10,7 +10,7 @@
  *
  * OOP shown here: `private` fields hide the node graph, and the rest of the app only calls `setTheme`, `setOn`, `play`.
  */
-import type { Theme } from "../../utils/guards";
+import type { Theme } from "@/utils/guards";
 
 /** Every short sound that can be played on demand. A union, so a misspelled name doesn't compile. */
 export type SoundName = "bell" | "train" | "car" | "chime" | "gull" | "boat" | "drop" | "rattle" | "print" | "key" | "overload";

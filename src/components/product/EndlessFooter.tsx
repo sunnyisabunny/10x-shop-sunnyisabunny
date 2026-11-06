@@ -4,8 +4,8 @@
  * Connects to: `CatalogResults` draws this. `useEndlessProducts` supplies `more` and `onLoadMore`.
  */
 import { useEffect, useRef } from "react";
-import type { MoreState } from "../../hooks/useEndlessProducts";
-import Button from "../ui/Button";
+import type { MoreState } from "@/hooks/useEndlessProducts";
+import Button from "@/components/ui/Button";
 
 /** How far below the screen the next chunk starts loading, so people rarely catch up with the end of the list. */
 const LOAD_AHEAD = "400px";

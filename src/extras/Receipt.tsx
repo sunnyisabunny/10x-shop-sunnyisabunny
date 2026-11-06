@@ -5,8 +5,8 @@
  * every number comes from it. The page already shows all this in text, so `aria-hidden` saves screen readers hearing it twice.
  */
 import { useEffect } from "react";
-import type { OrderRecord } from "../types/order";
-import { formatDiscount, formatPrice, formatShipping, lineTotal } from "../utils/format";
+import type { OrderRecord } from "@/types/order";
+import { formatDiscount, formatPrice, formatShipping, lineTotal } from "@/utils/format";
 import { playSound } from "./sound/SoundToggle";
 
 /** One line of the receipt, with its label on the left and its amount on the right. */

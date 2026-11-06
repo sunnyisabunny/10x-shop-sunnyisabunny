@@ -7,10 +7,10 @@
  * `<T>` is a generic: `useFetch<Product>(...)` gives a state whose `data` is a Product. One hook, many types.
  */
 import { useCallback, useEffect, useState } from "react";
-import { api } from "../api/ApiClient";
-import type { AsyncState } from "../types/api";
-import { UNEXPECTED_ERROR } from "../utils/constants";
-import { isApiError } from "../utils/guards";
+import { api } from "@/api/ApiClient";
+import type { AsyncState } from "@/types/api";
+import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { isApiError } from "@/utils/guards";
 
 /** A hook's return value is its public API, so it gets a named shape like a component's props. */
 export interface UseFetchResult<T> {

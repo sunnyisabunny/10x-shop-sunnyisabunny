@@ -6,17 +6,17 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router";
-import CartSummary from "../components/cart/CartSummary";
-import CheckoutForm from "../components/cart/CheckoutForm";
-import { useCart } from "../context/CartContext";
-import { useToast } from "../context/ToastContext";
-import { useAddresses } from "../hooks/useAddresses";
-import { useOrders } from "../hooks/useOrders";
-import { Cart } from "../models/Cart";
-import { Order } from "../models/Order";
-import type { ShippingInfo } from "../types/order";
-import { PLACE_ORDER_DELAY_MS } from "../utils/constants";
-import { formatPrice, lineTotal } from "../utils/format";
+import CartSummary from "@/components/cart/CartSummary";
+import CheckoutForm from "@/components/cart/CheckoutForm";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
+import { useAddresses } from "@/hooks/useAddresses";
+import { useOrders } from "@/hooks/useOrders";
+import { Cart } from "@/models/Cart";
+import { Order } from "@/models/Order";
+import type { ShippingInfo } from "@/types/order";
+import { PLACE_ORDER_DELAY_MS } from "@/utils/constants";
+import { formatPrice, lineTotal } from "@/utils/format";
 
 export default function CheckoutPage() {
   const { items, promoCode, clear } = useCart();

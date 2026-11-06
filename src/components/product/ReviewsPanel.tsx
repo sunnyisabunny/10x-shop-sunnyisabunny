@@ -4,13 +4,13 @@
  * Connects to: `ProductPage` passes the list and `onAdd`. The new review goes through `useReviews`.
  */
 import { useState, type FormEvent } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../context/ToastContext";
-import type { Review } from "../../types/product";
-import { MIN_COMMENT_LENGTH } from "../../utils/constants";
-import { formatDate } from "../../utils/format";
-import { buttonStyles } from "../ui/Button";
-import { inputStyles } from "../ui/FormField";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import type { Review } from "@/types/product";
+import { MIN_COMMENT_LENGTH } from "@/utils/constants";
+import { formatDate } from "@/utils/format";
+import { buttonStyles } from "@/components/ui/Button";
+import { inputStyles } from "@/components/ui/FormField";
 
 interface ReviewsPanelProps {
   reviews: Review[];

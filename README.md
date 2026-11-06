@@ -93,7 +93,10 @@ src/
     cart/      cart lines, totals, checkout form
     order/     status badge and timeline
   utils/       constants, formatting, validation, URL rules, type guards
+  extras/      everything beyond the spec. The shop still works if this folder is deleted
 ```
+
+Imports that leave their own folder use the `@/` alias, so `@/utils/format` means `src/utils/format`. Files in the same folder use `./`, which shows they belong together.
 
 **How data flows:** a user action calls an event handler, which updates state. The cart goes through a reducer, so every change follows one set of rules, and an effect then saves the result. Filters, sorting and the page number live in the URL rather than in state, so the URL is the single source of truth, and `useFetch` loads whatever it describes. A newer request cancels an older one with `AbortController`, so a slow answer can't overwrite a newer one.
 

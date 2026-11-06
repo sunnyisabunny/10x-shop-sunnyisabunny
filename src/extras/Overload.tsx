@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "@/context/ToastContext";
 import { isForSomethingElse, printedKey } from "./keys";
 import { playSound } from "./sound/SoundToggle";
 

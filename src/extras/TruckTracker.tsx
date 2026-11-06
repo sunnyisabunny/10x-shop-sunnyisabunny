@@ -5,8 +5,8 @@
  * `aria-hidden` keeps this from screen readers. Delivery is simulated, and the shop says so everywhere it matters.
  */
 import { useState } from "react";
-import type { OrderStatus } from "../types/order";
-import { ORDER_STATUS_STEPS } from "../utils/constants";
+import type { OrderStatus } from "@/types/order";
+import { ORDER_STATUS_STEPS } from "@/utils/constants";
 
 /** When the truck leaves and arrives, read from the same steps as the status, so changing a timing moves both together. */
 const LEAVES_AT_MS = ORDER_STATUS_STEPS[0].untilMs;

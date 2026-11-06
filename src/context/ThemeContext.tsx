@@ -5,9 +5,9 @@
  * follows the `data-theme` attribute set here.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { StorageService } from "../models/StorageService";
-import { STORAGE_KEYS, THEME_BAR_COLORS } from "../utils/constants";
-import { parseTheme, type Theme } from "../utils/guards";
+import { StorageService } from "@/models/StorageService";
+import { STORAGE_KEYS, THEME_BAR_COLORS } from "@/utils/constants";
+import { parseTheme, type Theme } from "@/utils/guards";
 
 interface ThemeContextValue {
   theme: Theme;

@@ -4,11 +4,11 @@
  * Connects to: `CatalogPage` passes it the products, and it draws one `ProductCard` for each.
  */
 import { useLocation } from "react-router";
-import { useAddToCart } from "../../hooks/useAddToCart";
-import type { ProductSummary } from "../../types/product";
-import { PAGE_SIZE } from "../../utils/constants";
-import { slotCode } from "../../utils/format";
-import type { CatalogView } from "../../utils/url";
+import { useAddToCart } from "@/hooks/useAddToCart";
+import type { ProductSummary } from "@/types/product";
+import { PAGE_SIZE } from "@/utils/constants";
+import { slotCode } from "@/utils/format";
+import type { CatalogView } from "@/utils/url";
 import ProductCard from "./ProductCard";
 
 /**

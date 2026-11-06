@@ -6,7 +6,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useSlot } from "./useSlot";
 
 /** How long the cat stays awake before going back to sleep. */

@@ -4,13 +4,13 @@
  * Connects to: `CartContext` holds the data. `CartLine` and `CartSummary` draw it.
  */
 import { Link, useNavigate } from "react-router";
-import CartLine from "../components/cart/CartLine";
-import CartSummary from "../components/cart/CartSummary";
-import Button, { buttonStyles } from "../components/ui/Button";
-import StateMessage from "../components/ui/StateMessage";
-import { useCart } from "../context/CartContext";
-import { useToast } from "../context/ToastContext";
-import { formatItemCount } from "../utils/format";
+import CartLine from "@/components/cart/CartLine";
+import CartSummary from "@/components/cart/CartSummary";
+import Button, { buttonStyles } from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
+import { formatItemCount } from "@/utils/format";
 
 export default function CartPage() {
   const { items, itemCount, removeItem, setQuantity, clear } = useCart();

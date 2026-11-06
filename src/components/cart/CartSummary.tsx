@@ -4,10 +4,10 @@
  * Connects to: `useCart` supplies the numbers. Pages decide what goes in `children`, such as a button.
  */
 import { useState, type FormEvent, type ReactNode } from "react";
-import { useCart } from "../../context/CartContext";
-import { PROMO_PERCENT } from "../../utils/constants";
-import { formatDiscount, formatPrice, formatShipping } from "../../utils/format";
-import { inputStyles } from "../ui/FormField";
+import { useCart } from "@/context/CartContext";
+import { PROMO_PERCENT } from "@/utils/constants";
+import { formatDiscount, formatPrice, formatShipping } from "@/utils/format";
+import { inputStyles } from "@/components/ui/FormField";
 
 interface CartSummaryProps {
   /** Only the Cart page can add or remove a promo code. Checkout just shows the result. */

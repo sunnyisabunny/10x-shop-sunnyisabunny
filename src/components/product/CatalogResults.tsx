@@ -4,13 +4,13 @@
  * Connects to: `CatalogPage` passes the loaded state. `ProductGrid`, `Pagination` and `EndlessFooter` do the drawing.
  */
 import { Link } from "react-router";
-import type { EndlessControls } from "../../hooks/useEndlessProducts";
-import type { AsyncState } from "../../types/api";
-import type { ProductSummary, ProductsResponse } from "../../types/product";
-import { PAGE_SIZE } from "../../utils/constants";
-import { clearedFiltersPath, type CatalogView } from "../../utils/url";
-import Button, { buttonStyles } from "../ui/Button";
-import StateMessage from "../ui/StateMessage";
+import type { EndlessControls } from "@/hooks/useEndlessProducts";
+import type { AsyncState } from "@/types/api";
+import type { ProductSummary, ProductsResponse } from "@/types/product";
+import { PAGE_SIZE } from "@/utils/constants";
+import { clearedFiltersPath, type CatalogView } from "@/utils/url";
+import Button, { buttonStyles } from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
 import EndlessFooter from "./EndlessFooter";
 import Pagination from "./Pagination";
 import ProductGrid, { ProductGridSkeleton } from "./ProductGrid";

@@ -6,8 +6,8 @@
  * A rule in `index.css` looks for the `invoice` class below and takes everything marked `data-screen-only` off paper. It
  * only applies when an invoice is on the page, so printing any other page isn't affected.
  */
-import type { Order } from "../../models/Order";
-import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "../../utils/format";
+import type { Order } from "@/models/Order";
+import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "@/utils/format";
 
 /** One line in the totals. */
 function TotalRow({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {

@@ -5,20 +5,20 @@
  */
 import { useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
-import { productPath } from "../api/products.api";
-import Gallery from "../components/product/Gallery";
-import { PriceBlock, StockBadge } from "../components/product/PriceBlock";
-import RelatedProducts from "../components/product/RelatedProducts";
-import ReviewsPanel from "../components/product/ReviewsPanel";
-import WishlistButton from "../components/product/WishlistButton";
-import Button from "../components/ui/Button";
-import StateMessage from "../components/ui/StateMessage";
-import Stepper from "../components/ui/Stepper";
-import { useAddToCart } from "../hooks/useAddToCart";
-import { useFetch } from "../hooks/useFetch";
-import { useReviews } from "../hooks/useReviews";
-import type { Product } from "../types/product";
-import { formatCategory } from "../utils/format";
+import { productPath } from "@/api/products.api";
+import Gallery from "@/components/product/Gallery";
+import { PriceBlock, StockBadge } from "@/components/product/PriceBlock";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import ReviewsPanel from "@/components/product/ReviewsPanel";
+import WishlistButton from "@/components/product/WishlistButton";
+import Button from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import Stepper from "@/components/ui/Stepper";
+import { useAddToCart } from "@/hooks/useAddToCart";
+import { useFetch } from "@/hooks/useFetch";
+import { useReviews } from "@/hooks/useReviews";
+import type { Product } from "@/types/product";
+import { formatCategory } from "@/utils/format";
 import NotFoundPage from "./NotFoundPage";
 
 /** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */

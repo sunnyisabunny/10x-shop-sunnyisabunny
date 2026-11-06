@@ -8,7 +8,7 @@
  * also check on the server.
  */
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProtectedRoute() {
   const { isLoggedIn } = useAuth();
