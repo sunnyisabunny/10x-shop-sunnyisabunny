@@ -484,3 +484,182 @@
     transform: translateY(-8px);
   }
 }
+
+/* The pickup tray. Dark inside, like a real one, in both themes. */
+.pickup-tray {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 100%;
+  padding: 0 120px 6px 12px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #030407, #10141d);
+  color: #c8d0dc;
+  text-decoration: none;
+  box-shadow: inset 0 14px 22px rgb(0 0 0 / 0.95), inset 0 0 0 1px var(--edge), 0 1px 0 var(--edge-bright);
+}
+
+.pickup-tray:hover {
+  color: #fff;
+}
+
+.pickup-tray img {
+  flex: none;
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+
+/* The delay waits for the falling picture to arrive. `both` keeps the new one out of sight until then. */
+.pickup-tray img.is-landing {
+  animation: tray-land 380ms cubic-bezier(0.2, 1.5, 0.4, 1) 400ms both;
+}
+
+@keyframes tray-land {
+  from {
+    transform: translateY(-90px) rotate(-10deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.pickup-tray-label {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.pickup-tray-label b {
+  display: block;
+  color: #e8edf5;
+  font-family: var(--font-dot);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* The falling picture. Only `transform` moves. `--fall` comes from ItemDrop, which measures the distance. */
+.item-fall {
+  position: fixed;
+  z-index: 60;
+  object-fit: contain;
+  pointer-events: none;
+  animation: item-fall 460ms cubic-bezier(0.55, 0.06, 0.9, 0.35) both;
+}
+
+@keyframes item-fall {
+  to {
+    transform: translateY(var(--fall)) rotate(9deg) scale(0.6);
+  }
+}
+
+/* The receipt. A very small font file, with only the letters and numbers, loaded only when a receipt is on the screen. */
+@font-face {
+  font-family: "DotGothic16 Receipt";
+  src: url("/fonts/dotgothic16-receipt.woff2") format("woff2");
+  font-display: swap;
+}
+
+.receipt-printer {
+  width: 100%;
+  max-width: 400px;
+  margin-inline: auto;
+}
+
+.receipt-slot {
+  height: 20px;
+  border-radius: 4px;
+  background: #03050a;
+  box-shadow: inset 0 3px 6px #000, 0 0 0 1px var(--edge-bright), 0 1px 0 1px var(--edge);
+}
+
+/* `steps` makes the paper advance in jerks, the way a real printer does. The zigzag is the torn edge. */
+.receipt {
+  width: 340px;
+  max-width: calc(100% - 40px);
+  margin-inline: auto;
+  padding: 26px 22px 30px;
+  background: #fbfaf5;
+  color: #16171a;
+  font-family: "DotGothic16 Receipt", var(--font-dot);
+  font-size: 15px;
+  line-height: 1.55;
+  animation: receipt-print 1500ms steps(14) both;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), 95% 100%, 90% calc(100% - 8px), 85% 100%, 80% calc(100% - 8px), 75% 100%, 70% calc(100% - 8px), 65% 100%, 60% calc(100% - 8px), 55% 100%, 50% calc(100% - 8px), 45% 100%, 40% calc(100% - 8px), 35% 100%, 30% calc(100% - 8px), 25% 100%, 20% calc(100% - 8px), 15% 100%, 10% calc(100% - 8px), 5% 100%, 0 calc(100% - 8px));
+}
+
+@keyframes receipt-print {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.receipt-row span:last-child {
+  flex: none;
+}
+
+.receipt-rule {
+  margin: 10px 0;
+  border-top: 1px dashed #8a8c90;
+}
+
+.receipt-barcode {
+  height: 46px;
+  margin-top: 14px;
+  background: repeating-linear-gradient(90deg, #16171a 0 2px, transparent 2px 5px, #16171a 5px 6px, transparent 6px 8px, #16171a 8px 11px, transparent 11px 13px);
+}
+
+/* The truck's road. Dark in both themes, like every LED panel here. */
+.truck-road {
+  position: relative;
+  padding: 10px 12px 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--color-led-panel);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+/* This box is as wide as the road, so moving it by 100% of itself crosses the road. Subtracting the truck's own width
+   stops it at the far end. `linear both` holds the truck still before it leaves and after it arrives. */
+.truck-run {
+  height: 28px;
+  animation-name: truck-drive;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@keyframes truck-drive {
+  to {
+    transform: translateX(calc(100% - 56px));
+  }
+}
+
+.truck-caption {
+  margin-top: 6px;
+  color: var(--color-led);
+  font-size: 13px;
+}
+
+/* With no animation, the truck is simply placed where it should be for this status. */
+@media (prefers-reduced-motion: reduce) {
+  .truck-run[data-status="Shipped"] {
+    transform: translateX(calc(50% - 28px));
+  }
+  .truck-run[data-status="Delivered"] {
+    transform: translateX(calc(100% - 56px));
+  }
+}

@@ -355,7 +355,7 @@
    which Lighthouse measured as a layout shift of 0.114, over the PRD's limit of 0.1. See DEBUG-LOG.md.
    This is deliberately outside any @layer. The footer has the `flex` utility, and the utilities layer beats the
    components layer no matter how specific the selector is, so inside a layer this rule silently did nothing. */
-main:has(.page-spinner) + footer {
+main:has(.page-spinner) ~ * {
   display: none;
 }
 

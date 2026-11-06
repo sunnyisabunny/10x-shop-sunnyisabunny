@@ -74,6 +74,8 @@ export default function Layout() {
               </Suspense>
             </ErrorBoundary>
           </main>
+          {/* EXTRA: room for the pickup tray, for the same reason as the ticker's. */}
+          <div id="tray-slot" data-screen-only className="mx-2.5 mb-3 h-[92px] tablet:mx-6 tablet:mb-4" />
           <Footer />
         </div>
       </div>
