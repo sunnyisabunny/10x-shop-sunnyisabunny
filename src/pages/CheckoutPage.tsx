@@ -14,7 +14,7 @@ import { Cart } from "../models/Cart";
 import { Order } from "../models/Order";
 import type { ShippingInfo } from "../types/order";
 import { PLACE_ORDER_DELAY_MS } from "../utils/constants";
-import { discountedPrice, formatPrice } from "../utils/format";
+import { formatPrice, lineTotal } from "../utils/format";
 
 export default function CheckoutPage() {
   const { items, promoCode, clear } = useCart();
@@ -71,7 +71,7 @@ export default function CheckoutPage() {
                 <span>
                   {item.quantity} × {item.title}
                 </span>
-                <span>{formatPrice(discountedPrice(item.price, item.discountPercentage) * item.quantity)}</span>
+                <span>{formatPrice(lineTotal(item))}</span>
               </li>
             ))}
           </ul>

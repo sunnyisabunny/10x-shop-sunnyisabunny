@@ -43,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {/* This wrapper is always in the page, because screen readers only announce changes inside a live
           region that already exists. Adding it together with the message could go unannounced. */}
-      <div role="status" className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4">
+      <div data-screen-only role="status" className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4">
         {toast !== null && (
           <p className="rounded-md bg-led-panel px-4 py-2.5 font-semibold text-led shadow-[0_0_0_1px_rgb(255_182_39/0.4),0_10px_28px_rgb(0_0_0/0.5)]">
             {toast.message}
