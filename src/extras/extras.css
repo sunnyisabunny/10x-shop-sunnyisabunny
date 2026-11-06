@@ -86,43 +86,38 @@
   }
 }
 
-/* Headlights and taillights are just gradients, so they need no image. */
-.scene-car {
-  bottom: 38px;
-  width: 54px;
-  height: 18px;
+/* Two cars on the wet road, each drawing with its own lights and beam. Japan drives on the left, so seen from this
+   pavement the near lane runs leftward and the far lane rightward. The far car is smaller, and passes behind the near one. */
+.scene-car-far {
+  bottom: 34px;
+  left: -170px;
+  width: 152px;
+  height: 35px;
+  animation: scene-car-right 31s linear 3s infinite;
 }
-.scene-car-away {
+.scene-car-near {
+  bottom: 4px;
   left: calc(100% + 20px);
-  background:
-    radial-gradient(circle at 10px 9px, #ff5b52 2.6px, rgb(255 60 50 / 0.45) 4px, transparent 9px),
-    radial-gradient(circle at 44px 9px, #ff5b52 2.6px, rgb(255 60 50 / 0.45) 4px, transparent 9px);
-  animation: scene-car-left 31s linear 3s infinite;
-}
-.scene-car-toward {
-  bottom: 18px;
-  left: -80px;
-  background:
-    radial-gradient(circle at 10px 9px, #fff6d8 3px, rgb(255 240 190 / 0.5) 5px, transparent 10px),
-    radial-gradient(circle at 44px 9px, #fff6d8 3px, rgb(255 240 190 / 0.5) 5px, transparent 10px);
-  animation: scene-car-right 23s linear 11s infinite;
+  width: 190px;
+  height: 44px;
+  animation: scene-car-left 23s linear 11s infinite;
 }
 @keyframes scene-car-left {
   0% {
     transform: translateX(0);
   }
-  24%,
+  26%,
   100% {
-    transform: translateX(calc(-100vw - 120px));
+    transform: translateX(calc(-100vw - 230px));
   }
 }
 @keyframes scene-car-right {
   0% {
     transform: translateX(0);
   }
-  26%,
+  24%,
   100% {
-    transform: translateX(calc(100vw + 120px));
+    transform: translateX(calc(100vw + 190px));
   }
 }
 
