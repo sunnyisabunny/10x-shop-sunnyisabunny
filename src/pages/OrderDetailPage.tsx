@@ -121,12 +121,14 @@ export default function OrderDetailPage() {
 
         <OrderTimeline status={order.getStatus(now)} />
 
-        {/* EXTRA: the same, for the truck. */}
-        <ErrorBoundary fallback={null}>
-          <Suspense fallback={null}>
-            <TruckTracker placedAt={order.placedAt} status={order.getStatus(now)} />
-          </Suspense>
-        </ErrorBoundary>
+        {/* EXTRA: the same, for the truck. Its height is set aside, so the page doesn't jump when it arrives. */}
+        <div data-screen-only className="min-h-[72px]">
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <TruckTracker placedAt={order.placedAt} status={order.getStatus(now)} />
+            </Suspense>
+          </ErrorBoundary>
+        </div>
 
         <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
           <ul className="grid content-start gap-2.5">

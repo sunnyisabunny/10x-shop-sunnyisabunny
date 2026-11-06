@@ -53,7 +53,8 @@ export default function ItemDrop() {
   const lastSeen = useRef(quantities(items));
 
   // Looks for one product whose quantity went up. Reorder adds several at once, and that isn't one thing falling, so it
-  // stays still. Anyone who asks for less motion still hears the drop if sound is on, and the cart itself is unaffected.
+  // stays still. So does the Cart page's + button, because no slot is on screen there to fall from. Anyone who asks for
+  // less motion still hears the drop if sound is on.
   useEffect(() => {
     const before = lastSeen.current;
     lastSeen.current = quantities(items);
@@ -61,9 +62,12 @@ export default function ItemDrop() {
     if (added.length !== 1) {
       return;
     }
-    playSound("drop");
     const picture = findPicture(added[0].productId);
-    if (picture !== null && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (picture === null) {
+      return;
+    }
+    playSound("drop");
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setFall(fallFrom(picture));
     }
   }, [items]);

@@ -110,14 +110,15 @@ export default function MachinePanel() {
     return () => window.clearTimeout(forgetTimer.current);
   }, [code]);
 
-  // The real keyboard works too, but only while the panel's place is on the page, so these keys do nothing elsewhere. The
-  // cleanup removes the listener when the panel goes away, or every visit to the catalog would add another one.
+  // The real keyboard works too, but only while the panel can be seen, so these keys do nothing elsewhere. Its place stays
+  // on the page on narrower screens, only hidden, and a width of 0 is how that shows. The cleanup removes the listener when
+  // the panel goes away, or every visit to the catalog would add another one.
   useEffect(() => {
     if (slot === null) {
       return;
     }
-    function handleKey(event: KeyboardEvent) {
-      if (isForSomethingElse(event)) {
+    const handleKey = (event: KeyboardEvent) => {
+      if (isForSomethingElse(event) || slot.offsetWidth === 0) {
         return;
       }
       if (event.key === "Escape") {
@@ -128,7 +129,7 @@ export default function MachinePanel() {
       if (key !== null) {
         press(key);
       }
-    }
+    };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [slot, press]);

@@ -14,7 +14,7 @@
 
 ## Beyond the spec
 
-These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. The places they draw are set aside in advance, so the page doesn't jump when they arrive.
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
 - **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
@@ -22,7 +22,7 @@ These weren't asked for, and nothing above counts them. Each one lives in `src/e
 - **Item drop and pickup tray:** the tray stays off Checkout. Each step shortens the form, which slid the tray under the pointer, so the second click of a double click opened the cart and lost what had been typed.
 - **Receipt:** real order data. It says no payment was taken.
 - **Delivery tracker:** timed from the same steps as the order's status, with no timer running.
-- **Keypad:** reads the slot codes the cards already write into the page. It reads the physical key, so it works with a Georgian keyboard layout.
+- **Keypad:** reads the slot codes the cards already write into the page. It reads the physical key, so it works with a Georgian keyboard layout. Its letter keys can't be switched off, which falls short of WCAG 2.1.4 for people using speech input. They only find a product and change nothing, and this is an extra, so I left it.
 - **Shake the machine:** lights a random slot and says so. It puts nothing in the cart, because a shop that adds things you didn't ask for is the wrong joke.
 - **10X overload:** type `1`, `0`, `X`. Nothing flashes more than twice in its 1.8 seconds, which is under the safe limit of three flashes a second.
 

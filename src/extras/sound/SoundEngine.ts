@@ -33,6 +33,12 @@ function between(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
 
+/** The train animation's full loop in `extras.css`, so the sound can stay in step with the picture. */
+const TRAIN_CYCLE_MS = 46000;
+
+/** How long the easter egg lasts. It matches `OVERLOAD_MS` in `Overload.tsx` and the animation in `extras.css`. */
+const OVERLOAD_SECONDS = 1.8;
+
 export class SoundEngine {
   private readonly master: GainNode;
   /** Sends a little of a sound to the reverb, which is what makes it seem far away. */
@@ -41,6 +47,9 @@ export class SoundEngine {
   private readonly brown: AudioBuffer;
   /** The two backgrounds, built the first time each is needed. */
   private readonly beds = new Map<Theme, GainNode>();
+  /** Whether sound is on, so a new theme only starts its sounds if they should be heard. */
+  private isOn = false;
+
   /** The running timers for occasional sounds, kept so they can all be stopped. */
   private timers: ReturnType<typeof setTimeout>[] = [];
   private theme: Theme | null = null;
@@ -238,13 +247,15 @@ export class SoundEngine {
       return null;
     }
     const delay = 6000;
-    const cycle = 46000;
-    return elapsed < delay ? (delay - elapsed) / 1000 : (cycle - ((elapsed - delay) % cycle)) / 1000;
+    return elapsed < delay ? (delay - elapsed) / 1000 : (TRAIN_CYCLE_MS - ((elapsed - delay) % TRAIN_CYCLE_MS)) / 1000;
   }
 
   /** Plays the train sound as the picture's train arrives, then waits for the next one. Without a picture, it is random. */
   private followTrain(passes = 0): void {
-    const wait = this.secondsUntilTrain() ?? between(50, 90);
+    const untilTrain = this.secondsUntilTrain() ?? between(50, 90);
+    // The animation's clock only moves once per frame, so right after a train it can still read just before the crossing.
+    // A wait that short means this train, which has just played, so the next one is a whole cycle away.
+    const wait = untilTrain < 1 ? untilTrain + TRAIN_CYCLE_MS / 1000 : untilTrain;
     this.timers.push(
       setTimeout(() => {
         this.play("train");
@@ -295,11 +306,20 @@ export class SoundEngine {
       gain.gain.cancelScheduledValues(now);
       gain.gain.setTargetAtTime(name === theme ? 1 : 0, now, FADE_SECONDS / 3);
     }
-    this.startEvents(theme, bed);
+    if (this.isOn) {
+      this.startEvents(theme, bed);
+    }
   }
 
-  /** Fades everything in or out. Turning off also stops the timers, so nothing keeps being scheduled in silence. */
+  /**
+   * Fades everything in or out. Turning off also stops the timers, so nothing keeps being scheduled in silence. Asking
+   * for what is already true does nothing, or the sounds that start with a theme, such as the first wave, would play twice.
+   */
   setOn(isOn: boolean): void {
+    if (isOn === this.isOn) {
+      return;
+    }
+    this.isOn = isOn;
     const now = this.context.currentTime;
     this.master.gain.cancelScheduledValues(now);
     this.master.gain.setTargetAtTime(isOn ? MASTER_LEVEL : 0, now, FADE_SECONDS / 3);
@@ -528,24 +548,24 @@ export class SoundEngine {
     oscillator.stop(when + 0.07);
   }
 
-  /** The easter egg: ten seconds of rising electrical strain and crackle, in step with the picture. */
+  /** The easter egg: a rising electrical strain and crackle, as long as the picture lasts. */
   private overload(when: number): void {
-    const length = 10;
+    const length = OVERLOAD_SECONDS;
     const buzz = this.context.createOscillator();
     buzz.type = "sawtooth";
     buzz.frequency.setValueAtTime(100, when);
     buzz.frequency.linearRampToValueAtTime(135, when + length);
     const level = this.context.createGain();
     level.gain.setValueAtTime(0.0001, when);
-    level.gain.linearRampToValueAtTime(0.08, when + 7);
-    level.gain.setValueAtTime(0.08, when + 9.4);
+    level.gain.linearRampToValueAtTime(0.08, when + length * 0.7);
+    level.gain.setValueAtTime(0.08, when + length * 0.9);
     level.gain.linearRampToValueAtTime(0.0001, when + length);
     buzz.connect(level);
     this.chain(level, [{ type: "highpass", frequency: 300 }]).connect(this.master);
     buzz.start(when);
     buzz.stop(when + length + 0.1);
-    for (let i = 0; i < 70; i += 1) {
-      const t = when + between(0.5, 9.6);
+    for (let i = 0; i < 16; i += 1) {
+      const t = when + between(0.1, length - 0.1);
       this.burst([{ type: "highpass", frequency: 3200 }], between(0.3, 1), between(0.004, 0.018), t, this.master);
     }
   }
