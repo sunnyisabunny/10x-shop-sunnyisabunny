@@ -10,15 +10,13 @@ import type { Category } from "../../types/product";
 import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "../../utils/constants";
 import { formatCategory } from "../../utils/format";
 import { isSortValue, type CatalogChange, type CatalogParams, type CatalogView } from "../../utils/url";
-import { inputStyles } from "../ui/FormField";
+import { inputStyles, labelStyles } from "../ui/FormField";
 import PriceFilter from "./PriceFilter";
 
 interface CatalogToolbarProps {
   params: CatalogParams;
   onChange: (change: CatalogChange) => void;
 }
-
-const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
 
 /** The icon inside each view button. Decoration, because the button's `aria-label` already names it. */
 function ViewIcon({ view }: { view: CatalogView }) {
@@ -154,8 +152,7 @@ export default function CatalogToolbar({ params, onChange }: CatalogToolbarProps
         </select>
       </label>
 
-      {/* The `key` gives the fields a fresh start whenever the range in the URL changes. See `PriceFilter`. */}
-      <PriceFilter key={`${params.min}-${params.max}`} min={params.min} max={params.max} onChange={(min, max) => onChange({ type: "price", min, max })} />
+      <PriceFilter min={params.min} max={params.max} onChange={(min, max) => onChange({ type: "price", min, max })} />
 
       <ViewToggle view={params.view} onChange={(view) => onChange({ type: "view", view })} />
     </div>

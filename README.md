@@ -41,6 +41,12 @@ Login is simulated, so there is no real account to find. Any username works with
 - Profile page, a dark and light theme, and Clear local data
 - Every page loads on demand, and `memo` is used only where a measurement justified it
 
+### BONUS
+- Grid and list view, kept in the URL
+- A wishlist, saved in the browser
+- A printable invoice for each order
+- A price range filter, on the price shown after discount
+
 ## Tech Stack
 
 - **React 19** with **TypeScript** in strict mode

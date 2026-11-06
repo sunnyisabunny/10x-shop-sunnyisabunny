@@ -42,7 +42,7 @@ export default function CatalogResults({ state, page, view, onRetry, onPageChang
   // Products exist but not on this page, as with an old link to ?page=99. "No products found" would be false.
   if (products.length === 0 && total > 0) {
     return (
-      <StateMessage title={`This page is past the end of the list. There are ${totalPages} pages.`}>
+      <StateMessage title={`This page is past the end of the list. ${totalPages === 1 ? "There is 1 page." : `There are ${totalPages} pages.`}`}>
         <Button variant="quiet" onClick={() => onPageChange(totalPages)}>
           Go to the last page
         </Button>

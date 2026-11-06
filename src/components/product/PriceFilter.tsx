@@ -1,12 +1,13 @@
 /**
  * NOTE: the price range in the catalog's control panel (BONUS).
  * Why it exists: 133 of the 194 products cost $100 or less, so a slider would crowd nearly everything into one end.
- * Two number fields with an Apply button give exact control, and only one change of the URL.
+ * Two number fields with a button give exact control, and only one change of the URL.
  * Connects to: `CatalogToolbar` draws this and passes `onChange`. `useCatalogProducts` does the filtering.
  */
 import { useState, type FormEvent } from "react";
-import { buttonStyles } from "../ui/Button";
-import { inputStyles } from "../ui/FormField";
+import { hasPriceRange, isPriceText } from "../../utils/url";
+import Button from "../ui/Button";
+import { inputStyles, labelStyles } from "../ui/FormField";
 
 interface PriceFilterProps {
   min: number | null;
@@ -14,53 +15,85 @@ interface PriceFilterProps {
   onChange: (min: string, max: string) => void;
 }
 
-const labelStyles = "grid gap-1 text-[13px] text-ink-soft";
+/** A price as text for a field. An empty field means no limit on that side. */
+function toText(price: number | null): string {
+  return price === null ? "" : String(price);
+}
 
-/**
- * The fields hold what is being typed, starting from the URL. `CatalogToolbar` gives this component a `key` made from
- * the URL's range, so when the URL changes some other way, such as Back or Clear filters, it starts fresh with the new
- * values. That is simpler than an effect copying them across.
- */
 export default function PriceFilter({ min, max, onChange }: PriceFilterProps) {
-  const [minText, setMinText] = useState(min === null ? "" : String(min));
-  const [maxText, setMaxText] = useState(max === null ? "" : String(max));
+  /** What is typed in each field, which only reaches the URL when the button is pressed. */
+  const [minText, setMinText] = useState(toText(min));
+  const [maxText, setMaxText] = useState(toText(max));
   const [error, setError] = useState<string | null>(null);
 
-  /** `preventDefault` stops the browser's page reload. A reversed range can only be a slip, so it gets a message. */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (minText !== "" && maxText !== "" && Number(minText) > Number(maxText)) {
-      setError("Min price can't be above max price");
-      return;
-    }
+  /** The range the fields last took from the URL. */
+  const [applied, setApplied] = useState(`${min}-${max}`);
+
+  // When the URL's range changes, such as with Back or Clear filters, the fields follow it. Setting state during a
+  // render like this is React's own pattern for adjusting state to a new prop: React redraws at once, before anything
+  // reaches the screen. A `key` would be simpler, but it would remake the form and drop keyboard focus out of the page.
+  if (applied !== `${min}-${max}`) {
+    setApplied(`${min}-${max}`);
+    setMinText(toText(min));
+    setMaxText(toText(max));
     setError(null);
-    onChange(minText, maxText);
   }
 
-  const isActive = min !== null || max !== null;
+  /**
+   * `preventDefault` stops the browser's page reload. The check is the same one the URL uses, so anything that would
+   * be ignored there gets a message here. A range entered backwards isn't an error: the URL reads it the right way round.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const isValid = [minText, maxText].every((text) => text === "" || isPriceText(text));
+    setError(isValid ? null : "Enter a price like 10 or 9.99");
+    if (isValid) {
+      onChange(minText, maxText);
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit} noValidate className="grid flex-[1_1_100%] gap-1 tablet:flex-none">
       <div className="flex items-end gap-2">
         <label className={`${labelStyles} min-w-0 flex-1 tablet:w-24 tablet:flex-none`}>
           Min price
-          <input type="number" min="0" step="0.01" inputMode="decimal" value={minText} onChange={(event) => setMinText(event.target.value)} className={inputStyles} />
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            inputMode="decimal"
+            value={minText}
+            onChange={(event) => setMinText(event.target.value)}
+            aria-invalid={error !== null}
+            aria-describedby={error !== null ? "price-error" : undefined}
+            className={inputStyles}
+          />
         </label>
         <label className={`${labelStyles} min-w-0 flex-1 tablet:w-24 tablet:flex-none`}>
           Max price
-          <input type="number" min="0" step="0.01" inputMode="decimal" value={maxText} onChange={(event) => setMaxText(event.target.value)} className={inputStyles} />
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            inputMode="decimal"
+            value={maxText}
+            onChange={(event) => setMaxText(event.target.value)}
+            aria-invalid={error !== null}
+            aria-describedby={error !== null ? "price-error" : undefined}
+            className={inputStyles}
+          />
         </label>
-        <button type="submit" className={`${buttonStyles.quiet} shrink-0 whitespace-nowrap`}>
+        <Button variant="quiet" type="submit" className="shrink-0 whitespace-nowrap">
           Set price
-        </button>
-        {isActive && (
-          <button type="button" onClick={() => onChange("", "")} className={`${buttonStyles.quiet} shrink-0 whitespace-nowrap`}>
+        </Button>
+        {hasPriceRange({ min, max }) && (
+          <Button variant="quiet" onClick={() => onChange("", "")} className="shrink-0 whitespace-nowrap">
             Clear price
-          </button>
+          </Button>
         )}
       </div>
       {error !== null && (
-        <p role="alert" className="text-[13px] font-semibold text-error">
+        <p id="price-error" role="alert" className="text-[13px] font-semibold text-error">
           {error}
         </p>
       )}

@@ -38,13 +38,18 @@ export function isSortValue(value: string): value is SortValue {
   return SORT_OPTIONS.some((option) => option.value === value);
 }
 
-/** Reads a price from the URL. A regex, because Number("1e3") would count as 1000 and Number("") as 0. */
-function parsePrice(text: string | null): number | null {
-  return text !== null && /^\d+(\.\d{1,2})?$/.test(text) ? Number(text) : null;
+/** True for a price like 10 or 9.99. A regex, because Number("1e3") would count as 1000 and Number("") as 0. */
+export function isPriceText(text: string): boolean {
+  return /^\d+(\.\d{1,2})?$/.test(text);
 }
 
-/** True when the catalog has a price range. */
-export function hasPriceRange({ min, max }: CatalogParams): boolean {
+/** Reads a price from the URL, where anything else counts as no limit. */
+function parsePrice(text: string | null): number | null {
+  return text !== null && isPriceText(text) ? Number(text) : null;
+}
+
+/** True when the catalog has a price range. `Pick` lets a caller pass just these two values. */
+export function hasPriceRange({ min, max }: Pick<CatalogParams, "min" | "max">): boolean {
   return min !== null || max !== null;
 }
 
@@ -60,7 +65,7 @@ export function parseCatalogParams(searchParams: URLSearchParams): CatalogParams
   const page = /^[1-9]\d*$/.test(pageText) ? Number(pageText) : 1;
   const low = parsePrice(searchParams.get("min"));
   const high = parsePrice(searchParams.get("max"));
-  // Someone can write a range backwards by hand in the URL, and its meaning is still clear.
+  // A range written backwards still has a clear meaning, so it is read the right way round.
   const isReversed = low !== null && high !== null && low > high;
   return {
     q,
