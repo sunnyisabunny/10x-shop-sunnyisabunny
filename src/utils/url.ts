@@ -149,7 +149,8 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
       setOrDelete(next, "max", change.max);
       next.delete("page");
       // The two don't combine, as `parseCatalogParams` explains, so the page says Endless is off while a range is set.
-      if (change.min !== "" || change.max !== "") {
+      // The old range counts too: a shared link can hold both, and clearing its range mustn't switch Endless on by surprise.
+      if (change.min !== "" || change.max !== "" || hasPriceRange(parseCatalogParams(current))) {
         next.delete("mode");
       }
       break;
@@ -157,17 +158,23 @@ export function nextSearchParams(current: URLSearchParams, change: CatalogChange
   return next;
 }
 
+/** The fields a product card needs. The API always includes the id. */
+const CARD_FIELDS = "title,price,discountPercentage,rating,stock,thumbnail,category,brand";
+
 /**
  * Builds the API path for what the catalog is showing. URLSearchParams and encodeURIComponent make sure a
  * search for "50% & up" can't break the URL. Sorting works on all three endpoints, which was tested live.
  */
 export function buildProductsUrl(params: CatalogParams): string {
-  return buildChunkUrl(params, (params.page - 1) * PAGE_SIZE);
+  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String((params.page - 1) * PAGE_SIZE) }));
 }
 
-/** The same path from any starting point. Pages asks for whole pages, and Endless asks from wherever its list has reached. */
+/**
+ * One chunk for Endless, from wherever its list has reached. Only the fields a card needs, because Endless can end up
+ * holding every product in memory, and these leave out each product's description, reviews and photos.
+ */
 export function buildChunkUrl(params: CatalogParams, skip: number): string {
-  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String(skip) }));
+  return productsPath(params, new URLSearchParams({ limit: String(PAGE_SIZE), skip: String(skip), select: CARD_FIELDS }));
 }
 
 /**
@@ -175,7 +182,7 @@ export function buildChunkUrl(params: CatalogParams, skip: number): string {
  * leaves out descriptions, reviews and photos. Search and category still apply, because those the API can do itself.
  */
 export function buildFullListUrl(params: CatalogParams): string {
-  return productsPath(params, new URLSearchParams({ limit: "0", select: "title,price,discountPercentage,rating,stock,thumbnail,category,brand" }));
+  return productsPath(params, new URLSearchParams({ limit: "0", select: CARD_FIELDS }));
 }
 
 /** Adds the sort and chooses the right endpoint. The two functions above differ only in how much they ask for. */

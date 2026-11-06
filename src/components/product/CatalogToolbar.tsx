@@ -44,7 +44,11 @@ function ViewToggle({ view, onChange }: { view: CatalogView; onChange: (view: Ca
           type="button"
           aria-label={option === "grid" ? "Grid view" : "List view"}
           aria-pressed={view === option}
-          onClick={() => onChange(option)}
+          onClick={() => {
+            if (option !== view) {
+              onChange(option);
+            }
+          }}
           className={`${switchStyles} size-11`}
         >
           <ViewIcon view={option} />
@@ -67,7 +71,12 @@ function ModeSwitch({ mode, isEndlessOff, onChange }: { mode: CatalogMode; isEnd
           type="button"
           aria-pressed={mode === option}
           disabled={option === "endless" && isEndlessOff}
-          onClick={() => onChange(option)}
+          onClick={() => {
+            // Pressing the one already on does nothing. Otherwise it would lose the page and add a pointless Back step.
+            if (option !== mode) {
+              onChange(option);
+            }
+          }}
           className={`${switchStyles} px-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50`}
         >
           {option === "pages" ? "Pages" : "Endless"}

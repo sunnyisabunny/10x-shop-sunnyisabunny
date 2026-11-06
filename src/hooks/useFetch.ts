@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/ApiClient";
 import type { AsyncState } from "../types/api";
+import { UNEXPECTED_ERROR } from "../utils/constants";
 import { isApiError } from "../utils/guards";
 
 /** A hook's return value is its public API, so it gets a named shape like a component's props. */
@@ -31,7 +32,8 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
   // Loads whenever the path changes or Retry is pressed.
   useEffect(() => {
     if (path === null) {
-      setResult({ path, state: { status: "idle" } });
+      // The check lets React skip the redraw when this is already idle. In Endless the catalog's `useFetch` sits here.
+      setResult((current) => (current.path === null ? current : { path, state: { status: "idle" } }));
       return;
     }
 
@@ -57,7 +59,7 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
           path,
           state: {
             status: "error",
-            message: isApiError(error) ? error.message : "Something unexpected went wrong.",
+            message: isApiError(error) ? error.message : UNEXPECTED_ERROR,
             httpStatus: isApiError(error) ? error.status : undefined,
           },
         });

@@ -1,7 +1,7 @@
 /**
  * NOTE: the catalog's lower half: skeleton, error, empty message, or the grid with its page buttons or Endless footer.
  * Why it exists: all the "which state are we in" logic sits here, so `CatalogPage` stays a short overview.
- * Connects to: `CatalogPage` passes the loaded state. `ProductGrid` and `Pagination` do the drawing.
+ * Connects to: `CatalogPage` passes the loaded state. `ProductGrid`, `Pagination` and `EndlessFooter` do the drawing.
  */
 import { Link } from "react-router";
 import type { EndlessControls } from "../../hooks/useEndlessProducts";
@@ -23,9 +23,10 @@ interface CatalogResultsProps {
   endless: EndlessControls | null;
   onRetry: () => void;
   onPageChange: (page: number) => void;
+  onBackToTop: () => void;
 }
 
-export default function CatalogResults({ state, page, view, endless, onRetry, onPageChange }: CatalogResultsProps) {
+export default function CatalogResults({ state, page, view, endless, onRetry, onPageChange, onBackToTop }: CatalogResultsProps) {
   if (state.status === "idle" || state.status === "loading") {
     return <ProductGridSkeleton view={view} />;
   }
@@ -78,7 +79,7 @@ export default function CatalogResults({ state, page, view, endless, onRetry, on
         </span>
         {endless === null && totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={onPageChange} />}
       </div>
-      {endless !== null && <EndlessFooter more={endless.more} onLoadMore={endless.loadMore} onRetry={onRetry} />}
+      {endless !== null && <EndlessFooter more={endless.more} shown={products.length} onLoadMore={endless.loadMore} onRetry={onRetry} onBackToTop={onBackToTop} />}
     </>
   );
 }

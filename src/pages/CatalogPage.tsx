@@ -24,15 +24,16 @@ export default function CatalogPage() {
   /** The page heading, so keyboard focus has somewhere sensible to go after changing page. */
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  /**
-   * PRD P2 element 6: changing page returns to the top, since the new products start there. Focus goes there
-   * too: the button just pressed disappears while the page loads, and focus would otherwise fall out of the
-   * page, leaving keyboard users to tab through everything again.
-   */
-  function handlePageChange(page: number) {
-    change({ type: "page", page });
+  /** Returns to the top. Focus goes there too, or keyboard users would be left to tab through everything again. */
+  function returnToTop() {
     window.scrollTo(0, 0);
     headingRef.current?.focus();
+  }
+
+  /** PRD P2 element 6: changing page returns to the top, since the new products start there. */
+  function handlePageChange(page: number) {
+    change({ type: "page", page });
+    returnToTop();
   }
 
   // The caption's reason: the API sorts by list price, but cards show the price after discount, so a price
@@ -55,7 +56,7 @@ export default function CatalogPage() {
         {hasPriceRange(params) && <p className="mt-2 text-[13px] text-ink-soft">Filtered on the price shown, after discount. Endless is off while a price range is set.</p>}
       </div>
 
-      <CatalogResults state={state} page={params.page} view={params.view} endless={endless} onRetry={retry} onPageChange={handlePageChange} />
+      <CatalogResults state={state} page={params.page} view={params.view} endless={endless} onRetry={retry} onPageChange={handlePageChange} onBackToTop={returnToTop} />
     </section>
   );
 }

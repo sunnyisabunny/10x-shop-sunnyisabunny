@@ -33,7 +33,7 @@ function pageOfMatches(products: ProductSummary[], min: number | null, max: numb
   return { products: matching.slice(skip, skip + PAGE_SIZE), total: matching.length, skip, limit: PAGE_SIZE };
 }
 
-/** Returns the same `{ state, retry }` as `useFetch`, so the page draws every case with the same code. */
+/** Returns `{ state, retry }` like `useFetch`, so the page draws every case with the same code, plus Endless's controls. */
 export function useCatalogProducts(params: CatalogParams): UseCatalogProductsResult {
   const filtering = hasPriceRange(params);
   const isEndless = params.mode === "endless";
