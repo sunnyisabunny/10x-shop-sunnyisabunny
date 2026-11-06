@@ -17,7 +17,7 @@ import ScrollToTop from "./ScrollToTop";
  */
 function Street() {
   return (
-    <div className="street print:hidden" aria-hidden="true">
+    <div data-screen-only className="street" aria-hidden="true">
       <div className="rain">
         <i className="far" />
         <i />
@@ -35,7 +35,7 @@ function Street() {
 /** The machine's base, with the small print. Honest about the fact that nothing here can really be bought. */
 function Footer() {
   return (
-    <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-edge bg-steel-raised px-3.5 py-3 text-[13px] text-ink-soft tablet:rounded-b-lg tablet:px-6 print:hidden">
+    <footer data-screen-only className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-edge bg-steel-raised px-3.5 py-3 text-[13px] text-ink-soft tablet:rounded-b-lg tablet:px-6">
       <span
         aria-hidden="true"
         className="h-4 w-28 rounded-xs bg-[repeating-linear-gradient(90deg,#05070c_0_3px,transparent_3px_7px)]"
@@ -53,9 +53,9 @@ export default function Layout() {
     <>
       <ScrollToTop />
       <Street />
-      <div className="tablet:px-6 tablet:pt-[72px] tablet:pb-[88px] print:p-0">
+      <div data-paper className="tablet:px-6 tablet:pt-[72px] tablet:pb-[88px]">
         {/* `dark:` is the custom variant from index.css: a shadow this heavy only looks right at night. */}
-        <div className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)] print:max-w-none print:bg-white print:shadow-none">
+        <div data-paper className="relative mx-auto max-w-[1200px] bg-steel tablet:rounded-t-[18px] tablet:rounded-b-lg tablet:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.2),0_0_140px_var(--machine-glow)] tablet:dark:shadow-[inset_0_0_0_1px_var(--edge),0_44px_90px_rgb(0_0_0/0.55),0_0_140px_var(--machine-glow)]">
           <Header />
           {/* `key` gives each path a fresh boundary. Without it, after one crash the error
               message would stay on screen on every page you visit next. */}

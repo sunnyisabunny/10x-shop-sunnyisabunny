@@ -63,7 +63,7 @@ export default function Header() {
   }
 
   return (
-    <header className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-marquee px-3.5 py-2.5 shadow-[inset_0_1px_0_var(--edge-bright)] tablet:rounded-t-[18px] tablet:gap-x-7 tablet:px-6 tablet:py-4 print:hidden">
+    <header data-screen-only className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-marquee px-3.5 py-2.5 shadow-[inset_0_1px_0_var(--edge-bright)] tablet:rounded-t-[18px] tablet:gap-x-7 tablet:px-6 tablet:py-4">
       <Link to="/" onClick={closeMenu} className="flex min-h-11 items-center gap-3.5 no-underline">
         <span className="neon text-[32px] tablet:text-[46px]">
           10<span className="inline-block animate-flicker">X</span> Shop

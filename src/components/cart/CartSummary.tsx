@@ -6,7 +6,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useCart } from "../../context/CartContext";
 import { PROMO_PERCENT } from "../../utils/constants";
-import { formatPrice } from "../../utils/format";
+import { formatDiscount, formatPrice, formatShipping } from "../../utils/format";
 import { inputStyles } from "../ui/FormField";
 
 interface CartSummaryProps {
@@ -81,11 +81,11 @@ export default function CartSummary({ showPromoForm = false, children }: CartSum
             </button>
           )}
         </span>
-        <span>{discount > 0 ? `−${formatPrice(discount)}` : formatPrice(0)}</span>
+        <span>{formatDiscount(discount)}</span>
       </div>
       <div className="flex justify-between gap-3">
         <span>Shipping</span>
-        <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+        <span>{formatShipping(shipping)}</span>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-x-3 rounded-md bg-led-panel px-3 py-2 text-led">
         <span>Total</span>

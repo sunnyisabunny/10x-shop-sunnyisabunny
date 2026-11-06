@@ -12,7 +12,7 @@ import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import { useNow, useOrders } from "../hooks/useOrders";
 import type { CartItem } from "../types/cart";
-import { discountedPrice, formatDate, formatPrice } from "../utils/format";
+import { discountedPrice, formatDate, formatDiscount, formatPrice, formatShipping, lineTotal } from "../utils/format";
 import NotFoundPage from "./NotFoundPage";
 
 /** `location.state` has the type `any`, so this type guard checks its real shape at runtime. */
@@ -67,13 +67,24 @@ export default function OrderDetailPage() {
     navigate("/cart");
   }
 
+  /**
+   * Opens the browser's own print dialog, which can also save a PDF. The page title is what that PDF gets named, so it
+   * says which order this is for a moment. Without that, every saved invoice would be called "10X Shop".
+   */
+  function handlePrint(orderNumber: string) {
+    const previousTitle = document.title;
+    document.title = `Invoice ${orderNumber}`;
+    window.print();
+    document.title = previousTitle;
+  }
+
   const { shipping } = order;
 
   return (
     <>
       <Invoice order={order} />
-      {/* `print:hidden` takes the whole screen version off paper, leaving only the invoice above. */}
-      <section className="grid gap-5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6 print:hidden">
+      {/* `data-screen-only` takes the whole screen version off paper, leaving only the invoice above. See index.css. */}
+      <section data-screen-only className="grid gap-5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
         {justPlaced && (
           <div role="status" className="rounded-[10px] bg-discount p-4 text-on-discount">
             <h1 className="text-[26px] leading-[1.15] font-bold">Thank you! Your order has been placed.</h1>
@@ -111,7 +122,7 @@ export default function OrderDetailPage() {
                     {item.quantity} × {formatPrice(discountedPrice(item.price, item.discountPercentage))}
                   </div>
                 </div>
-                <div className="font-semibold">{formatPrice(discountedPrice(item.price, item.discountPercentage) * item.quantity)}</div>
+                <div className="font-semibold">{formatPrice(lineTotal(item))}</div>
               </li>
             ))}
           </ul>
@@ -133,19 +144,18 @@ export default function OrderDetailPage() {
             </div>
             <div className="flex justify-between gap-3">
               <span>Discount</span>
-              <span>{order.discount > 0 ? `−${formatPrice(order.discount)}` : formatPrice(0)}</span>
+              <span>{formatDiscount(order.discount)}</span>
             </div>
             <div className="flex justify-between gap-3">
               <span>Shipping</span>
-              <span>{order.shippingCost === 0 ? "Free" : formatPrice(order.shippingCost)}</span>
+              <span>{formatShipping(order.shippingCost)}</span>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-x-3 rounded-md bg-led-panel px-3 py-2 text-led">
               <span>Total</span>
               <b className="led-text text-[30px]">{formatPrice(order.total)}</b>
             </div>
             <Button onClick={() => handleReorder(order.items)}>Reorder</Button>
-            {/* Opens the browser's own print dialog, which can also save a PDF. */}
-            <Button variant="quiet" onClick={() => window.print()}>
+            <Button variant="quiet" onClick={() => handlePrint(order.number)}>
               Print invoice
             </Button>
           </aside>
