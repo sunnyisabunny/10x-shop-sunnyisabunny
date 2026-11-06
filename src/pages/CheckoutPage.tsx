@@ -9,6 +9,7 @@ import { Navigate, useNavigate } from "react-router";
 import CartSummary from "../components/cart/CartSummary";
 import CheckoutForm from "../components/cart/CheckoutForm";
 import { useCart } from "../context/CartContext";
+import { useAddresses } from "../hooks/useAddresses";
 import { useOrders } from "../hooks/useOrders";
 import { Cart } from "../models/Cart";
 import { Order } from "../models/Order";
@@ -19,6 +20,7 @@ import { formatPrice, lineTotal } from "../utils/format";
 export default function CheckoutPage() {
   const { items, promoCode, clear } = useCart();
   const { records, addOrder } = useOrders();
+  const { addresses, addAddress } = useAddresses();
   const navigate = useNavigate();
 
   /** True for the short moment between pressing the button and the confirmation. */
@@ -39,7 +41,7 @@ export default function CheckoutPage() {
    * and then the cart stays as it was. On success the two steps happen together: go to the order's page, then
    * empty the cart. Emptying first would trip the empty-cart redirect below and lose the confirmation.
    */
-  function handlePlaceOrder(shipping: ShippingInfo) {
+  function handlePlaceOrder(shipping: ShippingInfo, saveAddress: boolean) {
     setIsPlacing(true);
     setFailure(null);
     placeTimer.current = setTimeout(() => {
@@ -48,6 +50,10 @@ export default function CheckoutPage() {
         setFailure("Your order could not be placed. Please try again.");
         setIsPlacing(false);
         return;
+      }
+      // Saved only now, once the order is real. A full browser storage only loses the address, not the order.
+      if (saveAddress) {
+        addAddress({ address: shipping.address, city: shipping.city, postalCode: shipping.postalCode, country: shipping.country });
       }
       navigate(`/orders/${order.id}`, { state: { justPlaced: true } });
       clear();
@@ -63,7 +69,7 @@ export default function CheckoutPage() {
     <section className="grid gap-3.5 p-3.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
       <h1 className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">Checkout</h1>
       <div className="grid gap-5 desktop:grid-cols-[minmax(0,1fr)_360px]">
-        <CheckoutForm onPlaceOrder={handlePlaceOrder} isPlacing={isPlacing} failure={failure} />
+        <CheckoutForm onPlaceOrder={handlePlaceOrder} savedAddresses={addresses} isPlacing={isPlacing} failure={failure} />
         <CartSummary>
           <ul className="grid gap-1 border-t border-edge pt-2.5 text-[13px] text-ink-soft">
             {items.map((item) => (

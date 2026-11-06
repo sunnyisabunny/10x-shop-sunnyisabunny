@@ -8,7 +8,7 @@
  */
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
-import type { OrderRecord, ShippingInfo } from "../types/order";
+import type { OrderRecord, SavedAddress, ShippingInfo } from "../types/order";
 import type { ProductSummary, Review, StoredReviews } from "../types/product";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
 import { PROMO_CODE } from "./constants";
@@ -185,6 +185,17 @@ function isProductSummary(value: unknown): value is ProductSummary {
 /** Reads the saved wishlist, keeping the good entries and dropping any repeats. */
 export function parseWishlist(value: unknown): ProductSummary[] | null {
   return Array.isArray(value) ? uniqueBy(value.filter(isProductSummary), (item) => item.id) : null;
+}
+
+/** Reads the saved addresses, keeping only the ones with every field filled in. */
+export function parseAddresses(value: unknown): SavedAddress[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  return value.filter(
+    (item): item is SavedAddress =>
+      isRecord(item) && [item.address, item.city, item.postalCode, item.country].every((field) => typeof field === "string" && field.trim() !== ""),
+  );
 }
 
 /** Checks that something is a usable review. */

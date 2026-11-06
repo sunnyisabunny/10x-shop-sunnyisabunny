@@ -22,6 +22,9 @@ export interface ShippingInfo {
 }
 
 /** An order as plain data, which is the shape saved in localStorage. */
+/** The part of the shipping details worth keeping between orders. `Pick`, so it can't fall out of sync. */
+export type SavedAddress = Pick<ShippingInfo, "address" | "city" | "postalCode" | "country">;
+
 export interface OrderRecord {
   /** Date.now() at the moment of placing, so it is unique and also sorts by time. */
   id: number;
