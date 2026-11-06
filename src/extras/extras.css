@@ -446,7 +446,49 @@
   right: 96px;
   width: 80px;
   height: 50px;
-  pointer-events: none;
+  cursor: pointer;
+}
+
+/* A startled cat. The drawing moves and `!` goes with it, using only `transform`, so nothing has to be redrawn. It sits
+   inside its own wrapper, so the clickable area stays still while the cat is in the air. */
+.night-cat-body {
+  display: block;
+  position: relative;
+  transform-origin: 50% 100%;
+}
+.night-cat[data-startled="true"] .night-cat-body {
+  animation: cat-jump 640ms both;
+}
+@keyframes cat-jump {
+  0% {
+    transform: none;
+    animation-timing-function: ease-in;
+  }
+  12% {
+    transform: translateY(2px) scale(1.08, 0.86);
+    animation-timing-function: cubic-bezier(0.1, 0.8, 0.3, 1);
+  }
+  42% {
+    transform: translateY(-44px) scale(0.92, 1.12) rotate(-5deg);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  80% {
+    transform: translateY(1px) scale(1.1, 0.84);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+.night-cat-shock {
+  position: absolute;
+  top: -22px;
+  left: 18px;
+  color: var(--color-led);
+  font-family: var(--font-led);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 @media (min-width: 30.0625rem) {
