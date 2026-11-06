@@ -23,6 +23,7 @@
 
 - **Price filter:** the API can't filter by price. With a range set, the catalog fetches the whole current list once, with only the card fields, which is about 7 kB compressed for all 194 products, and filters and pages it in the browser. This is the one place all 194 products can load, which the PRD otherwise avoids. Without a range, the catalog loads one page at a time as the PRD asks.
 - **One browser, not one user:** orders, saved addresses, the wishlist and the cart belong to the browser, as the annex's data model has them, so two usernames on one browser share them. Profiles are kept per username. With a simulated login that accepts any name, separating them wouldn't protect anything.
+- **Endless forgets how far you went:** a refresh or Back keeps the filters but starts again from the top. Returning to the same depth would mean loading every earlier chunk on arrival, and Pages is there for anyone who wants a place to come back to. A price range turns Endless off, because the range needs the whole list in the browser and Endless exists to avoid that.
 - **Wishlist prices:** a saved product keeps the price and stock from when it was saved. DummyJSON's data doesn't change, so this can't go wrong here, but a real shop would refresh them.
 
 ## Metrics
