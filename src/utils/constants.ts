@@ -71,6 +71,7 @@ export const STORAGE_KEYS = {
   user: "shop_user",
   profiles: "shop_profile",
   theme: "shop_theme",
+  wishlist: "shop_wishlist",
 } as const;
 
 /**

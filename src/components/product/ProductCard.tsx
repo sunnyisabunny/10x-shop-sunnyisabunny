@@ -8,19 +8,20 @@
  */
 import { memo } from "react";
 import { Link } from "react-router";
-import type { Product } from "../../types/product";
+import type { ProductSummary } from "../../types/product";
 import { formatCategory } from "../../utils/format";
 import type { CatalogView } from "../../utils/url";
 import Button from "../ui/Button";
 import { DiscountBadge, PriceBlock, StockBadge } from "./PriceBlock";
+import WishlistButton from "./WishlistButton";
 
 /** The props are an interface, as the PRD asks: every component's inputs are named and typed. */
 export interface ProductCardProps {
-  product: Product;
+  product: ProductSummary;
   /** The machine's label for this position, such as "B3". */
   code: string;
   /** A callback prop: the card only reports the press, and the parent decides what adding means. */
-  onAdd: (product: Product) => void;
+  onAdd: (product: ProductSummary) => void;
   /** The card's shape. Grid is the default, because related products and the wishlist always use it. */
   view?: CatalogView;
   /** Whether this card is on the catalog page. The product page uses it to know whether "Back to catalog" can just go back. */
@@ -105,6 +106,7 @@ function ProductCard({ product, code, onAdd, view = "grid", fromCatalog = false 
           aria-hidden="true"
           className="absolute inset-x-[14%] bottom-1.5 h-4 rounded-[50%] bg-[radial-gradient(closest-side,rgb(20_30_45/0.42),transparent)]"
         />
+        <WishlistButton product={product} />
       </div>
 
       <PriceBlock price={product.price} discountPercentage={product.discountPercentage} className="[grid-area:led]" />

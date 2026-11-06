@@ -9,7 +9,7 @@
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
 import type { OrderRecord, ShippingInfo } from "../types/order";
-import type { Review, StoredReviews } from "../types/product";
+import type { ProductSummary, Review, StoredReviews } from "../types/product";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
 import { PROMO_CODE } from "./constants";
 
@@ -146,6 +146,38 @@ export function isOrderRecord(value: unknown): value is OrderRecord {
 /** Turns saved orders into a usable list, dropping any that are broken. */
 export function parseOrders(value: unknown): OrderRecord[] | null {
   return Array.isArray(value) ? value.filter(isOrderRecord) : null;
+}
+
+/** Checks that something has every field a product card needs, with a price and stock that make sense. */
+function isProductSummary(value: unknown): value is ProductSummary {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.id) &&
+    typeof value.title === "string" &&
+    typeof value.price === "number" &&
+    value.price >= 0 &&
+    typeof value.discountPercentage === "number" &&
+    typeof value.rating === "number" &&
+    typeof value.stock === "number" &&
+    typeof value.thumbnail === "string" &&
+    typeof value.category === "string" &&
+    (value.brand === undefined || typeof value.brand === "string")
+  );
+}
+
+/** Reads the saved wishlist, keeping the good entries. Repeats are dropped, because cards use the id as their React key. */
+export function parseWishlist(value: unknown): ProductSummary[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  const seen = new Set<number>();
+  return value.filter(isProductSummary).filter((item) => {
+    if (seen.has(item.id)) {
+      return false;
+    }
+    seen.add(item.id);
+    return true;
+  });
 }
 
 /** Checks that something is a usable review. */

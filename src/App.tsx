@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
+import { WishlistProvider } from "./context/WishlistContext";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
@@ -19,12 +20,14 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <CartProvider>
-              {/* useTransitions={false} makes a route change commit together with state changes. By default the
-                  router delays its update as a transition, so on logout ProtectedRoute would see "logged out" while
-                  the URL is still /checkout, and redirect to /login instead of the catalog. See DEBUG-LOG.md. */}
-              <BrowserRouter useTransitions={false}>
-                <AppRoutes />
-              </BrowserRouter>
+              <WishlistProvider>
+                {/* useTransitions={false} makes a route change commit together with state changes. By default the
+                    router delays its update as a transition, so on logout ProtectedRoute would see "logged out" while
+                    the URL is still /checkout, and redirect to /login instead of the catalog. See DEBUG-LOG.md. */}
+                <BrowserRouter useTransitions={false}>
+                  <AppRoutes />
+                </BrowserRouter>
+              </WishlistProvider>
             </CartProvider>
           </AuthProvider>
         </ToastProvider>
