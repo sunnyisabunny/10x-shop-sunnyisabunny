@@ -98,3 +98,19 @@ The AI ran a code review on its own work twice during the FULL stage. Each findi
 **Its mistakes about the project itself:** it said the Vercel import hadn't happened, because it was reading a GitHub count that Vercel doesn't update, when the site was already live. It also gave a finishing time based on the wrong time of day, and corrected both once it checked the clock and the site.
 
 **A claim it caught in its own plan:** the `@/` path alias was listed as BONUS and configured, but no file used it. It found that when checking the plan against the code, before this report could claim it.
+
+---
+
+## Entry 9: the street, and sound
+
+**Goal:** make the light theme better, and give the shop some atmosphere.
+
+**Prompt:**
+
+> what can we do to make the light theme better? not to steer off drastically from the tokyo vending machine feel, i was thinking maybe a small fisherman town in japan, maybe add some koi fish, bonsai trees, and let's also improve the dark theme a little with moreof an actual city feel. we could also add background sounds that suit the vibes of the themes. and could you also tell me what are all the eyecandy features and how to trigger them, and how to trigger the easter egg. what should i put in the vercel settings, continue
+
+**What I decided when it asked:** a taller band above the machine so the street can be seen, sound generated in the browser rather than audio files, sound off until pressed, and machine sound effects when it is on.
+
+**What the AI did:** generated the art as SVG from a script, and built the sound with the Web Audio API.
+
+**What it couldn't do:** it can't hear. It measured loudness by rendering the sound offline, so it can say nothing clips, but not that it sounds good.

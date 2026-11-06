@@ -12,6 +12,13 @@
 | Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 15 real bugs in the log | |
 | Practical project | Done: README, PLAN, REPORT, Git history, deploy | 63 Issues, a Projects board, milestones and PRs linked to Issues. Not fully met: see below | |
 
+## Beyond the spec
+
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal.
+
+- **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
+- **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. I can't hear audio, so I measured its levels instead, and the sound itself is for a person to judge.
+
 ## What was not done, and why
 
 - **Commits on 15 different days and three weekly notes:** not reachable. Work began on 5 November, so the commits cover 5-6 November and there is one progress note. I did not backdate commits or invent notes.

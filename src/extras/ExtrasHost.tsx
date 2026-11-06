@@ -6,7 +6,6 @@
  */
 import "./extras.css";
 import Scene from "./Scene";
-import SoundTestPanel from "./sound/SoundTestPanel";
 import SoundToggle from "./sound/SoundToggle";
 
 export default function ExtrasHost() {
@@ -14,7 +13,6 @@ export default function ExtrasHost() {
     <>
       <Scene />
       <SoundToggle />
-      <SoundTestPanel />
     </>
   );
 }
