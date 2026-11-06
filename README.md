@@ -10,7 +10,7 @@ It is the graduation project for the 10X Front-end program. Login and checkout a
 
 ## Live Demo
 
-Coming with the first deploy.
+[10x-shop-sunnyisabunny.vercel.app](https://10x-shop-sunnyisabunny.vercel.app)
 
 ## Test Account
 

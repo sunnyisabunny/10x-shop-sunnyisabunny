@@ -1,16 +1,16 @@
 # Report
 
-**Status:** at the FULL stage. It is updated as each stage ships. Its numbers come from scripts that read the real repo and the real build, not from memory. Those scripts are my own tools and live outside this repo, so the graded code stays only the shop.
+**Status:** final report. Its numbers come from scripts that read the real repo, the real build and the live site, not from memory. Those scripts are my own tools and live outside this repo, so the graded code stays only the shop.
 
 ## Planned and delivered
 
-| Module | CORE | FULL |
-|---|---|---|
-| React | Done | Done: `useReducer`, custom hooks, Formik and Yup, Orders, Profile, reviews, related products, promo code |
-| TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types |
-| Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens, dark mode with a custom variant, custom utilities |
-| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 14 real bugs in the log |
-| Practical project | README, PLAN and Git history done. Deploy pending | 63 Issues, a Projects board and milestones. Not fully met: see below |
+| Module | CORE | FULL | BONUS |
+|---|---|---|---|
+| React | Done | Done: `useReducer`, custom hooks, Formik and Yup, Orders, Profile, reviews, related products, promo code | Done: wishlist, grid and list view, printable invoice, Checkout in three steps, price range filter, address book, Endless |
+| TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | |
+| Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens | Done: dark mode, custom variants and utilities |
+| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 15 real bugs in the log | |
+| Practical project | Done: README, PLAN, REPORT, Git history, deploy | 63 Issues, a Projects board, milestones and PRs linked to Issues. Not fully met: see below | |
 
 ## What was not done, and why
 
@@ -30,7 +30,7 @@
 
 ### Lighthouse
 
-Mobile preset, median of 3 runs per page. So far these come from a production build on my own machine, because the Vercel import is a step I do by hand and it isn't done yet. They will be measured again on the deployed site. The images are in [`docs/lighthouse`](docs/lighthouse).
+Mobile preset, median of 3 runs per page. The before and after columns compare production builds on my own machine, because those are the only like-for-like numbers: "before" was taken before the site was deployed. The live site's numbers are below them. The images are in [`docs/lighthouse`](docs/lighthouse).
 
 **Before:** commit `5e7dc76`. **After:** branch `perf/lazy-routes`.
 
@@ -43,6 +43,18 @@ Mobile preset, median of 3 runs per page. So far these come from a production bu
 | LCP | 0.8 s | 0.8 s | 3.2 s | 3.3 s | |
 | CLS | 0.001 | 0 | 0.026 | 0.026 | Lazy loading first pushed `/` to 0.114, and that was then fixed (entry 14) |
 | Total weight | 256 kB | 235 kB | 262 kB | 245 kB | Formik and Yup left the first load |
+
+**On the live site**, at commit `630d62c`:
+
+| Metric | `/` | `/products/1` |
+|---|---|---|
+| Performance | 99 | 93 |
+| Accessibility | 100 | 100 |
+| Best Practices | 100 | 100 |
+| SEO | 100 | 100 |
+| LCP | 0.9 s | 3.0 s |
+| CLS | 0 | 0 |
+| Total weight | 241 kB | 247 kB |
 
 ### Bundle
 
@@ -71,13 +83,65 @@ The CRM project once repainted the whole screen 60 times a second from a backgro
 
 ### Process
 
-Numbers for commits, PRs, Issues and hours are filled in from `git` and GitHub at hand-in.
+Read from `git` and GitHub by a script.
 
-## Hardest problems so far
+| | |
+|---|---|
+| Commits, not counting merges | 88 |
+| Days with commits | 2 (5 and 6 November) |
+| Merged PRs, all linked to Issues | 22 |
+| Issues, closed | 50 of 63 |
+| Bugs in `DEBUG-LOG.md` | 15 |
+| Source files | 78 |
+| Lines of source, of which notes | 6,244, of which 1,383 are notes |
+
+### Hours
+
+Time from the first commit to the end of each stage, read from commit times and tags. This is wall-clock time building with an AI assistant, not learning time, and it includes breaks of under a few minutes.
+
+| Stage | Finished | Hours |
+|---|---|---|
+| Setup and CORE | 5 Nov 21:58 | 1.4 |
+| FULL | 6 Nov 01:30 | 3.5 |
+| BONUS, with the scenes and sound built alongside | 6 Nov 06:48 | 5.3 |
+
+**Hours per epic can't be measured honestly.** I often committed in batches at the end of a stretch of work, so commit times put hours on the wrong feature. One PR, the wishlist, shows two hours that were really spent on the scenes. So here are the plan's estimates by epic instead. They are estimates, not measurements.
+
+| Epic | Planned hours |
+|---|---|
+| Docs | 3.0 |
+| Auth | 2.45 |
+| Catalog | 2.65 |
+| Cart | 1.95 |
+| Product | 1.4 |
+| Checkout | 0.65 |
+| Orders | 0.9 |
+| Profile | 0.85 |
+| Quality | 2.0 |
+| BONUS | 3.1 |
+| Extras | 2.5 |
+| **Total** | **21.45** |
+
+## The three hardest problems
 
 1. **A lost click.** Checking a field on blur removed its error line in the middle of a click, so the button moved away between mouse down and mouse up. It looked like a random failure until a test isolated it (entry 7). The fix was a reserved line for every error, so validation can't move anything.
 2. **Logging out landed on the wrong page.** React applied the logout and the navigation at different priorities, so the login guard ran in between (entry 1).
 3. **A failed order saved twice.** The hook updated the screen before it knew the save had worked, so a retry after full storage saved the old order and a new one (entry 8).
+
+## What I would do differently
+
+- **Start in week 1.** Everything I couldn't earn honestly comes from starting on 5 November: commits on 15 days, three progress notes, and a dated plan in week 1.
+- **Deploy on the first day.** I deployed near the end, so every measurement waited on it, and the before-and-after comparison had to stay on my own machine.
+- **Keep the browser tests in the repo.** I kept them out so the graded code stayed only the shop. That means CI can't run them and the ✓ marks in `COMPATIBILITY.md` rest on my word. The price of including them would have been small.
+- **Build less, and understand more of it.** Two days of work with an AI produced far more code than I could read closely in the same time. Fewer features would have left more time for reading and explaining them, and the defence is where that counts.
+
+## How AI was used
+
+Claude Code wrote nearly all of the code, the tests and the notes beside the code, working from the PRD and from my decisions. I decided the scope, the design direction, the extras and what to cut, and I reviewed the result in a browser. `ai-log.md` quotes my prompts word for word.
+
+Findings from its code reviews had to fail in a real browser test before anything changed. Some did not survive: two tabs overwriting each other's orders turned out to be unreachable. I rejected others on purpose, such as giving orders an owner, because the annex's model has none, and migrating an old cart format, because the site had never been deployed.
+
+It also made mistakes that testing caught, which is why I don't take its word for things. Its first fix for the footer's layout shift did nothing (entry 14), and its first version of Endless requested the same products twice (entry 15).
 
 ## Code review
 
