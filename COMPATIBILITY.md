@@ -4,7 +4,8 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 
 ## How this was tested
 
-- **Chromium, Firefox and WebKit:** driven by automated browser tests through Playwright, on the production build. Each engine ran the same checks: the core flow, the catalog flow, the FULL features, and the quality checks such as the keyboard path and the phone width. The one difference is in the keyboard path on WebKit, explained below.
+- **Chromium, Firefox and WebKit:** driven by automated browser tests through Playwright, on the production build. Each engine ran the same checks: the core flow, the catalog flow, the FULL features, the BONUS features, and the quality checks such as the keyboard path and the phone width. The one difference is in the keyboard path on WebKit, explained below.
+- **The live site:** the same checks and the accessibility audit also ran against [the deployed site](https://10x-shop-sunnyisabunny.vercel.app) in Chromium, including opening `/products/5` directly and reloading it.
 - **The test scripts aren't in this repo.** They are my own tools, kept in a separate folder so that the graded code stays only the shop. So the ✓ marks here are results I am reporting, and CI only runs typecheck, lint and build. I can run the scripts at the defence.
 - **WebKit is close to Safari, but it isn't Safari.** It is the engine Safari uses, in Playwright's own build on Windows. I don't have a Mac or an iPhone here to confirm it in real Safari.
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
@@ -21,6 +22,7 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 | Checkout | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
 | Orders and order details | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
 | Profile | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
+| Wishlist | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
 
 ## Problems found and fixed
 

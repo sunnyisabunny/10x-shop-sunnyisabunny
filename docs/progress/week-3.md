@@ -8,17 +8,19 @@ This is the only progress note, and the annex asks for three. Work on this code 
 
 - **Setup:** repo, tooling, CI on Linux for Node 22, 24 and 26, the plan, 63 Issues and a Projects board.
 - **CORE:** catalog, product page, cart, login, checkout, responsive layout, 404 and an Error Boundary. Tagged `v1.0-core`.
-- **FULL:** fetch layer, search and filters in the URL, cart reducer, promo code and shipping, reviews, related products, orders with live status, Profile, light theme, Formik and Yup, simulated Sign Up and reset, lazy routes, and measured memoization.
+- **FULL:** fetch layer, search and filters in the URL, cart reducer, promo code and shipping, reviews, related products, orders with live status, Profile, light theme, Formik and Yup, simulated Sign Up and reset, lazy routes, and measured memoization. Tagged `v2.0-full`.
+- **BONUS:** grid and list view, wishlist, printable invoice, price range filter, Checkout in three steps, address book, and a Pages and Endless switch. Tagged `v3.0-bonus`.
+- **Deploy:** the site is live on Vercel, and the browser tests pass against it.
 
 ## What is planned next
 
-BONUS items, then the eight extras, then final checks, the demo video and hand-in.
+The eight extras, then final checks, the demo video and hand-in.
 
 ## Blockers
 
-- The Vercel import is a step I do by hand, and it isn't done yet, so the Lighthouse numbers so far come from a local production build, marked as local.
-- `/security-review` couldn't run from this setup, so those checks are manual for now. `REPORT.md` says so.
+- `/security-review` couldn't run from this setup, so those checks are manual. `REPORT.md` says so.
+- The working session stopped for over seven hours on 6 November, with nothing committed in that gap.
 
 ## Hours
 
-Taken from commit timestamps by a script, and filled in with the final numbers in `REPORT.md`.
+Taken from commit times, per stage, in `REPORT.md`. It can't be split by epic honestly, and that section says why.
