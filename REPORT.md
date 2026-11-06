@@ -103,10 +103,10 @@ Read from `git` and GitHub by a script on 6 November, including the commit that 
 
 | | |
 |---|---|
-| Commits, not counting merges | 106 |
+| Commits, not counting merges | 107 |
 | Days with commits | 2 (5 and 6 November) |
 | Merged PRs | 30, of which 29 are linked to Issues. The scenes PR, #86, has none, because it was a request made later |
-| Issues, closed | 66 of 67. The last one is handing in |
+| Issues, closed | 67 of 67 |
 | Bugs in `DEBUG-LOG.md` | 18 |
 | Source files | 94 |
 | Lines of source, of which notes | 8,914, of which 1,724 are notes |

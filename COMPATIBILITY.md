@@ -9,7 +9,7 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 - **The test scripts aren't in this repo.** They are my own tools, kept in a separate folder so that the graded code stays only the shop. So the ✓ marks here are results I am reporting, and CI only runs typecheck, lint and build. I can run the scripts at the defence.
 - **WebKit is close to Safari, but it isn't Safari.** It is the engine Safari uses, in Playwright's own build on Windows. I don't have a Mac or an iPhone here to confirm it in real Safari.
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
-- **Edge and a real phone** are checked by hand, and those rows are filled in after that pass.
+- **Edge and a real phone** were checked by hand.
 
 Checks passed on the final production build, with 0 failures. The counts differ because of the differences explained in this file.
 
@@ -28,14 +28,14 @@ The Chromium column also passed on the live site.
 
 | Page | Chromium desktop | Chromium 375px | Firefox desktop | Firefox 375px | WebKit desktop | WebKit 375px | Edge (by hand) | Real phone (by hand) |
 |---|---|---|---|---|---|---|---|---|
-| Catalog | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Product details | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Cart | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Login, Sign Up, Reset | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Checkout | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Orders and order details | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Profile | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
-| Wishlist | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Not yet | Not yet |
+| Catalog | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Product details | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Cart | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Login, Sign Up, Reset | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Checkout | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Orders and order details | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Profile | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Wishlist | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Problems found and fixed
 
