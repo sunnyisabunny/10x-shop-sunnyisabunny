@@ -56,7 +56,14 @@ export default function CatalogPage() {
         {hasPriceRange(params) && <p className="mt-2 text-[13px] text-ink-soft">Filtered on the price shown, after discount. Endless is off while a price range is set.</p>}
       </div>
 
-      <CatalogResults state={state} page={params.page} view={params.view} endless={endless} onRetry={retry} onPageChange={handlePageChange} onBackToTop={returnToTop} />
+      {/* EXTRA: `machine-side` is the keypad's place, set aside here so the products don't jump when it loads. The two columns
+          depend on it being here, so deleting that one line puts the products back to full width. */}
+      <div className="grid min-w-0 gap-3.5 min-[1200px]:has-[#machine-side]:grid-cols-[minmax(0,1fr)_168px]">
+        <div className="grid min-w-0 content-start gap-3.5">
+          <CatalogResults state={state} page={params.page} view={params.view} endless={endless} onRetry={retry} onPageChange={handlePageChange} onBackToTop={returnToTop} />
+        </div>
+        <div id="machine-side" data-screen-only className="hidden min-[1200px]:block" />
+      </div>
     </section>
   );
 }

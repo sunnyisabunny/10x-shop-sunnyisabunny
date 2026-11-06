@@ -4,15 +4,25 @@
  * Dependencies run one way: extras may read the shop's contexts and hooks, and the shop never imports an extra.
  * Connects to: `Layout`, which wraps this in an ErrorBoundary, so a broken extra can't take the shop down.
  */
+import { useEffect } from "react";
 import "./extras.css";
 import ItemDrop from "./ItemDrop";
 import LedTicker from "./LedTicker";
+import MachinePanel from "./MachinePanel";
 import NightCat from "./NightCat";
+import Overload from "./Overload";
 import PickupTray from "./PickupTray";
 import Scene from "./Scene";
 import SoundToggle from "./sound/SoundToggle";
 
 export default function ExtrasHost() {
+  // Fetches the code for the receipt and the truck ahead of time. Their pages load them lazily, and already having the
+  // code means they appear with the page, instead of pushing it down a moment later.
+  useEffect(() => {
+    void import("./Receipt");
+    void import("./TruckTracker");
+  }, []);
+
   return (
     <>
       <Scene />
@@ -20,6 +30,8 @@ export default function ExtrasHost() {
       <NightCat />
       <PickupTray />
       <ItemDrop />
+      <MachinePanel />
+      <Overload />
       <SoundToggle />
     </>
   );

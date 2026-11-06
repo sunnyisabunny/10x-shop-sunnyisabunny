@@ -17,9 +17,13 @@ const soundStorage = new StorageService<boolean>("shop_sound", (value) => (typeo
 let sharedEngine: SoundEngine | null = null;
 let isSoundOn = false;
 
+/** Some browsers have no Web Audio at all. Then there is nothing to switch on, so no button is drawn: one would do nothing. */
+const hasWebAudio = typeof AudioContext !== "undefined";
+
 /** Plays a short sound if sound is on, and does nothing otherwise, so a caller never has to check. */
 export function playSound(...args: Parameters<SoundEngine["play"]>): void {
-  if (isSoundOn) {
+  // Not while the tab is hidden. Its audio clock is stopped then, so the sound would wait and play on return.
+  if (isSoundOn && !document.hidden) {
     sharedEngine?.play(...args);
   }
 }
@@ -78,7 +82,7 @@ export default function SoundToggle() {
   // Someone who turned sound on during an earlier visit gets it back on their first click anywhere. The browser
   // won't allow it any sooner. The cleanup removes the listener, however the click turns out.
   useEffect(() => {
-    if (!isOn || contextRef.current !== null) {
+    if (!hasWebAudio || !isOn || contextRef.current !== null) {
       return;
     }
     function startOnFirstClick() {
@@ -94,17 +98,38 @@ export default function SoundToggle() {
     };
   }, [isOn, theme, wakeAudio]);
 
-  // The shop goes quiet in a background tab, so it doesn't follow people around. Suspending also saves battery.
+  // The shop goes quiet in a background tab, so it doesn't follow people around, which also saves battery. The engine's
+  // timers have to stop too. Otherwise every sound due while hidden waits on the stopped audio clock, and they would all
+  // play at once as a roar when the tab comes back.
   useEffect(() => {
     function handleVisibility() {
       if (contextRef.current === null || !isOn) {
         return;
       }
-      void (document.hidden ? contextRef.current.suspend() : contextRef.current.resume());
+      if (document.hidden) {
+        sharedEngine?.setOn(false);
+        void contextRef.current.suspend();
+      } else {
+        void contextRef.current.resume();
+        sharedEngine?.setOn(true);
+      }
     }
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [isOn]);
+
+  // Stops all sound if this goes away, which happens if any extra crashes, because the speaker button goes with it.
+  // Without this, the sound would keep playing with no way to turn it off.
+  useEffect(
+    () => () => {
+      sharedEngine?.setOn(false);
+      void contextRef.current?.close();
+      contextRef.current = null;
+      sharedEngine = null;
+      isSoundOn = false;
+    },
+    [],
+  );
 
   /** The button's click, which is what makes audio allowed to start. */
   function handleClick() {
@@ -113,7 +138,7 @@ export default function SoundToggle() {
   }
 
   const nav = document.getElementById("main-nav");
-  if (nav === null) {
+  if (nav === null || !hasWebAudio) {
     return null;
   }
 
