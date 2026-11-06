@@ -84,3 +84,33 @@ The AI ran a code review on its own work twice during the FULL stage. Each findi
 | Migrate the old cart format | **Rejected.** The site had never been deployed, so no old carts exist |
 
 **Corrections to the AI's own work:** its first fix for the footer's layout shift did nothing, because the rule was in the wrong CSS layer. Lighthouse showed the score hadn't moved, so it had to find out why (entry 14). A tool it wrote to split commits also corrupted line endings on Windows, which put the wrong contents in two unpushed commits. It redid them.
+
+---
+
+## Entry 8: BONUS, and bugs the tests found that the screen didn't show
+
+**Goal:** finish the BONUS list from the plan.
+
+**What the AI did:** built the seven items one branch at a time, and ran a code review on each before merging.
+
+**What the tests caught that nothing on the screen showed:** its first version of Endless requested the same products twice when Load more was pressed more than once. The page looked right, and only a test counting requests saw it. It traced the cause into React's own source (`DEBUG-LOG.md` entry 15).
+
+**Its mistakes about the project itself:** it said the Vercel import hadn't happened, because it was reading a GitHub count that Vercel doesn't update, when the site was already live. It also gave a finishing time based on the wrong time of day, and corrected both once it checked the clock and the site.
+
+**A claim it caught in its own plan:** the `@/` path alias was listed as BONUS and configured, but no file used it. It found that when checking the plan against the code, before this report could claim it.
+
+---
+
+## Entry 9: the street, and sound
+
+**Goal:** make the light theme better, and give the shop some atmosphere.
+
+**Prompt:**
+
+> what can we do to make the light theme better? not to steer off drastically from the tokyo vending machine feel, i was thinking maybe a small fisherman town in japan, maybe add some koi fish, bonsai trees, and let's also improve the dark theme a little with moreof an actual city feel. we could also add background sounds that suit the vibes of the themes. and could you also tell me what are all the eyecandy features and how to trigger them, and how to trigger the easter egg. what should i put in the vercel settings, continue
+
+**What I decided when it asked:** a taller band above the machine so the street can be seen, sound generated in the browser rather than audio files, sound off until pressed, and machine sound effects when it is on.
+
+**What the AI did:** generated the art as SVG from a script, and built the sound with the Web Audio API.
+
+**What it couldn't do:** it can't hear. It measured loudness by rendering the sound offline, so it can say nothing clips, but not that it sounds good.

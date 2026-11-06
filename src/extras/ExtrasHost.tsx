@@ -8,7 +8,6 @@ import "./extras.css";
 import LedTicker from "./LedTicker";
 import NightCat from "./NightCat";
 import Scene from "./Scene";
-import SoundTestPanel from "./sound/SoundTestPanel";
 import SoundToggle from "./sound/SoundToggle";
 
 export default function ExtrasHost() {
@@ -18,7 +17,6 @@ export default function ExtrasHost() {
       <LedTicker />
       <NightCat />
       <SoundToggle />
-      <SoundTestPanel />
     </>
   );
 }
