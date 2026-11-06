@@ -1,0 +1,418 @@
+/*
+ * NOTE: the look of the extras, which are beyond the spec. Each part of the shop works without this file.
+ * Why it exists: keeping the extras' styles here means deleting `src/extras` removes all of them at once.
+ * Connects to: `ExtrasHost.tsx` imports it. Because that component loads lazily, this CSS arrives after the page.
+ */
+@import "./scene-sprites.css";
+
+/* --- The scenes behind the machine -------------------------------------------------------------------------------
+
+   Art: plain SVG files in public/scenes. CSS only downloads a background for a rule that applies, so a phone
+   downloads none of this, and each theme downloads only its own.
+
+   Motion: every moving part animates only `transform` or `opacity`. The browser can do those on the GPU without
+   redrawing anything, which is the same reason the rain is cheap. Animating `left` or a background position would
+   repaint the screen on every frame. Measured: 0 paints while idle. */
+
+@media (min-width: 30.0625rem) {
+  .street::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      url("/scenes/night-road.svg") bottom center / max(2560px, 100vw) auto no-repeat,
+      url("/scenes/night.svg") top center / max(2560px, 100vw) auto no-repeat;
+    animation: scene-in 500ms ease-out both;
+  }
+  [data-theme="light"] .street::before {
+    background:
+      url("/scenes/day-canal.svg") bottom center / max(2560px, 100vw) auto no-repeat,
+      url("/scenes/day.svg") top center / max(2560px, 100vw) auto no-repeat;
+  }
+  /* The new art has its own signs, so the plain ones step aside. */
+  .street .sign {
+    display: none;
+  }
+  /* The rain falls in front of everything in the street. */
+  .street .rain {
+    z-index: 2;
+  }
+}
+
+/* Only the current theme's moving parts exist on the page. `display: none` also stops their animations. */
+.scene-night,
+.scene-day {
+  display: none;
+}
+@media (min-width: 30.0625rem) {
+  [data-theme="dark"] .scene-night,
+  [data-theme="light"] .scene-day {
+    display: block;
+  }
+}
+
+/* Each moving drawing is placed relative to the page's centre line, the same line the art is drawn around. */
+.scene-part {
+  position: absolute;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/* --- Night --- */
+
+.scene-wires {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: 240px;
+  background: url("/scenes/night-wires.svg") top center / max(2560px, 100vw) auto no-repeat;
+}
+
+/* Starts past the left edge. Crossing takes 9 of its 46 seconds, and the rest is the wait for the next train. */
+.scene-train {
+  top: 98px;
+  left: -880px;
+  width: 860px;
+  height: 30px;
+  animation: scene-train 46s linear 6s infinite;
+}
+@keyframes scene-train {
+  0% {
+    transform: translateX(0);
+  }
+  20%,
+  100% {
+    transform: translateX(calc(100vw + 900px));
+  }
+}
+
+/* Headlights and taillights are just gradients, so they need no image. */
+.scene-car {
+  bottom: 38px;
+  width: 54px;
+  height: 18px;
+}
+.scene-car-away {
+  left: calc(100% + 20px);
+  background:
+    radial-gradient(circle at 10px 9px, #ff5b52 2.6px, rgb(255 60 50 / 0.45) 4px, transparent 9px),
+    radial-gradient(circle at 44px 9px, #ff5b52 2.6px, rgb(255 60 50 / 0.45) 4px, transparent 9px);
+  animation: scene-car-left 31s linear 3s infinite;
+}
+.scene-car-toward {
+  bottom: 18px;
+  left: -80px;
+  background:
+    radial-gradient(circle at 10px 9px, #fff6d8 3px, rgb(255 240 190 / 0.5) 5px, transparent 10px),
+    radial-gradient(circle at 44px 9px, #fff6d8 3px, rgb(255 240 190 / 0.5) 5px, transparent 10px);
+  animation: scene-car-right 23s linear 11s infinite;
+}
+@keyframes scene-car-left {
+  0% {
+    transform: translateX(0);
+  }
+  24%,
+  100% {
+    transform: translateX(calc(-100vw - 120px));
+  }
+}
+@keyframes scene-car-right {
+  0% {
+    transform: translateX(0);
+  }
+  26%,
+  100% {
+    transform: translateX(calc(100vw + 120px));
+  }
+}
+
+/* The red lights on top of towers, and one sign with a tired tube. */
+.scene-beacon {
+  top: 13px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ff3b3b;
+  box-shadow: 0 0 6px 2px rgb(255 60 60 / 0.7);
+  animation: scene-blink 2.8s steps(1) infinite;
+}
+.scene-beacon-a {
+  left: calc(50% + (1490px - 1282px));
+  top: 4px;
+}
+.scene-beacon-b {
+  left: calc(50% + (640px - 1280px));
+  top: 28px;
+  animation-delay: 1.3s;
+}
+@keyframes scene-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.08;
+  }
+}
+.scene-dying-sign {
+  top: 172px;
+  left: calc(50% + (573px - 1280px));
+  width: 46px;
+  height: 110px;
+  border-radius: 3px;
+  background: #070912;
+  opacity: 0;
+  animation: scene-tube 13s steps(1) 4s infinite;
+}
+@keyframes scene-tube {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+  }
+  89% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0;
+  }
+  92% {
+    opacity: 0.6;
+  }
+  93% {
+    opacity: 0;
+  }
+}
+
+/* --- Day --- */
+
+/* Carp streamers: they pivot where they are tied to the pole, as a real windsock does. */
+.scene-nobori {
+  left: calc(50% + (1011px - 1280px));
+  width: 92px;
+  height: 26px;
+  transform-origin: left center;
+  animation: scene-flutter 3.1s ease-in-out infinite alternate;
+}
+.scene-nobori-1 {
+  top: 14px;
+}
+.scene-nobori-2 {
+  top: 42px;
+  animation-duration: 2.7s;
+  animation-delay: -1.1s;
+}
+.scene-nobori-3 {
+  top: 69px;
+  width: 92px;
+  scale: 0.8;
+  animation-duration: 3.4s;
+  animation-delay: -0.6s;
+}
+@keyframes scene-flutter {
+  from {
+    transform: rotate(-5deg) skewY(3deg);
+  }
+  to {
+    transform: rotate(6deg) skewY(-4deg);
+  }
+}
+
+/* Boats drift very slowly on the bay, in the strip of water above the machine. Sizes are set with width and height,
+   not `scale`, because `scale` would also shrink the distance they travel, and they would vanish halfway across. */
+.scene-boat {
+  top: 102px;
+  width: 58px;
+  height: 36px;
+  background-size: contain;
+  animation: scene-drift 210s linear infinite;
+}
+.scene-boat-b {
+  top: 111px;
+  width: 42px;
+  height: 26px;
+  animation-duration: 290s;
+  animation-delay: -150s;
+}
+@keyframes scene-drift {
+  from {
+    transform: translateX(-140px);
+  }
+  to {
+    transform: translateX(calc(100vw + 140px));
+  }
+}
+
+.scene-gull {
+  top: 26px;
+  width: 30px;
+  height: 12px;
+  background-size: contain;
+  animation: scene-glide 74s linear infinite;
+}
+.scene-gull-b {
+  top: 40px;
+  width: 22px;
+  height: 9px;
+  animation-duration: 96s;
+  animation-delay: -31s;
+}
+.scene-gull-c {
+  top: 16px;
+  width: 18px;
+  height: 7px;
+  animation-duration: 120s;
+  animation-delay: -70s;
+}
+@keyframes scene-glide {
+  from {
+    transform: translate(-60px, 0);
+  }
+  50% {
+    transform: translate(50vw, -8px);
+  }
+  to {
+    transform: translate(calc(100vw + 60px), 4px);
+  }
+}
+
+/* Koi: the outer element carries each fish along the canal, and the inner one gives it a slow swimming sway. One
+   element can only run one transform animation at a time. */
+.scene-koi {
+  width: 74px;
+  height: 28px;
+  animation: scene-swim 58s linear infinite;
+}
+.scene-koi i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: scene-sway 2.6s ease-in-out infinite alternate;
+}
+.scene-koi-1 {
+  bottom: 34px;
+  animation-delay: -6s;
+}
+.scene-koi-2 {
+  bottom: 62px;
+  width: 63px;
+  height: 24px;
+  animation-duration: 74s;
+  animation-delay: -28s;
+}
+.scene-koi-3 {
+  bottom: 96px;
+  width: 67px;
+  height: 25px;
+  animation-duration: 66s;
+  animation-delay: -47s;
+}
+.scene-koi-4 {
+  bottom: 128px;
+  width: 53px;
+  height: 20px;
+  animation-duration: 88s;
+  animation-delay: -12s;
+}
+/* These two swim the other way, with the drawing flipped so each still faces where it is going. */
+.scene-koi-5 {
+  bottom: 48px;
+  width: 59px;
+  height: 22px;
+  animation-name: scene-swim-back;
+  animation-duration: 69s;
+  animation-delay: -20s;
+}
+.scene-koi-6 {
+  bottom: 112px;
+  width: 70px;
+  height: 27px;
+  animation-name: scene-swim-back;
+  animation-duration: 80s;
+  animation-delay: -55s;
+}
+.scene-koi-5 i,
+.scene-koi-6 i {
+  scale: -1 1;
+}
+@keyframes scene-swim {
+  from {
+    transform: translateX(-90px);
+  }
+  to {
+    transform: translateX(calc(100vw + 90px));
+  }
+}
+@keyframes scene-swim-back {
+  from {
+    transform: translateX(calc(100vw + 90px));
+  }
+  to {
+    transform: translateX(-90px);
+  }
+}
+@keyframes scene-sway {
+  from {
+    transform: rotate(-3.5deg);
+  }
+  to {
+    transform: rotate(3.5deg);
+  }
+}
+
+/* A bonsai someone keeps on top of the machine. It moves with the machine, so it is visible at any desktop width. */
+.scene-bonsai {
+  display: none;
+  position: absolute;
+  top: -97px;
+  left: 96px;
+  width: 124px;
+  height: 100px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+@media (min-width: 64.0625rem) {
+  [data-theme="light"] .scene-bonsai {
+    display: block;
+  }
+}
+
+/* Anyone who asks for less motion sees a still picture: the global rule stops the animations, so the fish and boats
+   that would otherwise wait off screen are placed where they can be seen. */
+@media (prefers-reduced-motion: reduce) {
+  .scene-koi-1 {
+    transform: translateX(6vw);
+  }
+  .scene-koi-2 {
+    transform: translateX(88vw);
+  }
+  .scene-koi-3 {
+    transform: translateX(3vw);
+  }
+  .scene-koi-4 {
+    transform: translateX(92vw);
+  }
+  .scene-boat {
+    transform: translateX(30vw);
+  }
+  .scene-boat-b {
+    transform: translateX(66vw);
+  }
+  .scene-gull {
+    transform: translateX(22vw);
+  }
+  .scene-gull-b {
+    transform: translateX(62vw);
+  }
+  .scene-gull-c {
+    transform: translateX(44vw);
+  }
+}
+
+@keyframes scene-in {
+  from {
+    opacity: 0;
+  }
+}
