@@ -11,16 +11,19 @@
  */
 import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
-import type { ShippingInfo } from "../../types/order";
+import type { SavedAddress, ShippingInfo } from "../../types/order";
 import { COUNTRIES } from "../../utils/constants";
 import { isRecord } from "../../utils/guards";
 import { hasNoErrors, validateCheckout, type FieldErrors } from "../../utils/validation";
 import Button, { buttonStyles } from "../ui/Button";
 import FormField, { FieldError, inputStyles } from "../ui/FormField";
+import AddressPicker from "./AddressPicker";
 
 interface CheckoutFormProps {
-  /** Called only with values that passed validation. */
-  onPlaceOrder: (shipping: ShippingInfo) => void;
+  /** Called only with values that passed validation. The second part says whether to save the address too. */
+  onPlaceOrder: (shipping: ShippingInfo, saveAddress: boolean) => void;
+  /** Addresses saved earlier, offered on the Delivery step. */
+  savedAddresses: SavedAddress[];
   /** True while the order is being placed. Disables the button, so a double click can't order twice. */
   isPlacing: boolean;
   /** A failure from placing the order, shown here. The form keeps what was typed. */
@@ -111,11 +114,14 @@ function ReviewBlock({ title, lines, onEdit, disabled }: { title: string; lines:
   );
 }
 
-export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: CheckoutFormProps) {
+export default function CheckoutForm({ onPlaceOrder, savedAddresses, isPlacing, failure }: CheckoutFormProps) {
   /** What is typed in each field. `value` and `onChange` on every input make this a controlled form. */
   const [values, setValues] = useState<ShippingInfo>(EMPTY_FORM);
 
   const [errors, setErrors] = useState<FieldErrors<ShippingInfo>>({});
+
+  /** Whether to keep this address for next time. Off by default, because it is the shopper's choice to make. */
+  const [saveAddress, setSaveAddress] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -162,6 +168,12 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
     setValues((current) => ({ ...current, [name]: value }));
   }
 
+  /** Fills the Delivery fields from a saved address, and clears any errors they were showing. */
+  function handlePickAddress({ address, city, postalCode, country }: SavedAddress) {
+    setValues((current) => ({ ...current, address, city, postalCode, country }));
+    setErrors((current) => ({ ...current, address: undefined, city: undefined, postalCode: undefined, country: undefined }));
+  }
+
   /**
    * PRD P0.5: checks a field when you leave it, not only on submit. It updates just that field's error, so
    * filling in the form top to bottom doesn't light up the fields you haven't reached yet.
@@ -189,7 +201,7 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
       return;
     }
     if (!isPlacing) {
-      onPlaceOrder(trimmed);
+      onPlaceOrder(trimmed, saveAddress);
     }
   }
 
@@ -228,6 +240,7 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
 
       {step === 1 && (
         <>
+          <AddressPicker addresses={savedAddresses} onPick={handlePickAddress} />
           <FormField id="address" name="address" label="Address" autoComplete="street-address" value={values.address} onChange={handleChange} onBlur={handleBlur} error={errors.address} />
           <div className="grid gap-x-3.5 gap-y-2 md:grid-cols-2">
             <FormField id="city" name="city" label="City" autoComplete="address-level2" value={values.city} onChange={handleChange} onBlur={handleBlur} error={errors.city} />
@@ -257,6 +270,11 @@ export default function CheckoutForm({ onPlaceOrder, isPlacing, failure }: Check
             </select>
             <FieldError id="country-error" message={errors.country} />
           </div>
+          {/* The whole row is the label, so the tap target is 44px tall even though the box itself is small. */}
+          <label className="flex min-h-11 items-center gap-2.5 font-semibold">
+            <input type="checkbox" checked={saveAddress} onChange={(event) => setSaveAddress(event.target.checked)} className="size-5 accent-pink" />
+            Save this address for next time
+          </label>
         </>
       )}
 

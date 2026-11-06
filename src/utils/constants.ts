@@ -72,6 +72,7 @@ export const STORAGE_KEYS = {
   profiles: "shop_profile",
   theme: "shop_theme",
   wishlist: "shop_wishlist",
+  addresses: "shop_addresses",
 } as const;
 
 /**

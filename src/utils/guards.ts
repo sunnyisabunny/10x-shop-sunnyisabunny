@@ -8,10 +8,10 @@
  */
 import { ApiError } from "../api/ApiError";
 import type { CartItem, CartState } from "../types/cart";
-import type { OrderRecord, ShippingInfo } from "../types/order";
+import type { OrderRecord, SavedAddress, ShippingInfo } from "../types/order";
 import type { ProductSummary, Review, StoredReviews } from "../types/product";
 import type { AuthUser, Profile, StoredProfiles } from "../types/user";
-import { PROMO_CODE } from "./constants";
+import { COUNTRIES, PROMO_CODE } from "./constants";
 
 /** True for errors from our ApiClient, which carry an HTTP status. */
 export function isApiError(error: unknown): error is ApiError {
@@ -49,11 +49,11 @@ export function isCartItem(value: unknown): value is CartItem {
 }
 
 /**
- * Keeps the first of any items that share an id. Lists use the id as their React key, and keys must be unique. `<T>`
- * lets the cart and the wishlist share this, even though their ids are in different fields.
+ * Keeps the first of any items that share an id. Lists use the id as their React key, and keys must be unique. The two
+ * generics let the cart, the wishlist and the address book share this, with different items and different kinds of id.
  */
-function uniqueBy<T>(items: T[], getId: (item: T) => number): T[] {
-  const seen = new Set<number>();
+function uniqueBy<T, Id>(items: T[], getId: (item: T) => Id): T[] {
+  const seen = new Set<Id>();
   return items.filter((item) => {
     const id = getId(item);
     if (seen.has(id)) {
@@ -185,6 +185,31 @@ function isProductSummary(value: unknown): value is ProductSummary {
 /** Reads the saved wishlist, keeping the good entries and dropping any repeats. */
 export function parseWishlist(value: unknown): ProductSummary[] | null {
   return Array.isArray(value) ? uniqueBy(value.filter(isProductSummary), (item) => item.id) : null;
+}
+
+/**
+ * What makes two addresses the same one. JSON keeps the fields apart, so "5 Main, Apt 2" in one field and "5 Main" with
+ * "Apt 2" in another can't be mistaken for each other, as they could if the text were simply joined.
+ */
+export function addressKey({ address, city, postalCode, country }: SavedAddress): string {
+  return JSON.stringify([address, city, postalCode, country]);
+}
+
+/**
+ * Reads the saved addresses, keeping only complete ones, in a country the shop offers. The form's dropdown has no way
+ * to show any other country, so it would display one thing while the order saved another.
+ */
+export function parseAddresses(value: unknown): SavedAddress[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  const valid = value.filter(
+    (item): item is SavedAddress =>
+      isRecord(item) &&
+      [item.address, item.city, item.postalCode, item.country].every((field) => typeof field === "string" && field.trim() !== "") &&
+      COUNTRIES.some((country) => country === item.country),
+  );
+  return uniqueBy(valid, addressKey);
 }
 
 /** Checks that something is a usable review. */
