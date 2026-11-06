@@ -34,7 +34,7 @@ export default function WishlistPage() {
     <section className="grid gap-3.5 p-2.5 tablet:px-6 tablet:pt-5 tablet:pb-6">
       <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 px-1 tablet:px-0">
         {/* tabIndex -1 lets code focus the heading without adding it to the Tab order. */}
-        <h1 ref={headingRef} tabIndex={-1} className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em] outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">
           Wishlist
         </h1>
         {items.length > 0 && <span className="text-ink-soft">{formatItemCount(items.length)}</span>}

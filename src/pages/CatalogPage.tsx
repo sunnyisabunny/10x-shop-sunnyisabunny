@@ -43,7 +43,7 @@ export default function CatalogPage() {
     <section className="grid gap-3.5 p-2.5 tablet:px-6 tablet:pt-5 tablet:pb-4">
       <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 px-1 tablet:px-0">
         {/* tabIndex -1 lets code focus the heading without adding it to the Tab order. */}
-        <h1 ref={headingRef} tabIndex={-1} className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em] outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="text-[30px] leading-[1.15] font-bold tracking-[-0.01em]">
           Catalog
         </h1>
         {state.status === "success" && <span className="text-ink-soft">{formatItemCount(state.data.total)}</span>}

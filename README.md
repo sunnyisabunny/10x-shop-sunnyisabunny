@@ -46,6 +46,7 @@ Login is simulated, so there is no real account to find. Any username works with
 - A wishlist, saved in the browser
 - A printable invoice for each order
 - A price range filter, on the price shown after discount
+- Checkout in three steps: Contact, Delivery and Review
 
 ## Tech Stack
 
