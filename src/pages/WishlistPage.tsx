@@ -6,11 +6,11 @@
  */
 import { useEffect, useRef } from "react";
 import { Link } from "react-router";
-import ProductGrid from "../components/product/ProductGrid";
-import { buttonStyles } from "../components/ui/Button";
-import StateMessage from "../components/ui/StateMessage";
-import { useWishlist } from "../context/WishlistContext";
-import { formatItemCount } from "../utils/format";
+import ProductGrid from "@/components/product/ProductGrid";
+import { buttonStyles } from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import { useWishlist } from "@/context/WishlistContext";
+import { formatItemCount } from "@/utils/format";
 
 export default function WishlistPage() {
   const { items } = useWishlist();

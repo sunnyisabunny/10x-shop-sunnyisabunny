@@ -7,12 +7,12 @@
  * That is why refresh, Back/Forward and shared links all restore the same view with no extra code.
  */
 import { useRef } from "react";
-import CatalogResults from "../components/product/CatalogResults";
-import CatalogToolbar from "../components/product/CatalogToolbar";
-import { useCatalogParams } from "../hooks/useCatalogParams";
-import { useCatalogProducts } from "../hooks/useCatalogProducts";
-import { formatItemCount } from "../utils/format";
-import { hasPriceRange } from "../utils/url";
+import CatalogResults from "@/components/product/CatalogResults";
+import CatalogToolbar from "@/components/product/CatalogToolbar";
+import { useCatalogParams } from "@/hooks/useCatalogParams";
+import { useCatalogProducts } from "@/hooks/useCatalogProducts";
+import { formatItemCount } from "@/utils/format";
+import { hasPriceRange } from "@/utils/url";
 
 export default function CatalogPage() {
   const { params, change } = useCatalogParams();

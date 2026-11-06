@@ -4,9 +4,9 @@
  * Connects to: `CheckoutForm` passes the list and `onPick`. It draws nothing until an address has been saved.
  */
 import { useState } from "react";
-import { addressKey, formatAddress } from "../../hooks/useAddresses";
-import type { SavedAddress } from "../../types/order";
-import { inputStyles, labelStyles } from "../ui/FormField";
+import { addressKey, formatAddress } from "@/hooks/useAddresses";
+import type { SavedAddress } from "@/types/order";
+import { inputStyles, labelStyles } from "@/components/ui/FormField";
 
 interface AddressPickerProps {
   addresses: SavedAddress[];

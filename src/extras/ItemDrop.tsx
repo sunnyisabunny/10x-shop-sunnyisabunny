@@ -5,8 +5,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useCart } from "../context/CartContext";
-import type { CartItem } from "../types/cart";
+import { useCart } from "@/context/CartContext";
+import type { CartItem } from "@/types/cart";
 import { playSound } from "./sound/SoundToggle";
 
 /** One falling picture: what it shows, where it starts and how far it goes. */

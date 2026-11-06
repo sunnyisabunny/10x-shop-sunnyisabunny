@@ -8,11 +8,11 @@
  * the rules had grown enough to deserve one place, and a pure reducer can be read and tested alone.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
-import { Cart } from "../models/Cart";
-import { StorageService } from "../models/StorageService";
-import type { CartItem, CartProductInput, CartState } from "../types/cart";
-import { STORAGE_KEYS } from "../utils/constants";
-import { parseCartState } from "../utils/guards";
+import { Cart } from "@/models/Cart";
+import { StorageService } from "@/models/StorageService";
+import type { CartItem, CartProductInput, CartState } from "@/types/cart";
+import { STORAGE_KEYS } from "@/utils/constants";
+import { parseCartState } from "@/utils/guards";
 import { cartReducer } from "./cart.reducer";
 
 /** Everything components get from `useCart()`: the cart's state, plus what is worked out from it and the actions. */

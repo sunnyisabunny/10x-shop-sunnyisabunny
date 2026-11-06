@@ -11,12 +11,12 @@
  */
 import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
-import type { SavedAddress, ShippingInfo } from "../../types/order";
-import { COUNTRIES } from "../../utils/constants";
-import { isRecord } from "../../utils/guards";
-import { hasNoErrors, validateCheckout, type FieldErrors } from "../../utils/validation";
-import Button, { buttonStyles } from "../ui/Button";
-import FormField, { FieldError, inputStyles } from "../ui/FormField";
+import type { SavedAddress, ShippingInfo } from "@/types/order";
+import { COUNTRIES } from "@/utils/constants";
+import { isRecord } from "@/utils/guards";
+import { hasNoErrors, validateCheckout, type FieldErrors } from "@/utils/validation";
+import Button, { buttonStyles } from "@/components/ui/Button";
+import FormField, { FieldError, inputStyles } from "@/components/ui/FormField";
 import AddressPicker from "./AddressPicker";
 
 interface CheckoutFormProps {

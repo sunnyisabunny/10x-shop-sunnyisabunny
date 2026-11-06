@@ -4,7 +4,7 @@
  * each value should have exactly one home. A value copied into two places eventually disagrees with itself.
  * Connects to: validators, the catalog request, stock badges and the checkout.
  */
-import type { OrderStatus } from "../types/order";
+import type { OrderStatus } from "@/types/order";
 
 /** Login: the shortest password accepted. It also drives the error text, so they can't disagree. */
 export const MIN_PASSWORD_LENGTH = 6;

@@ -4,7 +4,7 @@
  * Connects to: the `*` route in `AppRoutes.tsx`, and `ProductPage.tsx`.
  */
 import { Link } from "react-router";
-import { buttonStyles } from "../components/ui/Button";
+import { buttonStyles } from "@/components/ui/Button";
 
 export default function NotFoundPage() {
   return (

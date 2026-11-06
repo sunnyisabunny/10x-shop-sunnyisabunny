@@ -11,21 +11,21 @@
  */
 import { lazy } from "react";
 import { Route, Routes } from "react-router";
-import Layout from "../components/layout/Layout";
+import Layout from "@/components/layout/Layout";
 import ProtectedRoute from "./ProtectedRoute";
 
-const CartPage = lazy(() => import("../pages/CartPage"));
-const CatalogPage = lazy(() => import("../pages/CatalogPage"));
-const CheckoutPage = lazy(() => import("../pages/CheckoutPage"));
-const LoginPage = lazy(() => import("../pages/LoginPage"));
-const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
-const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
-const OrdersPage = lazy(() => import("../pages/OrdersPage"));
-const ProductPage = lazy(() => import("../pages/ProductPage"));
-const ProfilePage = lazy(() => import("../pages/ProfilePage"));
-const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
-const SignUpPage = lazy(() => import("../pages/SignUpPage"));
-const WishlistPage = lazy(() => import("../pages/WishlistPage"));
+const CartPage = lazy(() => import("@/pages/CartPage"));
+const CatalogPage = lazy(() => import("@/pages/CatalogPage"));
+const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const OrderDetailPage = lazy(() => import("@/pages/OrderDetailPage"));
+const OrdersPage = lazy(() => import("@/pages/OrdersPage"));
+const ProductPage = lazy(() => import("@/pages/ProductPage"));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
+const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
+const SignUpPage = lazy(() => import("@/pages/SignUpPage"));
+const WishlistPage = lazy(() => import("@/pages/WishlistPage"));
 
 export default function AppRoutes() {
   return (

@@ -7,9 +7,9 @@
  * OOP shown here: a `private` constructor plus `static` factories, so an Order can only be built in the two
  * ways that make sense. `getStatus` doesn't change anything, and `toJSON` is the serialisation for storage.
  */
-import type { CartItem } from "../types/cart";
-import type { OrderRecord, OrderStatus, ShippingInfo } from "../types/order";
-import { ORDER_STATUS_STEPS } from "../utils/constants";
+import type { CartItem } from "@/types/cart";
+import type { OrderRecord, OrderStatus, ShippingInfo } from "@/types/order";
+import { ORDER_STATUS_STEPS } from "@/utils/constants";
 import type { Cart } from "./Cart";
 
 /** The next order number: the highest existing plus one, so deleting an order can't produce a duplicate. */

@@ -8,7 +8,7 @@
  * same shape useState gives, plus a third item that deletes the saved value.
  */
 import { useCallback, useEffect, useState } from "react";
-import { StorageService } from "../models/StorageService";
+import { StorageService } from "@/models/StorageService";
 
 /** Returns `[value, save, remove]`. `parse` checks what comes out of storage, since anyone can edit it. */
 export function useLocalStorage<T>(key: string, initial: T, parse: (value: unknown) => T | null): [T, (value: T) => boolean, () => void] {

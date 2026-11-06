@@ -4,13 +4,13 @@
  * Connects to: `CatalogPage` passes the current values and `onChange`. It also loads the category list itself.
  */
 import { useEffect, useRef, useState } from "react";
-import { useDebounce } from "../../hooks/useDebounce";
-import { useFetch } from "../../hooks/useFetch";
-import type { Category } from "../../types/product";
-import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "../../utils/constants";
-import { formatCategory } from "../../utils/format";
-import { hasPriceRange, isSortValue, type CatalogChange, type CatalogMode, type CatalogParams, type CatalogView } from "../../utils/url";
-import { inputStyles, labelStyles } from "../ui/FormField";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useFetch } from "@/hooks/useFetch";
+import type { Category } from "@/types/product";
+import { SEARCH_DEBOUNCE_MS, SORT_OPTIONS } from "@/utils/constants";
+import { formatCategory } from "@/utils/format";
+import { hasPriceRange, isSortValue, type CatalogChange, type CatalogMode, type CatalogParams, type CatalogView } from "@/utils/url";
+import { inputStyles, labelStyles } from "@/components/ui/FormField";
 import PriceFilter from "./PriceFilter";
 
 interface CatalogToolbarProps {

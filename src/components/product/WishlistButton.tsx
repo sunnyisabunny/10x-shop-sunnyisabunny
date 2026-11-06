@@ -4,9 +4,9 @@
  * Connects to: `WishlistContext`. Because this component reads the context itself, adding to the wishlist redraws the
  * hearts only, and `memo(ProductCard)` still keeps the cards from redrawing.
  */
-import { useWishlist } from "../../context/WishlistContext";
-import { useToast } from "../../context/ToastContext";
-import type { ProductSummary } from "../../types/product";
+import { useWishlist } from "@/context/WishlistContext";
+import { useToast } from "@/context/ToastContext";
+import type { ProductSummary } from "@/types/product";
 
 interface WishlistButtonProps {
   product: ProductSummary;

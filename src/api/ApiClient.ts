@@ -11,7 +11,7 @@
  * that header would make the browser send an extra OPTIONS "preflight" request before every call. There is
  * no `post` either, because this app never writes to the server.
  */
-import { API_BASE_URL, API_TIMEOUT_MS } from "../utils/constants";
+import { API_BASE_URL, API_TIMEOUT_MS } from "@/utils/constants";
 import { ApiError } from "./ApiError";
 
 export class ApiClient {

@@ -5,19 +5,19 @@
  */
 import { useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import Button, { buttonStyles } from "../components/ui/Button";
-import FormField from "../components/ui/FormField";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
-import { useTheme } from "../context/ThemeContext";
-import { useToast } from "../context/ToastContext";
-import { useWishlist } from "../context/WishlistContext";
-import { addressKey, formatAddress, useAddresses } from "../hooks/useAddresses";
-import { useOrders } from "../hooks/useOrders";
-import { useClearReviews } from "../hooks/useReviews";
-import type { SavedAddress } from "../types/order";
-import type { Profile } from "../types/user";
-import { hasNoErrors, validateProfile, type FieldErrors } from "../utils/validation";
+import Button, { buttonStyles } from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { useTheme } from "@/context/ThemeContext";
+import { useToast } from "@/context/ToastContext";
+import { useWishlist } from "@/context/WishlistContext";
+import { addressKey, formatAddress, useAddresses } from "@/hooks/useAddresses";
+import { useOrders } from "@/hooks/useOrders";
+import { useClearReviews } from "@/hooks/useReviews";
+import type { SavedAddress } from "@/types/order";
+import type { Profile } from "@/types/user";
+import { hasNoErrors, validateProfile, type FieldErrors } from "@/utils/validation";
 
 /** The form for someone who hasn't saved a profile yet. */
 const EMPTY_PROFILE: Profile = { firstName: "", lastName: "", email: "", phone: "" };

@@ -6,13 +6,13 @@
  */
 import { lazy, Suspense } from "react";
 import { Outlet, useLocation } from "react-router";
-import ErrorBoundary from "../ui/ErrorBoundary";
-import Spinner from "../ui/Spinner";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import Spinner from "@/components/ui/Spinner";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
 
 // EXTRA: the features beyond the spec. Deleting this line, its use below and `src/extras` leaves a complete shop.
-const ExtrasHost = lazy(() => import("../../extras/ExtrasHost"));
+const ExtrasHost = lazy(() => import("@/extras/ExtrasHost"));
 
 /**
  * The night street behind the machine. All decoration, so `aria-hidden` keeps it away from screen readers.

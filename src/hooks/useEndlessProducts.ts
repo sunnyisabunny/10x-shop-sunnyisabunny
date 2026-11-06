@@ -11,12 +11,12 @@
  * `products` alone, so the list already loaded stays on the screen.
  */
 import { useCallback, useEffect, useState } from "react";
-import { api } from "../api/ApiClient";
-import type { AsyncState } from "../types/api";
-import type { ProductSummary, ProductsResponse } from "../types/product";
-import { UNEXPECTED_ERROR } from "../utils/constants";
-import { isApiError } from "../utils/guards";
-import { buildChunkUrl, type CatalogParams } from "../utils/url";
+import { api } from "@/api/ApiClient";
+import type { AsyncState } from "@/types/api";
+import type { ProductSummary, ProductsResponse } from "@/types/product";
+import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { isApiError } from "@/utils/guards";
+import { buildChunkUrl, type CatalogParams } from "@/utils/url";
 import type { UseFetchResult } from "./useFetch";
 
 /** The state of the list's bottom edge. A union, so only a failure can carry a message. */

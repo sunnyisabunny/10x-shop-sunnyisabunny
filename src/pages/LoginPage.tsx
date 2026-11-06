@@ -6,15 +6,15 @@
  */
 import { useFormik } from "formik";
 import { Link, Navigate, useLocation } from "react-router";
-import AuthCard, { authLinkStyles } from "../components/ui/AuthCard";
-import { buttonStyles } from "../components/ui/Button";
-import FormField from "../components/ui/FormField";
-import { useAuth } from "../context/AuthContext";
-import { useToast } from "../context/ToastContext";
-import type { LoginFormValues } from "../types/user";
-import { loginSchema } from "../utils/authSchemas";
-import { MIN_PASSWORD_LENGTH } from "../utils/constants";
-import { readFromPath } from "../utils/guards";
+import AuthCard, { authLinkStyles } from "@/components/ui/AuthCard";
+import { buttonStyles } from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import type { LoginFormValues } from "@/types/user";
+import { loginSchema } from "@/utils/authSchemas";
+import { MIN_PASSWORD_LENGTH } from "@/utils/constants";
+import { readFromPath } from "@/utils/guards";
 
 export default function LoginPage() {
   const { login, isLoggedIn } = useAuth();

@@ -6,8 +6,8 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useTheme } from "../../context/ThemeContext";
-import { StorageService } from "../../models/StorageService";
+import { useTheme } from "@/context/ThemeContext";
+import { StorageService } from "@/models/StorageService";
 import { SoundEngine } from "./SoundEngine";
 
 /** The choice is saved under its own key. "Clear local data" leaves it alone, like the theme. */

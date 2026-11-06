@@ -9,11 +9,11 @@
  * this state with developer tools.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage";
-import { StorageService } from "../models/StorageService";
-import type { AuthUser, Profile, StoredProfiles } from "../types/user";
-import { STORAGE_KEYS } from "../utils/constants";
-import { parseAuthUser, parseStoredProfiles } from "../utils/guards";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { StorageService } from "@/models/StorageService";
+import type { AuthUser, Profile, StoredProfiles } from "@/types/user";
+import { STORAGE_KEYS } from "@/utils/constants";
+import { parseAuthUser, parseStoredProfiles } from "@/utils/guards";
 
 /** What Sign Up did. A union of exact words, so the page has to deal with each outcome by name. */
 export type SignUpResult = "created" | "taken" | "email-not-saved";

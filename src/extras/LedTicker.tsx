@@ -6,9 +6,9 @@
  */
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router";
-import { useCart } from "../context/CartContext";
-import { FREE_SHIPPING_FROM, PROMO_CODE, PROMO_PERCENT } from "../utils/constants";
-import { formatPrice } from "../utils/format";
+import { useCart } from "@/context/CartContext";
+import { FREE_SHIPPING_FROM, PROMO_CODE, PROMO_PERCENT } from "@/utils/constants";
+import { formatPrice } from "@/utils/format";
 import { useSlot } from "./useSlot";
 
 /** The machine's own remarks. The lemon is real: $0.79 less 9.7% is 71 cents. The car is real too, and is not. */

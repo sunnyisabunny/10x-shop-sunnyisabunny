@@ -7,8 +7,8 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Button from "../components/ui/Button";
-import { useToast } from "../context/ToastContext";
+import Button from "@/components/ui/Button";
+import { useToast } from "@/context/ToastContext";
 import { isForSomethingElse, printedKey } from "./keys";
 import { playSound } from "./sound/SoundToggle";
 import { useSlot } from "./useSlot";
