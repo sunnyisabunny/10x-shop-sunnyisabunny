@@ -39,10 +39,10 @@ export default function WishlistButton({ product, labelled = false }: WishlistBu
       <button
         type="button"
         onClick={handleClick}
-        aria-pressed={isSaved}
-        className="inline-flex min-h-11 items-center gap-2 rounded-md bg-steel-raised px-3.5 font-semibold text-ink shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hocus:bg-edge aria-pressed:text-pink"
+        className={`inline-flex min-h-11 items-center gap-2 rounded-md bg-steel-raised px-3.5 font-semibold shadow-[inset_0_0_0_1px_var(--edge-bright)] transition-colors duration-150 hocus:bg-edge ${isSaved ? "text-pink" : "text-ink"}`}
       >
         {heart}
+        {/* The words already say the state, so this one has no `aria-pressed`, which would make screen readers say it twice. */}
         <span className="text-ink">{isSaved ? "In your wishlist" : "Add to wishlist"}</span>
       </button>
     );
@@ -50,13 +50,14 @@ export default function WishlistButton({ product, labelled = false }: WishlistBu
 
   return (
     // z-[2] lifts it above the card's stretched link, so pressing the heart doesn't open the product. The button is the
-    // 44px tap target, and the smaller pale circle inside keeps the heart visible over a dark product.
+    // 44px tap target, and the smaller pale circle inside keeps the heart visible over a dark product. `right-1` leaves
+    // just enough room for the focus ring, which the card's rounded corners would otherwise cut off.
     <button
       type="button"
       onClick={handleClick}
       aria-pressed={isSaved}
       aria-label={`Wishlist: ${product.title}`}
-      className="absolute right-0.5 bottom-2 z-[2] inline-flex size-11 items-center justify-center text-[#10141d] transition-colors duration-150 hocus:text-pink aria-pressed:text-pink"
+      className="absolute right-1 bottom-2 z-[2] inline-flex size-11 items-center justify-center text-[#10141d] transition-colors duration-150 hocus:text-pink aria-pressed:text-pink"
     >
       <span className="inline-flex size-8 items-center justify-center rounded-full bg-white/80">{heart}</span>
     </button>

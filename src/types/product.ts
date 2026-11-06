@@ -38,7 +38,7 @@ export interface Product {
 
 /**
  * What a product card needs. `Pick` copies these fields from Product, so they can't fall out of sync, and a full Product
- * still fits anywhere a summary is expected. The wishlist saves only this, and the price filter loads only this.
+ * still fits anywhere a summary is expected. The wishlist saves only this.
  */
 export type ProductSummary = Pick<Product, "id" | "title" | "price" | "discountPercentage" | "rating" | "stock" | "thumbnail" | "category" | "brand">;
 

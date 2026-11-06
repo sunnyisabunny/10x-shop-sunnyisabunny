@@ -108,7 +108,7 @@ export default function Header() {
         </NavLink>
         <NavLink to="/wishlist" onClick={closeMenu} className={navLinkClass}>
           Wishlist
-          {wishlist.length > 0 && <span className="text-ink-soft">{wishlist.length}</span>}
+          <CoinCounter count={wishlist.length} />
         </NavLink>
         {isLoggedIn ? (
           <>
