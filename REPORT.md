@@ -9,12 +9,12 @@
 | React | Done | Done: `useReducer`, custom hooks, Formik and Yup, Orders, Profile, reviews, related products, promo code | Done: wishlist, grid and list view, printable invoice, Checkout in three steps, price range filter, address book, Endless |
 | TypeScript | Done: strict mode, no `any`, 0 type errors | Done: generics, `ApiClient`, `ApiError`, `Cart`, `Order` and `StorageService` classes, type guards, unions, utility types | Done: `@/` path alias |
 | Tailwind CSS | Done: v4 plugin, utilities, grid and flex, responsive, hover, focus and disabled | Done: `@theme` tokens | Done: dark mode, custom variants and utilities |
-| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 15 real bugs in the log | |
-| Practical project | Done: README, PLAN, REPORT, Git history, deploy | 63 Issues, a Projects board, milestones and PRs linked to Issues. Not fully met: see below | |
+| Optimization | Done: 375px and desktop, Error Boundary, `DEBUG-LOG.md` | Done: lazy routes, measured `memo`, Lighthouse before and after, `COMPATIBILITY.md`, 17 real bugs in the log | |
+| Practical project | Done: README, PLAN, REPORT, Git history, deploy | 64 Issues, a Projects board, milestones and PRs linked to Issues, and a demo video. Not fully met: see below | |
 
 ## Beyond the spec
 
-These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. I also deleted `src/extras` and the tagged lines on a throwaway branch: 2,519 lines went, and typecheck, lint, build and the core and catalog browser checks all still passed. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. I also deleted `src/extras` and the tagged lines on a throwaway branch: 2,522 lines went, and typecheck, lint, build and the core and catalog browser checks all still passed. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
 - **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
@@ -44,7 +44,7 @@ These weren't asked for, and nothing above counts them. Each one lives in `src/e
 
 ### Lighthouse
 
-Mobile preset, median of 3 runs per page. The before and after columns compare production builds on my own machine, because those are the only like-for-like numbers: "before" was taken before the site was deployed. The live site's numbers are below them. The images are in [`docs/lighthouse`](docs/lighthouse).
+Mobile preset, median of 3 runs per page. The before and after columns compare production builds on my own machine, because those are the only like-for-like numbers: "before" was taken before the site was deployed. The live site's numbers are below them. The images are in [`docs/lighthouse`](docs/lighthouse): `before.png`, `after.png`, `live-catalog.png` and `live-product.png`.
 
 **Before:** commit `5e7dc76`. **After:** branch `perf/lazy-routes`.
 
@@ -58,17 +58,19 @@ Mobile preset, median of 3 runs per page. The before and after columns compare p
 | CLS | 0.001 | 0 | 0.026 | 0.026 | Lazy loading first pushed `/` to 0.114, and that was then fixed (entry 14) |
 | Total weight | 256 kB | 235 kB | 262 kB | 245 kB | Formik and Yup left the first load |
 
-**On the live site**, at commit `630d62c`:
+**On the live site**, at commit `47ce1a0`, with the extras in:
 
 | Metric | `/` | `/products/1` |
 |---|---|---|
-| Performance | 99 | 93 |
+| Performance | 100 | 92 |
 | Accessibility | 100 | 100 |
 | Best Practices | 100 | 100 |
 | SEO | 100 | 100 |
-| LCP | 0.9 s | 3.0 s |
+| LCP | 1.1 s | 3.0 s |
 | CLS | 0 | 0 |
-| Total weight | 241 kB | 247 kB |
+| Total weight | 261 kB | 267 kB |
+
+The extras added 20 kB to each page, which is their own code and a small font, loaded after the page. Lighthouse tests at phone width, and phones don't download the street's art.
 
 ### Bundle
 
@@ -97,17 +99,17 @@ The CRM project once repainted the whole screen 60 times a second from a backgro
 
 ### Process
 
-Read from `git` and GitHub by a script.
+Read from `git` and GitHub by a script on 6 November, including the commit that added these numbers.
 
 | | |
 |---|---|
-| Commits, not counting merges | 88 |
+| Commits, not counting merges | 101 |
 | Days with commits | 2 (5 and 6 November) |
-| Merged PRs, all linked to Issues | 22 |
-| Issues, closed | 50 of 63 |
-| Bugs in `DEBUG-LOG.md` | 15 |
-| Source files | 78 |
-| Lines of source, of which notes | 6,244, of which 1,383 are notes |
+| Merged PRs | 28, of which 27 are linked to Issues. The scenes PR, #86, has none, because it was a request made later |
+| Issues, closed | 63 of 64. The last one is handing in |
+| Bugs in `DEBUG-LOG.md` | 17 |
+| Source files | 94 |
+| Lines of source, of which notes | 8,790, of which 1,707 are notes |
 
 ### Hours
 
@@ -118,6 +120,9 @@ Time from the first commit to the end of each stage, read from commit times and 
 | Setup and CORE | 5 Nov 21:58 | 1.4 |
 | FULL | 6 Nov 01:30 | 3.5 |
 | BONUS, with the scenes and sound built alongside | 6 Nov 06:48 | 5.3 |
+| Extras, the path alias, the video and the final checks | 6 Nov 16:10 | 2.1 |
+
+Work stopped from 06:48 to 14:07 on 6 November, so those seven hours aren't counted.
 
 **Hours per epic can't be measured honestly.** I often committed in batches at the end of a stretch of work, so commit times put hours on the wrong feature. One PR, the wishlist, shows two hours that were really spent on the scenes. So here are the plan's estimates by epic instead. They are estimates, not measurements.
 
@@ -157,6 +162,8 @@ I didn't take findings from its code reviews on trust. Most had to fail in a rea
 
 It also made mistakes that testing caught, which is why I don't take its word for things. Its first fix for the footer's layout shift did nothing (entry 14), and its first version of Endless requested the same products twice (entry 15).
 
+The demo video was also made this way. A script drives the live site in a real browser and adds the captions, and I didn't record it by hand. Watching the first take found what no test had: a Profile save that failed on screen while its caption said it had worked, and captions covering the shop's own messages. Those were faults in the script rather than in the shop, and they were fixed before the take the README links to.
+
 ## Code review
 
 `/code-review` ran on the work before merging. Most of its findings were reproduced with browser tests before being fixed. The rest, such as stale comments and some of the extras' sound timing, were fixed from reading the code.
@@ -166,6 +173,8 @@ It also made mistakes that testing caught, which is why I don't take its word fo
 - No secrets in the repo, and no password or card field in any saved data.
 - CI has read-only permissions.
 - `npm audit` reports 0 vulnerabilities.
+- Values from the URL are encoded before they reach the API, and a product id that isn't a number sends no request.
+- No link opens a new tab, and nothing reads a redirect target from the URL. Login's return path comes from the router's state.
 
 ## Limits
 

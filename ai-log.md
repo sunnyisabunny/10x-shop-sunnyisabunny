@@ -114,3 +114,21 @@ The AI ran a code review on its own work twice during the FULL stage. Each findi
 **What the AI did:** generated the art as SVG from a script, and built the sound with the Web Audio API.
 
 **What it couldn't do:** it can't hear. It measured loudness by rendering the sound offline, so it can say nothing clips, but not that it sounds good.
+
+---
+
+## Entry 10: finishing
+
+**Goal:** know what was left, and get it done.
+
+**Prompt (verbatim):**
+> continue, how much till theassignment is fully done?
+
+**What the AI did:** gave an estimate, then made `main` ready to hand in first, so that nothing going wrong later could cost the graded work. It then finished the extras, moved the imports to the `@/` alias, recorded the video, and measured everything again on the live site.
+
+**The video:** entry 6 said it would start from a real recording. A script drives the live site in a real browser and adds the captions. `/brag` only makes a clip of 15 to 25 seconds, so it wasn't used. The AI then watched its own recording through frames, and that found what no test had: a Profile save that failed on screen while the caption said it had worked, and captions covering the shop's messages. It fixed both and recorded it again.
+
+**The sheet for my defence:** it tried all eight of the live changes I might be asked for, for real. One instruction was wrong: adding an order status doesn't make the compiler ask for the row in `ORDER_STATUS_STEPS`.
+
+**Its slips in this stretch:** a command it hadn't checked put an error message into a merged PR's description, where an Issue number belonged. A repeat of the test that deletes the extras didn't run at all because of a wrong path, and looked like a pass. It noticed both from the output and corrected them.
+

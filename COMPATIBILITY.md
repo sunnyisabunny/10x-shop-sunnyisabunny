@@ -11,6 +11,19 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
 - **Edge and a real phone** are checked by hand, and those rows are filled in after that pass.
 
+Checks passed on the final production build, with 0 failures. The counts differ because of the differences explained in this file.
+
+| Flow | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| Core | 73 | 73 | 73 |
+| Catalog | 51 | 51 | 51 |
+| FULL features | 206 | 206 | 206 |
+| Quality | 61 | 59 | 59 |
+| BONUS features | 195 | 195 | 195 |
+| Extras | 168 | 163 | 147 |
+
+The Chromium column also passed on the live site.
+
 ## Results
 
 | Page | Chromium desktop | Chromium 375px | Firefox desktop | Firefox 375px | WebKit desktop | WebKit 375px | Edge (by hand) | Real phone (by hand) |
@@ -36,6 +49,7 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 - **WebKit** reports a request cancelled by leaving the page as a page error reading `due to access control checks`. The tests ignore that message, because a real failure would also leave the page without products, and other checks would catch it.
 - **Firefox** logs `Image corrupt or truncated` when leaving a page interrupts a product image download. The page isn't affected.
 - **WebKit on Windows has no Web Audio.** Playwright's build has no `AudioContext`, so the sound checks run only in Chromium and Firefox, and sound hasn't been tested in real Safari.
+- **WebKit on Windows draws bold text lighter** in the reading font, which shows in its screenshots. It measures the text at the right weight, with the same widths as the other engines to within a hundredth of a pixel, so nothing moves. I couldn't check this in real Safari.
 - **Safari and WebKit** leave links out of the Tab order by default. It is a browser setting, and a page can't change it. Buttons and form fields are reachable as usual, and links can be reached with Option+Tab in real Safari. In the WebKit test, the two link steps focus the link directly.
 
 ## Accessibility

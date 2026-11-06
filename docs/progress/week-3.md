@@ -11,10 +11,12 @@ This is the only progress note, and the annex asks for three. Work on this code 
 - **FULL:** fetch layer, search and filters in the URL, cart reducer, promo code and shipping, reviews, related products, orders with live status, Profile, light theme, Formik and Yup, simulated Sign Up and reset, lazy routes, and measured memoization. Tagged `v2.0-full`.
 - **BONUS:** grid and list view, wishlist, printable invoice, price range filter, Checkout in three steps, address book, and a Pages and Endless switch. Tagged `v3.0-bonus`.
 - **Deploy:** the site is live on Vercel, and the browser tests pass against it.
+- **Extras:** the eight extras, a street for each theme and generated sound, listed in `REPORT.md` as beyond the spec.
+- **Hand-in material:** the demo video, the final measurements on the live site, and the report.
 
 ## What is planned next
 
-The eight extras, then final checks, the demo video and hand-in.
+Handing in, then the defence on 7-8 November: reading the notes and rehearsing live code changes.
 
 ## Blockers
 
