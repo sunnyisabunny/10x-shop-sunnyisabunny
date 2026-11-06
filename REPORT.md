@@ -14,7 +14,7 @@
 
 ## Beyond the spec
 
-These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
+These weren't asked for, and nothing above counts them. Each one lives in `src/extras`, the shop only reaches them through lines tagged `EXTRA:`, and they load after the page, inside an Error Boundary that draws nothing if they fail. I tested that by blocking their file, and the shop works as normal. I also deleted `src/extras` and the tagged lines on a throwaway branch: 2,519 lines went, and typecheck, lint, build and the core and catalog browser checks all still passed. The places they draw are set aside in advance, so the page doesn't jump when they arrive. The exception is the receipt, which can't know its height. It only appears right after an order, and its code has been fetched by then.
 
 - **The street:** a Tokyo street at night and a small Japanese port town by day. Moving parts only use `transform` and `opacity`. Over 5 seconds at 1920px, in both themes, Chrome reported 0 paints and 0 layouts, including while the train crosses. Phones download none of the art.
 - **Sound:** generated in the browser with the Web Audio API, so there are no audio files. It stays off until pressed. Its levels were measured rather than judged by the AI that wrote it, which can't hear.
