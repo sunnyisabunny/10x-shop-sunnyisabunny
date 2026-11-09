@@ -1,6 +1,6 @@
 # Report
 
-**Status:** final report. Its numbers come from scripts that read the real repo, the real build and the live site, not from memory. Those scripts are my own tools and live outside this repo, so the graded code stays only the shop.
+**Status:** final report. Its numbers come from scripts that read the real repo, the real build and the live site, not from memory. Claude wrote those scripts. The browser tests are in [`tests/e2e`](tests/e2e), while the scripts that count commits and measure Lighthouse still live outside the repo.
 
 ## Planned and delivered
 
@@ -151,7 +151,7 @@ Work stopped from 06:48 to 14:07, and again from 17:13 to 19:07, on 6 November, 
 
 - **Start in week 1.** Everything I couldn't earn honestly comes from starting on 5 November: commits on 15 days, three progress notes, and a dated plan in week 1.
 - **Deploy on the first day.** I deployed near the end, so every measurement waited on it, and the before-and-after comparison had to stay on my own machine.
-- **Keep the browser tests in the repo.** I kept them out so the graded code stayed only the shop. That means CI can't run them and the ✓ marks in `COMPATIBILITY.md` rest on my word. The price of including them would have been small.
+- **Keep the browser tests in the repo from the start.** I kept them out at first so the graded code stayed only the shop, and they only moved into `tests/e2e` after the first hand-in. Until then nobody else could read or run them, and the ✓ marks in `COMPATIBILITY.md` rested on my word.
 - **Build less, and understand more of it.** Two days of work with an AI produced far more code than I could read closely in the same time. Fewer features would have left more time for reading and explaining them, and the defence is where that counts.
 
 ## How AI was used

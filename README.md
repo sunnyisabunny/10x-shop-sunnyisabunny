@@ -123,6 +123,9 @@ npm run dev
 | `npm run typecheck` | Checks types with `tsc --noEmit` |
 | `npm run lint` | Runs ESLint |
 | `npm test` | Runs the unit tests in `tests/unit` |
+| `npm run e2e:serve` | Builds the shop and serves it for the browser tests |
+| `npm run e2e` | Runs the browser tests in `tests/e2e`. See their [README](tests/e2e/README.md) |
+| `npm run e2e:a11y` | Runs the accessibility audit |
 
 ## Documents
 
@@ -132,6 +135,7 @@ npm run dev
 - [`COMPATIBILITY.md`](COMPATIBILITY.md): results per page, browser and device
 - [`ai-log.md`](ai-log.md): how AI was used
 - [`docs/CONFIG-NOTES.md`](docs/CONFIG-NOTES.md): what each config file does and why
+- [`tests/e2e/README.md`](tests/e2e/README.md): what each browser test checks, and how to run them
 - [Projects board](https://github.com/users/sunnyisabunny/projects/1): the task list, with every Issue
 
 ## Credits
