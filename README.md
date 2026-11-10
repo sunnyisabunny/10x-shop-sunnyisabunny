@@ -137,7 +137,7 @@ npm run dev
 ## Credits
 
 - Built by [sunnyisabunny](https://github.com/sunnyisabunny) as the graduation project for the 10X Front-end program.
-- Developed with Claude Code as a pair-programming assistant. See [`ai-log.md`](ai-log.md).
+- Claude Code wrote nearly all of the code, the tests and the notes, working from the PRD and my decisions. See [`ai-log.md`](ai-log.md) and the "How AI was used" section of [`REPORT.md`](REPORT.md).
 - Product data from [DummyJSON](https://dummyjson.com).
 - In the demo video: music by Sascha Ende at [ende.app](https://ende.app/en) (Happy Beats / Business Moves Vol. 12, CC BY 4.0), and sound effects by [Kenney](https://kenney.nl) and unicae_games (CC0). The rain, waves and machine sounds are the shop's own.
 - Fonts under the SIL Open Font License: [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [Doto](https://fonts.google.com/specimen/Doto), [Tilt Neon](https://fonts.google.com/specimen/Tilt+Neon), [DotGothic16](https://fonts.google.com/specimen/DotGothic16). The lettering on the street's signs also uses [Dela Gothic One](https://fonts.google.com/specimen/Dela+Gothic+One) and [Yuji Boku](https://fonts.google.com/specimen/Yuji+Boku).

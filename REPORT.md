@@ -124,7 +124,7 @@ Time from the first commit to the end of each stage, read from commit times and 
 
 Work stopped from 06:48 to 14:07, and again from 17:13 to 19:07, on 6 November, so those hours aren't counted.
 
-**Hours per epic can't be measured honestly.** I often committed in batches at the end of a stretch of work, so commit times put hours on the wrong feature. One PR, the wishlist, shows two hours that were really spent on the scenes. So here are the plan's estimates by epic instead. They are estimates, not measurements.
+**Hours per epic can't be measured honestly.** Commits were often made in batches at the end of a stretch of work, so commit times put hours on the wrong feature. One PR, the wishlist, shows two hours that were really spent on the scenes. So here are the plan's estimates by epic instead. They are estimates, not measurements.
 
 | Epic | Planned hours |
 |---|---|
@@ -158,17 +158,17 @@ Work stopped from 06:48 to 14:07, and again from 17:13 to 19:07, on 6 November, 
 
 Claude Code wrote nearly all of the code, the tests and the notes beside the code, working from the PRD and from my decisions. I decided the scope, the design direction, the extras and what to cut, and I reviewed the result in a browser. `ai-log.md` quotes my prompts word for word.
 
-I didn't take findings from its code reviews on trust. Most had to fail in a real browser test before anything changed, and some did not survive: two tabs overwriting each other's orders turned out to be unreachable. I rejected others on purpose, such as giving orders an owner, because the annex's model has none, and migrating an old cart format, because the site had never been deployed.
+Findings from its code reviews weren't taken on trust. Most had to fail in a real browser test before anything changed, and some did not survive: two tabs overwriting each other's orders turned out to be unreachable. Others were rejected on purpose, such as giving orders an owner, because the annex's model has none, and migrating an old cart format, because the site had never been deployed. Claude ran those reviews and tests and made those calls.
 
 It also made mistakes that testing caught, which is why I don't take its word for things. Its first fix for the footer's layout shift did nothing (entry 14), and its first version of Endless requested the same products twice (entry 15).
 
-The demo video was also made this way. A script drives the live site in a real browser, and I didn't record it by hand. The titles, captions, zooms and sound were added in editing, and the footage runs 3% fast to fit the annex's three minutes. Watching the takes found what no test had: a Profile save that failed on screen while its caption said it had worked, captions covering the shop's own messages, and a street shot where the machine hid the road. Those were faults in the script rather than in the shop, and they were fixed before the take the README links to.
+The demo video was also made this way. A script drives the live site in a real browser, and I didn't record it by hand. The titles, captions, zooms and sound were added in editing, and the footage runs 3% fast to fit the annex's three minutes. Claude checked each take frame by frame and found what no test had: a Profile save that failed on screen while its caption said it had worked, captions covering the shop's own messages, and a street shot where the machine hid the road. Those were faults in the script rather than in the shop, and they were fixed before the take the README links to. I watched the final cut with sound before handing in.
 
 ## Code review
 
 `/code-review` ran on the work before merging. Most of its findings were reproduced with browser tests before being fixed. The rest, such as stale comments and some of the extras' sound timing, were fixed from reading the code.
 
-`/security-review` couldn't run from this setup, because the session isn't started inside the repo. These were checked by hand instead:
+`/security-review` couldn't run from this setup, because the session wasn't started inside the repo. Claude checked these instead, by searching the code and running `npm audit`:
 - No raw HTML (`innerHTML`, `dangerouslySetInnerHTML`) anywhere in `src`.
 - No secrets in the repo, and no password or card field in any saved data.
 - CI has read-only permissions.
