@@ -27,4 +27,6 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint -- --max-warnings=0
+      # The unit tests need no browser and no network, so they can run on every push.
+      - run: npm test
       - run: npm run build

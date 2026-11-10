@@ -6,7 +6,7 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 
 - **Chromium, Firefox and WebKit:** driven by automated browser tests through Playwright, on the production build. Each engine ran the same checks: the core flow, the catalog flow, the FULL features, the BONUS features, the extras, and the quality checks such as the keyboard path and the phone width. The differences are the keyboard path and sound on WebKit, explained below, and two checks that use Chromium's developer tools and so run only there: the paint counts for the street, and the level of the audio signal.
 - **The live site:** the same checks and the accessibility audit also ran against [the deployed site](https://10x-shop-sunnyisabunny.vercel.app) in Chromium, including opening `/products/5` directly and reloading it.
-- **The test scripts aren't in this repo.** They are my own tools, kept in a separate folder so that the graded code stays only the shop. So the ✓ marks here are results I am reporting, and CI only runs typecheck, lint and build. I can run the scripts at the defence.
+- **The test scripts aren't in this repo.** They are my own tools, kept in a separate folder so that the graded code stays only the shop. So the ✓ marks here are results I am reporting, and CI runs typecheck, lint, the unit tests and build, but not these browser tests. I can run the scripts at the defence.
 - **WebKit is close to Safari, but it isn't Safari.** It is the engine Safari uses, in Playwright's own build on Windows. I don't have a Mac or an iPhone here to confirm it in real Safari.
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
 - **Edge and a real phone** were checked by hand.

@@ -122,6 +122,7 @@ npm run dev
 | `npm run preview` | Serves the production build locally |
 | `npm run typecheck` | Checks types with `tsc --noEmit` |
 | `npm run lint` | Runs ESLint |
+| `npm test` | Runs the unit tests in `tests/unit` |
 
 ## Documents
 
