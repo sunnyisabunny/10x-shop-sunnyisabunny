@@ -9,9 +9,11 @@ Results per page, browser and device (PRD O3). Screenshots are in [`docs/compat`
 - **The test scripts are in [`tests/e2e`](tests/e2e).** Claude wrote them while building the shop. They lived outside the repo until after the first hand-in, then moved in unchanged apart from their first line and one output folder. They run by hand, not in CI, because they call the live API. Their README shows how to run them. CI runs typecheck, lint, the unit tests and the build.
 - **WebKit is close to Safari, but it isn't Safari.** It is the engine Safari uses, in Playwright's own build on Windows. I don't have a Mac or an iPhone here to confirm it in real Safari.
 - **Phone width** is browser emulation at 375px, so it checks layout, not a real touch screen.
-- **Edge and a real phone** were checked by hand.
+- **Edge and a real phone** were checked by hand. My pass on 11 November, in Edge 155 and on a Google Pixel 7, is recorded row by row in [`MANUAL-TESTING.md`](MANUAL-TESTING.md).
 
 Checks passed on the final production build, with 0 failures. The counts differ because of the differences explained in this file.
+
+**Re-run on 11 November,** on the build being handed in (commit `91b4257`): I ran all six flows in the three browsers and got the same counts, with 0 failures. The logs are in [`tests/e2e/results/2026-11-11_1741`](tests/e2e/results/2026-11-11_1741). Claude then ran the accessibility audit in both themes, which found no problems: [`tests/e2e/results/2026-11-11_1805-a11y`](tests/e2e/results/2026-11-11_1805-a11y).
 
 | Flow | Chromium | Firefox | WebKit |
 |---|---|---|---|

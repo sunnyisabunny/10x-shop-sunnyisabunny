@@ -133,9 +133,11 @@ npm run dev
 - [`REPORT.md`](REPORT.md): planned against delivered
 - [`DEBUG-LOG.md`](DEBUG-LOG.md): real bugs and how they were found and fixed
 - [`COMPATIBILITY.md`](COMPATIBILITY.md): results per page, browser and device
+- [`MANUAL-TESTING.md`](MANUAL-TESTING.md): my own test pass by hand, in Edge and on my phone
 - [`ai-log.md`](ai-log.md): how AI was used
 - [`docs/CONFIG-NOTES.md`](docs/CONFIG-NOTES.md): what each config file does and why
 - [`tests/e2e/README.md`](tests/e2e/README.md): what each browser test checks, and how to run them
+- [`tests/e2e/results`](tests/e2e/results): the saved logs of the final browser test runs
 - [Projects board](https://github.com/users/sunnyisabunny/projects/1): the task list, with every Issue
 
 ## Credits

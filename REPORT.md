@@ -1,6 +1,29 @@
 # Report
 
-**Status:** final report. Its numbers come from scripts that read the real repo, the real build and the live site, not from memory. Claude wrote those scripts. The browser tests are in [`tests/e2e`](tests/e2e), while the scripts that count commits and measure Lighthouse still live outside the repo.
+**Status:** final report, updated on 11 November for the re-submission (see [After the first hand-in](#after-the-first-hand-in)). Its numbers come from scripts that read the real repo, the real build and the live site, not from memory. Claude wrote those scripts. The browser tests are in [`tests/e2e`](tests/e2e), while the scripts that count commits and measure Lighthouse still live outside the repo.
+
+## After the first hand-in
+
+The first hand-in was on 6 November, at the tag [`hand-in-1`](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/tree/hand-in-1). The course then allowed changes until 11 November. The shop itself didn't change in that time: every change was tests, records or documents. [Everything that changed, as one comparison](https://github.com/sunnyisabunny/10x-shop-sunnyisabunny/compare/hand-in-1...hand-in-2).
+
+| What changed | Why | PR |
+|---|---|---|
+| Unit tests with Vitest, which CI runs on every push: 76 tests for the catalog's URL rules, the type guards, the `Cart` class, the form rules, safe storage, prices, the cart reducer and orders | The pure logic had no tests that CI could run | #108, #111, #114 |
+| The six browser test flows and the accessibility audit moved into [`tests/e2e`](tests/e2e), with one script that runs them all and saves the results | They found most of the bugs, but they lived outside the repo, so nobody else could read or run them | #110 |
+| `DEBUG-LOG.md` now says who found and who fixed each bug, and the README, `PLAN.md` and this report say plainly what Claude Code did | The first hand-in credited some of Claude's work to "I" | #109, #113 |
+| A final check of the build being handed in: every browser flow in Chromium, Firefox and WebKit, with 781, 774 and 758 checks and 0 failures, the same counts as at the first hand-in. Then the accessibility audit in both themes, with no problems. The results are in [`tests/e2e/results`](tests/e2e/results) | To check the final build itself, rather than report earlier runs | #115, #116 |
+| The security checklist and both forms of `npm audit`, re-run on the final code with their real commands. See [Code review](#code-review) | At the first hand-in, the checklist named no person and showed no output | #116 |
+| My own pass by hand on the live site, in Edge on Windows 11 and on a Google Pixel 7, row by row in [`MANUAL-TESTING.md`](MANUAL-TESTING.md) | The ✓ marks for Edge and the phone had no details behind them | #115 |
+
+**Who did what:** Claude Code wrote the unit tests, moved the browser tests, wrote the document changes, and ran the accessibility audit and the security re-check. I merged #108 to #114 by hand, with review comments on #108, #109 and #114, and Claude merged the last two, #115 and #116, at my request once their checks had passed. I ran the unit tests and broke the code on purpose to watch them fail, ran every browser flow in all three browsers, and did my own manual pass in Edge and on my phone. `ai-log.md` covers the build up to the first hand-in, and this section is the record of what came after.
+
+| Since the first hand-in | |
+|---|---|
+| Commits, not counting merges | 10, including the one that added this section |
+| Merged PRs | 8, each linked to an Issue |
+| Issues | 11: #98 to #107, and #112. Ten were done, and #107, an AI-log entry, was dropped by my choice |
+| Unit tests | 76, run by CI on every push, on Node 22, 24 and 26 |
+| Changes to the shop's own code | None. `src`, `index.html` and `public` are the same as at `hand-in-1` |
 
 ## Planned and delivered
 
@@ -175,6 +198,21 @@ The demo video was also made this way. A script drives the live site in a real b
 - `npm audit` reports 0 vulnerabilities.
 - Values from the URL are encoded before they reach the API, and a product id that isn't a number sends no request.
 - No link opens a new tab, and nothing reads a redirect target from the URL. Login's return path comes from the router's state.
+
+**Re-checked on 11 November** by Claude, on the final code (commit `91b4257`), with these commands:
+
+| Check | Command | Result |
+|---|---|---|
+| Known vulnerabilities, all packages | `npm audit` | 0 |
+| Known vulnerabilities, shipped packages only | `npm audit --omit=dev` | 0 |
+| Raw HTML | `git grep -nE "innerHTML\|dangerouslySetInnerHTML" -- src` | No matches |
+| Links that open a new tab | `git grep -nE "target=.?_blank\|window\.open\(" -- src` | No matches |
+| `eval` and `new Function` | `git grep -nE "(^\|[^a-zA-Z])eval\(\|new Function\(" -- src` | No matches |
+| Secrets in code and config | `git grep -niIE "api[_-]?key\|secret\|bearer \|sk-[a-z0-9]{8}" -- src .github index.html vite.config.ts vercel.json package.json` | Only `SECRET = "10X"` in `src/extras/Overload.tsx`, the easter egg's key sequence, which isn't a credential |
+| CI permissions | `git grep -n -A1 "^permissions" -- .github/workflows/ci.yml` | `contents: read` |
+| Saved passwords | `git grep -ni password -- src/context src/models src/hooks` | Only notes saying no password is kept. Login saves the username alone |
+
+`/security-review` still wasn't run. It reviews a branch's changes that aren't merged yet, and nothing in `src` changed after the first hand-in.
 
 ## Limits
 
