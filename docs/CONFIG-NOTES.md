@@ -12,6 +12,7 @@ are explained here. `tsconfig.json` allows comments, so its notes are in the fil
 - `lint` runs ESLint. `any` is an error, so it can't stay in the code.
 - `preview` serves the production build, which is what the end-to-end checks run against.
 - `test` runs the unit tests in `tests/unit` once, as CI does. `test:watch` re-runs them whenever a file changes.
+- `e2e:serve` builds the shop and serves it at `http://127.0.0.1:4173` for the browser tests. `e2e` runs them through `tests/e2e/run-all.mjs`, and `e2e:a11y` runs the accessibility audit. `tests/e2e/README.md` explains both.
 
 **Why exact versions, with no `^`**
 So `npm install` gives an evaluator exactly what was tested.
@@ -24,6 +25,11 @@ TypeScript 7 exists, but `typescript-eslint` 8.72 only supports versions below 6
 - **It supports Vite 8 and Node 22, 24 and 26**, the versions CI uses.
 - **5.0.5, not the newest 5.1.0.** 5.1.0 was only eight days old when this was set up, and an older release that nobody has reported problems with is the safer pin.
 - **No browser environment.** The tests cover pure logic, so they run in plain Node, with no jsdom or happy-dom.
+
+**Why Playwright 1.64.1 and axe-core 4.14.0**
+- **They are only for the browser tests in `tests/e2e`,** which run by hand. Neither one reaches the site.
+- **They are the exact versions the tests were written and run with.** Playwright 1.64.1 matches the browser builds already on the test machine, and a newer Playwright would need new browsers.
+- **Installing Playwright doesn't download any browsers.** CI also sets `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`, so that can never change without anyone noticing.
 
 **Why `engines` says Node 22.22 or newer**
 That is the minimum React Router 8 declares.
