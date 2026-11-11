@@ -1,25 +1,15 @@
 # Manual testing
 
-<!-- HOW TO USE THIS TEMPLATE (delete this block when you're done)
-1. Copy this file to the repo root as MANUAL-TESTING.md, on your own branch: git switch -c docs/manual-testing
-2. Do every step yourself, in Edge on the computer and in your phone's browser, on the live site.
-3. Mark only what you actually saw: ✓ worked, ✗ didn't, – not tried. Write anything odd in Notes,
-   even small things. A short honest list is worth more than a long perfect one.
-4. Screenshots: put yours in docs/manual/, named like edge-catalog.png or phone-checkout.png, and link
-   the important ones in the table. On Windows: Win+Shift+S. On a phone: its own screenshot buttons.
-5. Commit it yourself (no Co-Authored-By line), push, open a PR with "Closes #103", and merge it by hand.
--->
-
 I tested the live site by hand, in Edge on my computer and in my phone's browser. This file records what I did and what I saw.
 
 | | Edge | Phone |
 |---|---|---|
 | Tested by | ალექსანდრე საკანდელიძე | ალექსანდრე საკანდელიძე |
 | Date | 11.11.2026 |
-| Device and system | Windows 11 PC | (phone model, Android-Google pixel 7) |
-| Browser and version | Edge (from `edge://155.0.4283.45`) | (browser, version from its settings) |
+| Device and system | Windows 11 PC | Google Pixel 7, Android |
+| Browser and version | Edge 155.0.4283.45 | – |
 | Site | https://10x-shop-sunnyisabunny.vercel.app | same |
-| Screen width | (e.g. 1920px) | (e.g. 393px) |
+| Screen width | – | – |
 
 ## Results
 
