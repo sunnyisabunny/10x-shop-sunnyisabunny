@@ -1,7 +1,7 @@
 # 10X Shop: project plan
 
 **Written:** 5 November 2026, before any feature code.
-**Author:** sunnyisabunny
+**Author:** sunnyisabunny, with Claude Code as co-author. The key decisions were made as the PRD required. (This line was corrected on 11 November.)
 **Hand-in:** 6 November 2026, 23:59 Georgia time. Defence: 7-8 November.
 
 The project window opened on 17 October. Work on this code started on 5 November, in week 3 of the
